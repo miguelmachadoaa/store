@@ -21,6 +21,7 @@ class Product extends Model
         'image',
         'is_active',
         'is_featured',
+        'category_id',
     ];
 
     protected $casts = [
@@ -92,4 +93,15 @@ class Product extends Model
     {
         return $this->compare_price && $this->compare_price > $this->price;
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
 }

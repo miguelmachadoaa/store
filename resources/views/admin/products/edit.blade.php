@@ -49,6 +49,32 @@
                                 @enderror
                             </div>
 
+                            <div class="mb-4">
+                                <label class="font-semibold">Categoría</label>
+                                <select name="category_id" class="w-full border rounded p-2">
+                                    <option value="">Seleccione una categoría</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}"
+                                            {{ isset($product) && $product->category_id == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="font-semibold">Marca</label>
+                                <select name="brand_id" class="w-full border rounded p-2">
+                                    <option value="">Seleccione una marca</option>
+                                    @foreach($brands as $brand)
+                                        <option value="{{ $brand->id }}"
+                                            {{ $product->brand_id == $brand->id ? 'selected' : '' }}>
+                                            {{ $brand->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <!-- Precio -->
                             <div>
                                 <label for="price" class="block text-sm font-medium text-gray-700">Precio *</label>

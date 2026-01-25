@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Tienda Online' }}</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -19,8 +22,20 @@
                 <a href="{{ route('home') }}" class="hover:text-blue-600">Inicio</a>
                 <a href="{{ route('products.index') }}" class="hover:text-blue-600">Productos</a>
                 <a href="#" class="hover:text-blue-600">Marcas</a>
-                <a href="{{ route('cart.index') }}" class="hover:text-blue-600">Carrito</a>
-            </nav>
+                {{-- Cart Icon --}}
+                <a href="{{ route('cart.index') }}" class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-700 hover:text-pink-600 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m5-9v9m4-9v9m4-9l2 9" />
+                    </svg>
+
+                    {{-- Cart Count --}}
+                    <span id="cart-count"
+                        class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full px-2 py-0.5">
+                        {{ session('cart') ? count(session('cart')) : 0 }}
+                    </span>
+                </a>
+                            </nav>
         </div>
     </header>
 
@@ -101,6 +116,57 @@
             © {{ date('Y') }} MiTienda. Todos los derechos reservados.
         </div>
     </footer>
+
+   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+    new Swiper(".mySwiper", {
+        loop: true,
+        autoplay: {
+            delay: 4000,
+        },
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        },
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+    });
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.addEventListener('click', function () {
+
+            const productId = this.dataset.id;
+
+            fetch(`/cart/ajax-add/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Actualizar contador
+                    document.getElementById('cart-count').textContent = data.count;
+
+                    // Animación visual
+                    document.getElementById('cart-count').classList.add('scale-125');
+                    setTimeout(() => {
+                        document.getElementById('cart-count').classList.remove('scale-125');
+                    }, 200);
+                }
+            });
+        });
+    });
+
+});
+</script>
 
 </body>
 </html>

@@ -1,5 +1,5 @@
 <div class="border rounded-lg p-4 shadow hover:shadow-lg transition">
-    <a href="{{ route('products.show', $product->slug) }}">
+    <a href="{{ route('product.detail', $product->slug) }}">
         <img src="{{ asset('storage/' . $product->image) }}"
              alt="{{ $product->name }}"
              class="w-full h-48 object-cover rounded mb-3">
@@ -27,10 +27,10 @@
         </div>
     </a>
 
-    <form action="{{ route('cart.add', $product->id) }}" method="POST" class="mt-4">
-        @csrf
-        <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-            Add to Cart
-        </button>
-    </form>
+    <button type="button"
+        class="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 add-to-cart"
+        data-id="{{ $product->id }}">
+        Add to Cart
+    </button>
+
 </div>

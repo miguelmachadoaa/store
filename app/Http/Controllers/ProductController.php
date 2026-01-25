@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Brand;
+use App\Models\Category;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -40,7 +43,12 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('admin.products.create');
+        $categories = Category::where('is_active', 1)->get();
+
+        $brands = Brand::where('is_active', 1)->get();
+
+
+        return view('admin.products.create', compact('categories', 'brands'));
     }
 
     /**
@@ -56,6 +64,7 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
             'sku' => 'nullable|string|unique:products,sku',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'category_id' => 'nullable|exists:categories,id',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
         ]);
@@ -87,7 +96,10 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('admin.products.edit', compact('product'));
+        $categories = Category::where('is_active', 1)->get();
+        $brands = Brand::where('is_active', 1)->get();
+
+        return view('admin.products.edit', compact('product', 'categories', 'brands'));
     }
 
     /**
@@ -101,6 +113,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'compare_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'category_id' => 'nullable|exists:categories,id',
             'sku' => 'nullable|string|unique:products,sku,' . $product->id,
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'is_active' => 'boolean',
@@ -140,4 +153,93 @@ class ProductController extends Controller
         return redirect()->route('products.index')
             ->with('success', 'Producto eliminado exitosamente.');
     }
+
+    public function inlineUpdate(Request $request, Product $product)
+    {
+        $request->validate([
+            'field' => 'required|string',
+            'value' => 'nullable',
+            'image' => 'nullable|image|max:2048'
+        ]);
+
+        // Si es imagen
+        if ($request->field === 'image' && $request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $product->update(['image' => $path]);
+
+            return response()->json([
+                'success' => true,
+                'image_url' => asset('storage/' . $path)
+            ]);
+        }
+
+        // Campos simples
+        $product->update([
+            $request->field => $request->value
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function shop(Request $request)
+    {
+        $query = Product::query()->where('is_active', 1);
+
+        // Filtro por categoría
+        if ($request->category) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Filtro por marca
+        if ($request->brand) {
+            $query->whereIn('brand_id', $request->brand);
+        }
+
+
+        // Filtro por precio
+        if ($request->min_price) {
+            $query->where('price', '>=', $request->min_price);
+        }
+
+        if ($request->max_price) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        // Ordenar
+        if ($request->sort) {
+            $query->orderBy('price', $request->sort === 'asc' ? 'ASC' : 'DESC');
+        }
+
+        $products = $query->paginate(12);
+
+        $categories = Category::all();
+        $brands = Brand::all();
+
+        return view('shop.index', compact('products', 'categories', 'brands'));
+    }
+
+    public function byBrand($slug)
+    {
+        $brand = Brand::where('slug', $slug)->firstOrFail();
+
+        $products = Product::where('brand_id', $brand->id)
+            ->where('is_active', 1)
+            ->paginate(12);
+
+        return view('shop.by-brand', compact('brand', 'products'));
+    }
+
+    public function detail($slug)
+    {
+        $product = Product::with(['brand', 'category'])->where('slug', $slug)->firstOrFail();
+
+        $related = Product::where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->take(6)
+            ->get();
+
+        return view('shop.detail', compact('product', 'related'));
+    }
+
+
 }

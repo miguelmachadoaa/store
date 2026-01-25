@@ -80,16 +80,15 @@
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @foreach($products as $product)
                                         <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @if($product->image)
-                                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="h-16 w-16 object-cover rounded-lg shadow-sm border border-gray-200">
-                                                @else
-                                                    <div class="h-16 w-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center shadow-sm border border-gray-200">
-                                                        <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                        </svg>
-                                                    </div>
-                                                @endif
+                                            <td class="px-6 py-4">
+                                                <label class="cursor-pointer">
+                                                    <img src="{{ asset('storage/' . $product->image) }}"
+                                                        class="h-16 w-16 object-cover rounded border shadow-sm">
+
+                                                    <input type="file" class="hidden inline-image-upload"
+                                                        data-id="{{ $product->id }}"
+                                                        data-field="image">
+                                                </label>
                                             </td>
                                             <td class="px-6 py-4">
                                                 <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>
@@ -102,27 +101,27 @@
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-semibold text-gray-900">${{ number_format($product->price, 2) }}</div>
-                                                @if($product->compare_price)
-                                                    <div class="text-sm text-gray-500 line-through">${{ number_format($product->compare_price, 2) }}</div>
-                                                @endif
+                                            <td class="px-6 py-4">
+                                                <input type="number" step="0.01"
+                                                    value="{{ $product->price }}"
+                                                    class="w-24 border rounded p-1 inline-edit"
+                                                    data-id="{{ $product->id }}"
+                                                    data-field="price">
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="text-sm font-medium {{ $product->stock > 0 ? 'text-green-600' : 'text-red-600' }}">
-                                                    {{ $product->stock }} unidades
-                                                </span>
+                                            <td class="px-6 py-4">
+                                                <input type="number"
+                                                    value="{{ $product->stock }}"
+                                                    class="w-20 border rounded p-1 inline-edit"
+                                                    data-id="{{ $product->id }}"
+                                                    data-field="stock">
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @if($product->is_active)
-                                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                        Activo
-                                                    </span>
-                                                @else
-                                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                        Inactivo
-                                                    </span>
-                                                @endif
+                                            <td class="px-6 py-4">
+                                                <select class="border rounded p-1 inline-edit"
+                                                        data-id="{{ $product->id }}"
+                                                        data-field="is_active">
+                                                    <option value="1" {{ $product->is_active ? 'selected' : '' }}>Activo</option>
+                                                    <option value="0" {{ !$product->is_active ? 'selected' : '' }}>Inactivo</option>
+                                                </select>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <div class="flex justify-end gap-2">
@@ -182,4 +181,54 @@
             </div>
         </div>
     </div>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    // Edición de texto / número / select
+    document.querySelectorAll('.inline-edit').forEach(el => {
+        el.addEventListener('change', function () {
+            const id = this.dataset.id;
+            const field = this.dataset.field;
+            const value = this.value;
+
+            fetch(`/products/${id}/inline-update`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ field, value })
+            });
+        });
+    });
+
+    // Subida de imagen
+    document.querySelectorAll('.inline-image-upload').forEach(input => {
+        input.addEventListener('change', function () {
+            const id = this.dataset.id;
+            const field = this.dataset.field;
+            const formData = new FormData();
+
+            formData.append('image', this.files[0]);
+            formData.append('field', field);
+
+            fetch(`/products/${id}/inline-update`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.image_url) {
+                    this.previousElementSibling.src = data.image_url;
+                }
+            });
+        });
+    });
+
+});
+</script>
 </x-app-layout>

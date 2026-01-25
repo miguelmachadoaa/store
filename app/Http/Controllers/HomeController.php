@@ -16,7 +16,7 @@ class HomeController extends Controller
         $featuredProducts = Product::active()->featured()->take(6)->get();
 
          $weeklyDeals = Product::active()->inStock()->take(4)->get();
-    $recentProducts = Product::active()->latest()->take(6)->get();
+        $recentProducts = Product::active()->latest()->take(6)->get();
 
 
         return view('home', compact('sliders', 'brands', 'featuredProducts', 'weeklyDeals', 'recentProducts'));
