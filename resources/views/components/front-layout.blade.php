@@ -1,0 +1,1 @@
+@include('layouts.front', ['slot' => $slot, 'sliders' => $sliders ?? null, 'brands' => $brands ?? null])
