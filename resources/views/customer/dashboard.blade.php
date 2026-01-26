@@ -2,9 +2,13 @@
 
     <div class="max-w-5xl mx-auto py-12 px-6">
 
-        <h2 class="text-2xl font-bold mb-6">Mi Cuenta</h2>
+        <h1 class="text-3xl font-bold mb-6">Mi Área</h1>
 
-        <h3 class="text-xl font-semibold mb-4">Mis Compras</h3>
+        <p class="text-gray-700 mb-4">
+            Hola {{ auth()->user()->name }}, aquí puedes ver tus compras y tu información personal.
+        </p>
+
+        <h2 class="text-xl font-semibold mb-4">Mis Compras</h2>
 
         @if($orders->count())
             <table class="w-full border">
@@ -20,7 +24,7 @@
                 @endforeach
             </table>
         @else
-            <p>No tienes compras registradas.</p>
+            <p class="text-gray-500">Aún no tienes compras registradas.</p>
         @endif
 
     </div>

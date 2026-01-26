@@ -4,14 +4,25 @@
 
     {{-- Galería de imágenes --}}
     <div>
-        <img src="{{ asset('storage/' . $product->image) }}"
-             class="w-full h-[450px] object-cover rounded-lg shadow">
+        {{-- Imagen principal --}}
+        <img id="main-image"
+            src="{{ asset('storage/' . ($product->images->first()->image ?? $product->image)) }}"
+            class="w-full h-[450px] object-cover rounded-lg shadow">
 
-        {{-- Miniaturas (si tienes más imágenes en el futuro) --}}
-        {{-- <div class="flex gap-3 mt-4">
-            <img src="..." class="h-20 w-20 rounded border cursor-pointer">
-        </div> --}}
+        {{-- Miniaturas --}}
+        <div class="flex gap-3 mt-4">
+            {{-- Imagen principal --}}
+            <img src="{{ asset('storage/' . $product->image) }}"
+                class="h-20 w-20 rounded border cursor-pointer thumb">
+
+            {{-- Imágenes adicionales --}}
+            @foreach($product->images as $img)
+                <img src="{{ asset('storage/' . $img->image) }}"
+                    class="h-20 w-20 rounded border cursor-pointer thumb">
+            @endforeach
+        </div>
     </div>
+
 
     {{-- Información del producto --}}
     <div>
@@ -87,5 +98,15 @@
         <p class="text-gray-500">No hay productos relacionados.</p>
     @endif
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.thumb').forEach(img => {
+        img.addEventListener('click', function () {
+            document.getElementById('main-image').src = this.src;
+        });
+    });
+});
+</script>
 
 </x-front-layout>

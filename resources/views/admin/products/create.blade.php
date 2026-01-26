@@ -123,6 +123,12 @@
                                 @enderror
                             </div>
 
+                            <div class="mb-4">
+                                <label class="font-semibold">Imágenes adicionales</label>
+                                <input type="file" name="images[]" multiple class="w-full border rounded p-2">
+                            </div>
+
+
                             <!-- Checkboxes -->
                             <div class="md:col-span-2 space-y-4">
                                 <div class="flex items-center">

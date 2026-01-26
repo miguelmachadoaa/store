@@ -13,13 +13,17 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CustomerAdminController;
 use App\Http\Controllers\Admin\CategoryAdminController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
+use App\Http\Controllers\Admin\PostAdminController;
+use App\Http\Controllers\BlogController;
 
 
 
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+Route::get('/etiqueta/{slug}', [BlogController::class, 'tag'])->name('blog.tag');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -30,8 +34,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/mi-cuenta', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
-});
+    Route::get('/mi-area', [CustomerDashboardController::class, 'index'])
+        ->name('customer.dashboard');
+
+    
+    });
 
 
 
@@ -46,6 +53,12 @@ Route::get('/checkout/success/{orderId}', [CheckoutController::class, 'success']
 
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    // Admin
+    Route::resource('posts', PostAdminController::class)->names('admin.posts');
+
+// Público
+
+
 
     Route::get('/customers', [CustomerAdminController::class, 'index'])->name('admin.customers.index');
     Route::get('/customers/{user}', [CustomerAdminController::class, 'show'])->name('admin.customers.show');
@@ -78,6 +91,8 @@ Route::post('/products/{product}/inline-update', [ProductController::class, 'inl
     Route::get('/producto/{slug}', [ProductController::class, 'detail'])->name('product.detail');
 
 Route::post('/cart/ajax-add/{id}', [CartController::class, 'ajaxAdd'])->name('cart.ajax-add');
+
+
 
 Route::get('/shop', [ProductController::class, 'shop'])->name('shop.index');
 require __DIR__.'/auth.php';

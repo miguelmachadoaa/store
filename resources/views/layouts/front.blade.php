@@ -20,8 +20,7 @@
 
             <nav class="flex gap-6">
                 <a href="{{ route('home') }}" class="hover:text-blue-600">Inicio</a>
-                <a href="{{ route('products.index') }}" class="hover:text-blue-600">Productos</a>
-                <a href="#" class="hover:text-blue-600">Marcas</a>
+                <a href="{{ route('shop.index') }}" class="hover:text-blue-600">Productos</a>
                 {{-- Cart Icon --}}
                 <a href="{{ route('cart.index') }}" class="relative">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-700 hover:text-pink-600 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -35,7 +34,45 @@
                         {{ session('cart') ? count(session('cart')) : 0 }}
                     </span>
                 </a>
-                            </nav>
+
+                @auth
+                    {{-- Si es cliente --}}
+                    @if(auth()->user()->role === 'customer')
+                        <a href="{{ route('customer.dashboard') }}"
+                        class="text-gray-700 hover:text-pink-600 font-medium">
+                            Mi Área
+                        </a>
+                    @endif
+
+                    {{-- Si es admin --}}
+                    @if(auth()->user()->role === 'admin')
+                        <a href="{{ route('admin.dashboard') }}"
+                        class="text-gray-700 hover:text-pink-600 font-medium">
+                            Admin
+                        </a>
+                    @endif
+
+                    {{-- Logout --}}
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button class="text-gray-700 hover:text-pink-600 font-medium">
+                            Cerrar sesión
+                        </button>
+                    </form>
+
+                @else
+                    {{-- Invitado --}}
+                    <a href="{{ route('login') }}" class="text-gray-700 hover:text-pink-600 font-medium">
+                        Iniciar sesión
+                    </a>
+
+                    <a href="{{ route('register') }}" class="text-gray-700 hover:text-pink-600 font-medium">
+                        Registrarse
+                    </a>
+                @endauth
+
+
+            </nav>
         </div>
     </header>
 

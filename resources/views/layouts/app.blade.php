@@ -44,6 +44,25 @@
             </div>
         </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
+   <script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
+
+   <script>
+    ClassicEditor
+        .create(document.querySelector('textarea[name="content"]'), {
+            toolbar: [
+                'undo', 'redo', '|',
+                'heading', '|',
+                'bold', 'italic', 'underline', '|',
+                'bulletedList', 'numberedList', '|',
+                'link', 'insertTable', '|',
+                'blockQuote', 'codeBlock'
+            ]
+        })
+        .catch(error => {
+            console.error(error);
+        });
+</script>
+      
     </body>
 </html>

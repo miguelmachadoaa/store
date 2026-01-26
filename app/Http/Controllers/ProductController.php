@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\ProductImage;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -74,10 +75,24 @@ class ProductController extends Controller
             $validated['image'] = $request->file('image')->store('products', 'public');
         }
 
+        
+
+
         $validated['is_active'] = $request->has('is_active');
         $validated['is_featured'] = $request->has('is_featured');
 
-        Product::create($validated);
+        $product = Product::create($validated);
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $img) {
+                $path = $img->store('products', 'public');
+
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image' => $path
+                ]);
+            }
+        }
 
         return redirect()->route('products.index')
             ->with('success', 'Producto creado exitosamente.');
@@ -133,6 +148,18 @@ class ProductController extends Controller
         $validated['is_featured'] = $request->has('is_featured');
 
         $product->update($validated);
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $img) {
+                $path = $img->store('products', 'public');
+
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image' => $path
+                ]);
+            }
+        }
+
 
         return redirect()->route('products.index')
             ->with('success', 'Producto actualizado exitosamente.');
