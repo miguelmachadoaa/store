@@ -64,6 +64,34 @@
                 </a>
             </li>
 
+            {{-- Blog --}}
+
+            <li>
+                <a href="{{ route('admin.posts.index') }}"
+                class="block px-3 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('admin.posts.*') ? 'bg-gray-100 font-semibold' : '' }}">
+                    Blog
+                </a>
+            </li>
+
+            
+
+            {{-- Newsletter --}}
+            <li>
+                <a href="{{ route('admin.newsletters.index') }}"
+                class="block px-3 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('admin.newsletters.*') ? 'bg-gray-100 font-semibold' : '' }}">
+                    Newsletter
+                </a>
+            </li>
+
+            {{-- Enviar Newsletter --}}
+            <li>
+                <a href="{{ route('admin.newsletter.form') }}"
+                class="block px-3 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('admin.newsletter.form') ? 'bg-gray-100 font-semibold' : '' }}">
+                    Enviar Newsletter
+                </a>
+            </li>
+
+
         </ul>
     </nav>
 </aside>

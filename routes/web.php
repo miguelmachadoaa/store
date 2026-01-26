@@ -15,8 +15,9 @@ use App\Http\Controllers\Admin\CategoryAdminController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\Admin\PostAdminController;
 use App\Http\Controllers\BlogController;
-
-
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\Admin\NewsletterAdminController ;
+use App\Http\Controllers\NewsletterSendController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -25,22 +26,11 @@ Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/etiqueta/{slug}', [BlogController::class, 'tag'])->name('blog.tag');
 
+Route::post('/newsletter', [NewsletterController::class, 'store'])->name('newsletter.store');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::get('/mi-area', [CustomerDashboardController::class, 'index'])
-        ->name('customer.dashboard');
-
-    
-    });
-
-
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
@@ -51,18 +41,49 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
 Route::get('/checkout/success/{orderId}', [CheckoutController::class, 'success'])->name('checkout.success');
 
+Route::post('/products/{product}/inline-update', [ProductController::class, 'inlineUpdate'])
+    ->name('products.inline-update');
+
+Route::get('/marca/{slug}', [ProductController::class, 'byBrand'])->name('shop.byBrand');
+
+Route::get('/producto/{slug}', [ProductController::class, 'detail'])->name('product.detail');
+
+Route::post('/cart/ajax-add/{id}', [CartController::class, 'ajaxAdd'])->name('cart.ajax-add');
+
+Route::get('/shop', [ProductController::class, 'shop'])->name('shop.index');
+
+//area clienets 
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/mi-area', [CustomerDashboardController::class, 'index'])
+        ->name('customer.dashboard');
+});
+
+
+//area admin
+
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+
+    Route::get('/admin/newsletter/send', [NewsletterSendController::class, 'form'])
+        ->name('admin.newsletter.form');
+
+    Route::post('/admin/newsletter/send', [NewsletterSendController::class, 'send'])
+        ->name('admin.newsletter.send');
+
     // Admin
     Route::resource('posts', PostAdminController::class)->names('admin.posts');
 
-// Público
-
-
+    Route::get('/admin/newsletters', [NewsletterAdminController::class, 'index'])
+        ->name('admin.newsletters.index');
 
     Route::get('/customers', [CustomerAdminController::class, 'index'])->name('admin.customers.index');
     Route::get('/customers/{user}', [CustomerAdminController::class, 'show'])->name('admin.customers.show');
-
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -83,16 +104,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 });
 
 
-Route::post('/products/{product}/inline-update', [ProductController::class, 'inlineUpdate'])
-    ->name('products.inline-update');
 
-    Route::get('/marca/{slug}', [ProductController::class, 'byBrand'])->name('shop.byBrand');
-
-    Route::get('/producto/{slug}', [ProductController::class, 'detail'])->name('product.detail');
-
-Route::post('/cart/ajax-add/{id}', [CartController::class, 'ajaxAdd'])->name('cart.ajax-add');
-
-
-
-Route::get('/shop', [ProductController::class, 'shop'])->name('shop.index');
 require __DIR__.'/auth.php';

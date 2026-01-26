@@ -57,6 +57,43 @@
         </div>
     </section>
 
+    <section class="bg-pink-50 py-16 mt-12">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+
+            <h2 class="text-3xl font-bold text-gray-800">
+                Suscríbete a nuestro Newsletter
+            </h2>
+
+            <p class="text-gray-600 mt-3 text-lg">
+                Recibe ofertas exclusivas, novedades y contenido especial directamente en tu correo.
+            </p>
+
+            <form action="{{ route('newsletter.store') }}" method="POST"
+                class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+                @csrf
+
+                <input type="email"
+                    name="email"
+                    placeholder="Ingresa tu correo"
+                    class="w-full sm:w-96 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-400"
+                    required>
+
+                <button class="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition">
+                    Suscribirme
+                </button>
+            </form>
+
+            @if(session('success'))
+                <p class="text-green-600 mt-4 font-semibold">
+                    {{ session('success') }}
+                </p>
+            @endif
+
+        </div>
+    </section>
+  
+    <x-latest-news />
+
     {{-- Footer promocional --}}
     <section class="bg-pink-600 text-white py-10">
         <div class="max-w-7xl mx-auto text-center px-6">

@@ -21,6 +21,7 @@
             <nav class="flex gap-6">
                 <a href="{{ route('home') }}" class="hover:text-blue-600">Inicio</a>
                 <a href="{{ route('shop.index') }}" class="hover:text-blue-600">Productos</a>
+                <a href="{{ route('blog.index') }}" class="hover:text-blue-600">Noticias</a>
                 {{-- Cart Icon --}}
                 <a href="{{ route('cart.index') }}" class="relative">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-700 hover:text-pink-600 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
