@@ -19,19 +19,38 @@
     </section>
 
     {{-- Categorías destacadas --}}
+    @if(isset($categories) && $categories->count() > 0)
     <section class="py-10 bg-pink-50">
         <div class="max-w-7xl mx-auto px-6">
             <h2 class="text-2xl font-bold mb-6 text-gray-800">Explore Top Categories</h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                @foreach(['Headphones', 'Mobile & iPod', 'Xbox', 'Soundbox', 'Washing Machines', 'Coffee Machine', 'Refrigerator', 'Iron Machine'] as $category)
-                    <div class="bg-white p-4 rounded shadow text-center hover:shadow-md transition">
-                        <div class="text-pink-600 text-2xl mb-2">🎧</div>
-                        <p class="font-semibold text-gray-700">{{ $category }}</p>
+                @forelse($categories as $category)
+                    <a href="{{ route('shop.byCategory', $category->slug) }}" 
+                    class="bg-white p-4 rounded shadow text-center hover:shadow-md transition group">
+                        <div class="mb-3 overflow-hidden rounded-lg">
+                            @if($category->image)
+                                <img src="{{ asset('storage/' . $category->image) }}" 
+                                    alt="{{ $category->name }}"
+                                    class="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300">
+                            @else
+                                <div class="w-full h-32 bg-pink-100 flex items-center justify-center text-pink-600 text-4xl">
+                                    🎧
+                                </div>
+                            @endif
+                        </div>
+                        <p class="font-semibold text-gray-700">{{ $category->name }}</p>
+                    </a>
+                @empty
+                    <div class="col-span-full text-center text-gray-500">
+                        No categories available
                     </div>
-                @endforeach
+                @endforelse
             </div>
         </div>
     </section>
+    @endif
+
+    {{-- Productos destacados --}}
 
     {{-- Ofertas de la semana --}}
     <section class="py-10 bg-white">

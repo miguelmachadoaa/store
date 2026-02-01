@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Slider;
 use App\Models\Brand;
+use App\Models\Category;
 
 
 class HomeController extends Controller
@@ -15,10 +16,12 @@ class HomeController extends Controller
         $brands = Brand::all();
         $featuredProducts = Product::active()->featured()->take(6)->get();
 
-         $weeklyDeals = Product::active()->inStock()->take(4)->get();
+        $categories = Category::where('is_active', true)->get();
+
+        $weeklyDeals = Product::active()->inStock()->take(4)->get();
         $recentProducts = Product::active()->latest()->take(6)->get();
 
 
-        return view('home', compact('sliders', 'brands', 'featuredProducts', 'weeklyDeals', 'recentProducts'));
+        return view('home', compact('sliders', 'brands', 'featuredProducts', 'weeklyDeals', 'recentProducts', 'categories'));
     }
 }

@@ -256,6 +256,17 @@ class ProductController extends Controller
         return view('shop.by-brand', compact('brand', 'products'));
     }
 
+    public function byCategory($slug)
+    {
+        $category = Category::where('slug', $slug)->firstOrFail();
+
+        $products = Product::where('category_id', $category->id)
+            ->where('is_active', 1)
+            ->paginate(12);
+
+        return view('shop.by-category', compact('category', 'products'));
+    }
+
     public function detail($slug)
     {
         $product = Product::with(['brand', 'category'])->where('slug', $slug)->firstOrFail();

@@ -45,6 +45,7 @@ Route::post('/products/{product}/inline-update', [ProductController::class, 'inl
     ->name('products.inline-update');
 
 Route::get('/marca/{slug}', [ProductController::class, 'byBrand'])->name('shop.byBrand');
+Route::get('/category/{slug}', [ProductController::class, 'byCategory'])->name('shop.byCategory');
 
 Route::get('/producto/{slug}', [ProductController::class, 'detail'])->name('product.detail');
 
