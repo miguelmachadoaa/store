@@ -16,8 +16,9 @@ use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\Admin\PostAdminController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\NewsletterController;
-use App\Http\Controllers\Admin\NewsletterAdminController ;
+use App\Http\Controllers\Admin\NewsletterAdminController;
 use App\Http\Controllers\NewsletterSendController;
+use App\Http\Controllers\Admin\DollarValueController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -89,11 +90,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     Route::resource('products', ProductController::class);
-    
+
     Route::resource('categories', CategoryAdminController::class)->names('admin.categories');
 
     Route::resource('sliders', SliderController::class);
-    
+
     // Ruta adicional para reordenar sliders (opcional - para futuro)
     Route::post('sliders/reorder', [SliderController::class, 'reorder'])->name('sliders.reorder');
 
@@ -102,8 +103,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/orders', [OrderAdminController::class, 'index'])->name('admin.orders.index');
     Route::get('/orders/{order}', [OrderAdminController::class, 'show'])->name('admin.orders.show');
     Route::post('/orders/{order}/status', [OrderAdminController::class, 'updateStatus'])->name('admin.orders.status');
+
+    Route::resource('dollar-values', DollarValueController::class)->names('admin.dollar-values');
 });
 
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
