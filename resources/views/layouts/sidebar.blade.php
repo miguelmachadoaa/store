@@ -21,7 +21,7 @@
 
             {{-- Catálogo --}}
             <li
-                x-data="{ open: {{ request()->routeIs('products.*', 'admin.categories.*', 'brands.*', 'admin.dollar-values.*') ? 'true' : 'false' }} }">
+                x-data="{ open: {{ request()->routeIs('products.*', 'admin.categories.*', 'brands.*', 'admin.dollar-values.*', 'admin.taxes.*') ? 'true' : 'false' }} }">
                 <button @click="open = !open"
                     class="flex items-center justify-between w-full px-4 py-3 hover:bg-gray-100 rounded-lg text-gray-700 font-medium transition">
                     <div class="flex items-center">
@@ -46,6 +46,8 @@
                     <a href="{{ route('admin.dollar-values.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.dollar-values.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Valor
                         Dólar</a>
+                    <a href="{{ route('admin.taxes.index') }}"
+                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.taxes.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Impuestos</a>
                 </div>
             </li>
 
