@@ -31,16 +31,16 @@ Route::get('/etiqueta/{slug}', [BlogController::class, 'tag'])->name('blog.tag')
 Route::post('/newsletter', [NewsletterController::class, 'store'])->name('newsletter.store');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    if (auth()->user()->isAdmin()) {
+        return redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('customer.dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-
-Route::post('/products/{product}/inline-update', [ProductController::class, 'inlineUpdate'])
-    ->name('products.inline-update');
 
 Route::get('/marca/{slug}', [ProductController::class, 'byBrand'])->name('shop.byBrand');
 Route::get('/category/{slug}', [ProductController::class, 'byCategory'])->name('shop.byCategory');
@@ -59,8 +59,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/mi-area', [CustomerDashboardController::class, 'index'])
-        ->name('customer.dashboard');
+    // Área de Cliente
+    Route::get('/mi-area', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
+    Route::get('/mi-area/ordenes', [CustomerDashboardController::class, 'orders'])->name('customer.orders');
+    Route::get('/mi-area/pagos', [CustomerDashboardController::class, 'payments'])->name('customer.payments');
+    Route::get('/mi-area/reportar-pago', [CustomerDashboardController::class, 'reportPaymentForm'])->name('customer.payments.report');
+    Route::post('/mi-area/reportar-pago', [CustomerDashboardController::class, 'storePaymentReport'])->name('customer.payments.store');
+    Route::get('/mi-area/perfil', [CustomerDashboardController::class, 'profile'])->name('customer.profile');
+    Route::patch('/mi-area/perfil', [CustomerDashboardController::class, 'updateProfile'])->name('customer.profile.update');
 
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
@@ -92,6 +98,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     Route::resource('products', ProductController::class);
+    Route::post('/products/{product}/inline-update', [ProductController::class, 'inlineUpdate'])
+        ->name('products.inline-update');
 
     Route::resource('categories', CategoryAdminController::class)->names('admin.categories');
 

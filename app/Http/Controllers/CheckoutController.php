@@ -123,6 +123,12 @@ class CheckoutController extends Controller
     public function downloadInvoice($orderId)
     {
         $order = Order::with('items.tax')->findOrFail($orderId);
+
+        // Security check: Only owner or admin can download
+        if (auth()->user()->role !== 'admin' && $order->user_id !== auth()->id()) {
+            abort(403, 'No tienes permiso para ver esta factura.');
+        }
+
         $settings = Setting::first();
 
         $pdf = Pdf::loadView('pdf.invoice', compact('order', 'settings'));

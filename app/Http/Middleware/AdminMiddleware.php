@@ -13,11 +13,9 @@ class AdminMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || !auth()->user()->isAdmin()) {
-            abort(403, 'Acceso no autorizado');
-        }
+        abort_if(!auth()->user() || !auth()->user()->isAdmin(), 403, 'Acceso denegado: Se requiere rol de administrador.');
 
         return $next($request);
     }
