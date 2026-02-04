@@ -5,35 +5,50 @@
 
         <h3 class="text-lg font-semibold">{{ $product->name }}</h3>
 
-        <div class="mt-2">
+        <div class="mt-2 text-gray-800">
+            @php
+                $showUsd = $storeSettings->showUsd();
+                $showBs = $storeSettings->showBs();
+            @endphp
+
             @if($product->hasDiscount())
                 <div class="flex flex-col">
-                    <div>
-                        <span class="text-red-600 font-bold text-xl">
+                    {{-- Precio Descuento --}}
+                    <div class="font-bold text-xl text-red-600">
+                        @if($showUsd)
                             ${{ number_format($product->price, 2) }}
-                        </span>
-                        <span class="text-xs text-gray-500 font-semibold">
-                            / Bs. {{ number_format($product->price_bs, 2) }}
-                        </span>
+                        @endif
+                        @if($showUsd && $showBs) / @endif
+                        @if($showBs)
+                            Bs. {{ number_format($product->price_bs, 2) }}
+                        @endif
                     </div>
 
-                    <div class="text-sm">
-                        <span class="line-through text-gray-500">
+                    {{-- Precio Anterior --}}
+                    <div class="text-sm line-through text-gray-500">
+                        @if($showUsd)
                             ${{ number_format($product->compare_price, 2) }}
-                        </span>
-                        <span class="text-green-600 ml-2">
-                            -{{ $product->discount_percentage }}%
-                        </span>
+                        @endif
+                        @if($showUsd && $showBs) / @endif
+                        @if($showBs)
+                            Bs. {{ number_format($product->compare_price_bs, 2) }}
+                        @endif
                     </div>
                 </div>
+                <span class="text-green-600 font-bold text-sm">
+                    -{{ $product->discount_percentage }}%
+                </span>
             @else
-                <div>
-                    <span class="text-gray-800 font-bold text-xl">
+                <div class="font-bold text-xl">
+                    @if($showUsd)
                         ${{ number_format($product->price, 2) }}
-                    </span>
-                    <span class="text-sm text-gray-600 font-semibold block">
+                    @endif
+
+                    @if($showUsd && $showBs)
+                        <span class="text-sm block text-gray-600">Bs. {{ number_format($product->price_bs, 2) }}</span>
+                    @elseif($showBs)
                         Bs. {{ number_format($product->price_bs, 2) }}
-                    </span>
+                    @endif
                 </div>
             @endif
         </div>

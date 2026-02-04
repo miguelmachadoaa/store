@@ -76,13 +76,27 @@
                             <x-input-error class="mt-2" :messages="$errors->get('email')" />
                         </div>
 
+                        {{-- Preferencia de Moneda --}}
+                        <div>
+                            <x-input-label for="currency_preference" :value="__('Mostrar Precios En')" />
+                            <select id="currency_preference" name="currency_preference"
+                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                <option value="both" {{ old('currency_preference', $setting->currency_preference) == 'both' ? 'selected' : '' }}>Ambas Monedas (USD y Bs)
+                                </option>
+                                <option value="usd" {{ old('currency_preference', $setting->currency_preference) == 'usd' ? 'selected' : '' }}>Solo Dólares (USD)</option>
+                                <option value="bs" {{ old('currency_preference', $setting->currency_preference) == 'bs' ? 'selected' : '' }}>Solo Bolívares (Bs)</option>
+                            </select>
+                            <x-input-error class="mt-2" :messages="$errors->get('currency_preference')" />
+                        </div>
+
                         <div class="flex items-center gap-4">
                             <x-primary-button>{{ __('Guardar Configuración') }}</x-primary-button>
 
                             @if (session('status') === 'settings-updated')
                                 <p x-data="{ show: true }" x-show="show" x-transition
                                     x-init="setTimeout(() => show = false, 2000)" class="text-sm text-gray-600">
-                                    {{ __('Guardado.') }}</p>
+                                    {{ __('Guardado.') }}
+                                </p>
                             @endif
                         </div>
                     </form>

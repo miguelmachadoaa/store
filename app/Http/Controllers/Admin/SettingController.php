@@ -25,6 +25,7 @@ class SettingController extends Controller
             'phone' => 'required|string',
             'rif' => 'required|string',
             'email' => 'required|email',
+            'currency_preference' => 'required|in:usd,bs,both',
         ]);
 
         $setting = Setting::first();
