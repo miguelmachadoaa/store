@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/checkout/success/{orderId}', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/orders/{orderId}/invoice', [CheckoutController::class, 'downloadInvoice'])->name('orders.invoice');
 });
 
 

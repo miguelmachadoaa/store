@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Product; // Importante para usar el helper getDollarRate
+use App\Models\Product;
+use App\Models\Setting;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CheckoutController extends Controller
 {
@@ -26,6 +28,7 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'phone' => 'required|string|max:20',
+            'rif' => 'required|string|max:20',
             'address' => 'required|string',
             'payment' => 'required|string',
         ]);
@@ -41,6 +44,7 @@ class CheckoutController extends Controller
         // Actualizar datos del usuario si no los tiene o si han cambiado
         $user->update([
             'phone' => $request->phone,
+            'rif' => $request->rif,
             'address' => $request->address,
         ]);
 
@@ -87,6 +91,7 @@ class CheckoutController extends Controller
             'user_id' => $user->id,
             'customer_name' => $user->name,
             'customer_email' => $user->email,
+            'customer_rif' => $request->rif,
             'address' => $request->address,
             'payment_method' => $request->payment,
             'total' => $total,
@@ -113,5 +118,15 @@ class CheckoutController extends Controller
         $order = Order::with('items')->findOrFail($orderId);
 
         return view('checkout.success', compact('order'));
+    }
+
+    public function downloadInvoice($orderId)
+    {
+        $order = Order::with('items.tax')->findOrFail($orderId);
+        $settings = Setting::first();
+
+        $pdf = Pdf::loadView('pdf.invoice', compact('order', 'settings'));
+
+        return $pdf->download('Factura_' . $order->id . '.pdf');
     }
 }

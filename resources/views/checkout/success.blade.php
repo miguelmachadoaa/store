@@ -32,9 +32,21 @@
                 <div class="text-xl font-bold">Total: ${{ number_format($order->total, 2) }}</div>
                 @if($order->total_bs)
                     <div class="text-sm text-indigo-600 font-bold">Total en Bolívares: Bs.
-                        {{ number_format($order->total_bs, 2) }}</div>
+                        {{ number_format($order->total_bs, 2) }}
+                    </div>
                 @endif
             </div>
+        </div>
+
+        <div class="mt-8">
+            <a href="{{ route('orders.invoice', $order->id) }}"
+                class="bg-indigo-600 text-white px-6 py-3 rounded-lg shadow hover:bg-indigo-700 font-bold flex items-center justify-center gap-2 max-w-sm mx-auto">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                Descargar Factura (PDF / BS)
+            </a>
         </div>
 
         <a href="{{ route('home') }}"

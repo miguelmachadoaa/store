@@ -18,6 +18,16 @@
             </div>
 
             <div class="mb-4">
+                <label class="block font-semibold mb-1">C.I. / RIF</label>
+                <input type="text" name="rif" value="{{ old('rif', $user->rif) }}"
+                    class="w-full border rounded p-2 @error('rif') border-red-500 @enderror" required
+                    placeholder="V-12345678-0">
+                @error('rif')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
                 <label class="block font-semibold mb-1">Phone Number</label>
                 <input type="text" name="phone" value="{{ old('phone', $user->phone) }}"
                     class="w-full border rounded p-2 @error('phone') border-red-500 @enderror" required>
