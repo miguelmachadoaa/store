@@ -18,7 +18,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::query();
+        $query = Product::query()->withCount('favoritedBy');
 
         // Búsqueda
         if ($request->has('search')) {

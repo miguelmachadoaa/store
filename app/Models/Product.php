@@ -141,4 +141,16 @@ class Product extends Model
         ]);
     }
 
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'wishlists');
+    }
+
+    public function isFavoritedBy(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+        return $this->favoritedBy()->where('user_id', $user->id)->exists();
+    }
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +25,8 @@
                 <a href="{{ route('blog.index') }}" class="hover:text-blue-600">Noticias</a>
                 {{-- Cart Icon --}}
                 <a href="{{ route('cart.index') }}" class="relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-700 hover:text-pink-600 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-700 hover:text-pink-600 transition"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m5-9v9m4-9v9m4-9l2 9" />
                     </svg>
@@ -39,16 +41,14 @@
                 @auth
                     {{-- Si es cliente --}}
                     @if(auth()->user()->role === 'customer')
-                        <a href="{{ route('customer.dashboard') }}"
-                        class="text-gray-700 hover:text-pink-600 font-medium">
+                        <a href="{{ route('customer.dashboard') }}" class="text-gray-700 hover:text-pink-600 font-medium">
                             Mi Área
                         </a>
                     @endif
 
                     {{-- Si es admin --}}
                     @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}"
-                        class="text-gray-700 hover:text-pink-600 font-medium">
+                        <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-pink-600 font-medium">
                             Admin
                         </a>
                     @endif
@@ -155,56 +155,78 @@
         </div>
     </footer>
 
-   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-<script>
-    new Swiper(".mySwiper", {
-        loop: true,
-        autoplay: {
-            delay: 4000,
-        },
-        pagination: {
-            el: ".swiper-pagination",
-            clickable: true,
-        },
-        navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-        },
-    });
+    <script>
+        new Swiper(".mySwiper", {
+            loop: true,
+            autoplay: {
+                delay: 4000,
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
 
-document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", () => {
 
-    document.querySelectorAll('.add-to-cart').forEach(btn => {
-        btn.addEventListener('click', function () {
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', function () {
 
-            const productId = this.dataset.id;
+                    const productId = this.dataset.id;
 
-            fetch(`/cart/ajax-add/${productId}`, {
+                    fetch(`/cart/ajax-add/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Actualizar contador
+                                document.getElementById('cart-count').textContent = data.count;
+
+                                // Animación visual
+                                document.getElementById('cart-count').classList.add('scale-125');
+                                setTimeout(() => {
+                                    document.getElementById('cart-count').classList.remove('scale-125');
+                                }, 200);
+                            }
+                        });
+                });
+            });
+
+        });
+        function toggleWishlist(productId, btn) {
+            fetch(`/wishlist/toggle/${productId}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json'
                 }
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    // Actualizar contador
-                    document.getElementById('cart-count').textContent = data.count;
-
-                    // Animación visual
-                    document.getElementById('cart-count').classList.add('scale-125');
-                    setTimeout(() => {
-                        document.getElementById('cart-count').classList.remove('scale-125');
-                    }, 200);
-                }
-            });
-        });
-    });
-
-});
-</script>
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.status === 'added') {
+                            btn.classList.add('text-pink-600');
+                            btn.classList.remove('text-gray-400');
+                        } else {
+                            btn.classList.remove('text-pink-600');
+                            btn.classList.add('text-gray-400');
+                        }
+                    }
+                });
+        }
+    </script>
 
 </body>
+
 </html>

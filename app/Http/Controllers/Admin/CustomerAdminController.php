@@ -17,7 +17,8 @@ class CustomerAdminController extends Controller
 
     public function show(User $user)
     {
-        $orders = Order::where('customer_email', $user->email)->get();
+        $user->load('favorites');
+        $orders = Order::where('user_id', $user->id)->get();
 
         return view('admin.customers.show', compact('user', 'orders'));
     }

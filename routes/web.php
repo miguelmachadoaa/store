@@ -7,6 +7,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\WishlistController;
 
 use App\Http\Controllers\Admin\OrderAdminController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -67,6 +68,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/mi-area/reportar-pago', [CustomerDashboardController::class, 'storePaymentReport'])->name('customer.payments.store');
     Route::get('/mi-area/perfil', [CustomerDashboardController::class, 'profile'])->name('customer.profile');
     Route::patch('/mi-area/perfil', [CustomerDashboardController::class, 'updateProfile'])->name('customer.profile.update');
+    Route::get('/mi-area/favoritos', [CustomerDashboardController::class, 'favorites'])->name('customer.favorites');
+
+    Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');

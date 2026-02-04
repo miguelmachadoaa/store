@@ -10,7 +10,7 @@
 
             {{-- Tarjetas de estadísticas --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
+
                 <div class="bg-white p-6 rounded-lg shadow border">
                     <h3 class="text-gray-500 text-sm">Total Ventas</h3>
                     <p class="text-3xl font-bold text-green-600">${{ number_format($totalSales, 2) }}</p>
@@ -73,17 +73,37 @@
             </div>
 
             {{-- Productos más vendidos --}}
-            <div class="bg-white p-6 rounded-lg shadow border">
-                <h3 class="text-lg font-bold mb-4">Productos Más Vendidos</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow border">
+                    <h3 class="text-lg font-bold mb-4">Productos Más Vendidos</h3>
+                    <table class="w-full">
+                        @foreach($topProducts as $product)
+                            <tr class="border-b">
+                                <td class="py-2 text-sm">{{ $product->name }}</td>
+                                <td class="text-right text-sm font-semibold">{{ $product->total_qty }} vendidos</td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
 
-                <table class="w-full">
-                    @foreach($topProducts as $product)
-                        <tr class="border-b">
-                            <td class="py-2">{{ $product->name }}</td>
-                            <td>{{ $product->total_qty }} vendidos</td>
-                        </tr>
-                    @endforeach
-                </table>
+                {{-- Productos más Favoritos --}}
+                <div class="bg-white p-6 rounded-lg shadow border">
+                    <h3 class="text-lg font-bold mb-4">Más Deseados (Favoritos)</h3>
+                    <table class="w-full">
+                        @foreach($topWishlist as $product)
+                            <tr class="border-b">
+                                <td class="py-2 text-sm">
+                                    <a href="{{ route('products.show', $product) }}" class="hover:text-pink-600 transition">
+                                        {{ $product->name }}
+                                    </a>
+                                </td>
+                                <td class="text-right text-sm font-bold text-pink-600">
+                                    ❤️ {{ $product->favorited_by_count }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
             </div>
 
         </div>

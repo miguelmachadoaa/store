@@ -20,9 +20,9 @@ class DashboardController extends Controller
 
         // Ventas por mes (últimos 6 meses)
         $salesByMonth = Order::select(
-                DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
-                DB::raw("SUM(total) as total")
-            )
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
+            DB::raw("SUM(total) as total")
+        )
             ->groupBy('month')
             ->orderBy('month', 'ASC')
             ->take(6)
@@ -38,13 +38,20 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        // Productos más favoritedos
+        $topWishlist = Product::withCount('favoritedBy')
+            ->orderBy('favorited_by_count', 'DESC')
+            ->take(5)
+            ->get();
+
         return view('admin.dashboard.index', compact(
             'totalOrders',
             'totalSales',
             'totalProducts',
             'salesByMonth',
             'recentOrders',
-            'topProducts'
+            'topProducts',
+            'topWishlist'
         ));
     }
 }

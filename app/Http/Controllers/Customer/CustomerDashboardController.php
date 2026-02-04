@@ -83,4 +83,10 @@ class CustomerDashboardController extends Controller
 
         return redirect()->back()->with('success', 'Perfil actualizado correctamente.');
     }
+
+    public function favorites()
+    {
+        $products = auth()->user()->favorites()->latest()->paginate(12);
+        return view('customer.favorites', compact('products'));
+    }
 }
