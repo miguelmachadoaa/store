@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product; // Importante para usar el helper getDollarRate
 
 class CheckoutController extends Controller
 {
@@ -22,8 +23,8 @@ class CheckoutController extends Controller
     public function process(Request $request)
     {
         $request->validate([
-            'name'    => 'required|string|max:255',
-            'email'   => 'required|email',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
             'address' => 'required|string',
             'payment' => 'required|string',
         ]);
@@ -36,21 +37,23 @@ class CheckoutController extends Controller
 
         // Crear la orden
         $order = Order::create([
-            'customer_name'  => $request->name,
+            'customer_name' => $request->name,
             'customer_email' => $request->email,
-            'address'        => $request->address,
+            'address' => $request->address,
             'payment_method' => $request->payment,
-            'total'          => collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']),
+            'total' => collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']),
+            'total_bs' => collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']) * Product::getDollarRate(),
+            'exchange_rate' => Product::getDollarRate(),
         ]);
 
         // Crear los items de la orden
         foreach ($cart as $productId => $item) {
             OrderItem::create([
-                'order_id'   => $order->id,
+                'order_id' => $order->id,
                 'product_id' => $productId,
-                'name'       => $item['name'],
-                'price'      => $item['price'],
-                'quantity'   => $item['quantity'],
+                'name' => $item['name'],
+                'price' => $item['price'],
+                'quantity' => $item['quantity'],
             ]);
         }
 

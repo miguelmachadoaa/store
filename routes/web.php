@@ -19,6 +19,7 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\Admin\NewsletterAdminController;
 use App\Http\Controllers\NewsletterSendController;
 use App\Http\Controllers\Admin\DollarValueController;
+use App\Http\Controllers\Admin\SettingController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -105,6 +106,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/orders/{order}/status', [OrderAdminController::class, 'updateStatus'])->name('admin.orders.status');
 
     Route::resource('dollar-values', DollarValueController::class)->names('admin.dollar-values');
+
+    // Configuración
+    Route::get('/settings', [SettingController::class, 'edit'])->name('admin.settings.edit');
+    Route::put('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
 });
 
 

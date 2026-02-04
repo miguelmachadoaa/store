@@ -18,9 +18,13 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total (USD)
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total (Bs)
+                                    </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones
+                                    </th>
                                 </tr>
                             </thead>
 
@@ -31,16 +35,24 @@
                                         <td class="px-6 py-4">{{ $order->customer_name }}</td>
                                         <td class="px-6 py-4">{{ $order->customer_email }}</td>
                                         <td class="px-6 py-4 font-semibold">${{ number_format($order->total, 2) }}</td>
+                                        <td class="px-6 py-4">
+                                            @if($order->total_bs)
+                                                Bs. {{ number_format($order->total_bs, 2) }}
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
+                                        </td>
                                         <td class="px-6 py-4">{{ $order->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="px-6 py-4">
-                                            <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full {{ $order->status_badge }}">
+                                            <span
+                                                class="px-3 py-1 inline-flex text-xs font-semibold rounded-full {{ $order->status_badge }}">
                                                 {{ ucfirst($order->status) }}
                                             </span>
                                         </td>
 
                                         <td class="px-6 py-4 text-right">
                                             <a href="{{ route('admin.orders.show', $order) }}"
-                                               class="text-indigo-600 hover:text-indigo-900 font-semibold">
+                                                class="text-indigo-600 hover:text-indigo-900 font-semibold">
                                                 Ver Detalle
                                             </a>
                                         </td>

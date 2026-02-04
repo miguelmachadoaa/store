@@ -31,10 +31,13 @@
                     <table class="min-w-full divide-y divide-gray-200 mb-6">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto
+                                </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subtotal</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subtotal
+                                </th>
                             </tr>
                         </thead>
 
@@ -71,9 +74,28 @@
                 </form>
 
 
-                {{-- Total --}}
-                <div class="text-right text-xl font-bold">
-                    Total: ${{ number_format($order->total, 2) }}
+                {{-- Totales --}}
+                <div class="mt-8 border-t pt-4">
+                    <div class="flex justify-end">
+                        <div class="w-full sm:w-1/2 lg:w-1/3">
+                            <div class="flex justify-between py-2 border-b">
+                                <span class="font-semibold text-gray-600">Total USD:</span>
+                                <span class="font-bold text-xl">${{ number_format($order->total, 2) }}</span>
+                            </div>
+
+                            @if($order->total_bs)
+                                <div class="flex justify-between py-2 border-b bg-gray-50">
+                                    <span class="font-semibold text-gray-600">Tasa de Cambio:</span>
+                                    <span>Bs. {{ number_format($order->exchange_rate, 2) }}</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b bg-indigo-50">
+                                    <span class="font-bold text-indigo-800">Total Bolívares:</span>
+                                    <span class="font-bold text-xl text-indigo-800">Bs.
+                                        {{ number_format($order->total_bs, 2) }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
                 </div>
 
             </div>

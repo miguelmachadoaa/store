@@ -10,6 +10,28 @@ class Product extends Model
 {
     use HasFactory;
 
+    // Helper estático para obtener la tasa del día (cacheable si se quisiera)
+    public static function getDollarRate()
+    {
+        return \App\Models\DollarValue::latest('date')->first()?->value ?? 0;
+    }
+
+    // Accessor para precio en Bolívares
+    public function getPriceBsAttribute()
+    {
+        $rate = self::getDollarRate();
+        return $this->price * $rate;
+    }
+
+    // Accessor para precio comparativo en Bolívares
+    public function getComparePriceBsAttribute()
+    {
+        if (!$this->compare_price)
+            return 0;
+        $rate = self::getDollarRate();
+        return $this->compare_price * $rate;
+    }
+
     protected $fillable = [
         'name',
         'slug',
