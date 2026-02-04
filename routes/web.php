@@ -39,10 +39,6 @@ Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
-Route::get('/checkout/success/{orderId}', [CheckoutController::class, 'success'])->name('checkout.success');
-
 Route::post('/products/{product}/inline-update', [ProductController::class, 'inlineUpdate'])
     ->name('products.inline-update');
 
@@ -65,6 +61,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/mi-area', [CustomerDashboardController::class, 'index'])
         ->name('customer.dashboard');
+
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/checkout/success/{orderId}', [CheckoutController::class, 'success'])->name('checkout.success');
 });
 
 

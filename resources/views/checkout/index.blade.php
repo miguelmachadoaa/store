@@ -7,17 +7,32 @@
 
             <div class="mb-4">
                 <label class="block font-semibold mb-1">Full Name</label>
-                <input type="text" name="name" class="w-full border rounded p-2" required>
+                <input type="text" name="name" value="{{ $user->name }}" class="w-full border rounded p-2 bg-gray-50"
+                    readonly>
             </div>
 
             <div class="mb-4">
                 <label class="block font-semibold mb-1">Email</label>
-                <input type="email" name="email" class="w-full border rounded p-2" required>
+                <input type="email" name="email" value="{{ $user->email }}" class="w-full border rounded p-2 bg-gray-50"
+                    readonly>
+            </div>
+
+            <div class="mb-4">
+                <label class="block font-semibold mb-1">Phone Number</label>
+                <input type="text" name="phone" value="{{ old('phone', $user->phone) }}"
+                    class="w-full border rounded p-2 @error('phone') border-red-500 @enderror" required>
+                @error('phone')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="mb-4">
                 <label class="block font-semibold mb-1">Shipping Address</label>
-                <textarea name="address" class="w-full border rounded p-2" required></textarea>
+                <textarea name="address" class="w-full border rounded p-2 @error('address') border-red-500 @enderror"
+                    required>{{ old('address', $user->address) }}</textarea>
+                @error('address')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="mb-4">

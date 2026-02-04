@@ -71,6 +71,20 @@
                                 </select>
                             </div>
 
+                            <div class="mb-4">
+                                <label class="font-semibold">Impuesto</label>
+                                <select name="tax_id" class="w-full border rounded p-2">
+                                    @foreach($taxes as $tax)
+                                        <option value="{{ $tax->id }}" {{ old('tax_id', 1) == $tax->id ? 'selected' : '' }}>
+                                            {{ $tax->name }} ({{ number_format($tax->rate, 2) }}%)
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('tax_id')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
 
                             <!-- Precio -->
                             <div>

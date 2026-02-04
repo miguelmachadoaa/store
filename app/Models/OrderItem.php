@@ -12,5 +12,16 @@ class OrderItem extends Model
         'name',
         'price',
         'quantity',
+        'total_bs',
+        'exchange_rate',
+        'tax_id',
+        'tax_rate',
+        'taxable_base',
+        'tax_amount',
     ];
+
+    public function tax()
+    {
+        return $this->belongsTo(Tax::class);
+    }
 }

@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\ProductImage;
+use App\Models\Tax;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -24,8 +25,8 @@ class ProductController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -47,9 +48,9 @@ class ProductController extends Controller
         $categories = Category::where('is_active', 1)->get();
 
         $brands = Brand::where('is_active', 1)->get();
+        $taxes = Tax::orderBy('name')->get();
 
-
-        return view('admin.products.create', compact('categories', 'brands'));
+        return view('admin.products.create', compact('categories', 'brands', 'taxes'));
     }
 
     /**
@@ -66,6 +67,7 @@ class ProductController extends Controller
             'sku' => 'nullable|string|unique:products,sku',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'category_id' => 'nullable|exists:categories,id',
+            'tax_id' => 'nullable|exists:taxes,id',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
         ]);
@@ -75,7 +77,7 @@ class ProductController extends Controller
             $validated['image'] = $request->file('image')->store('products', 'public');
         }
 
-        
+
 
 
         $validated['is_active'] = $request->has('is_active');
@@ -111,10 +113,11 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $categories = Category::where('is_active', 1)->get();
         $brands = Brand::where('is_active', 1)->get();
+        $taxes = Tax::orderBy('name')->get();
+        $categories = Category::where('is_active', 1)->get();
 
-        return view('admin.products.edit', compact('product', 'categories', 'brands'));
+        return view('admin.products.edit', compact('product', 'categories', 'brands', 'taxes'));
     }
 
     /**
@@ -129,6 +132,7 @@ class ProductController extends Controller
             'compare_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'category_id' => 'nullable|exists:categories,id',
+            'tax_id' => 'nullable|exists:taxes,id',
             'sku' => 'nullable|string|unique:products,sku,' . $product->id,
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'is_active' => 'boolean',

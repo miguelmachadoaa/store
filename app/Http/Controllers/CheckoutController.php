@@ -17,14 +17,15 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío.');
         }
 
-        return view('checkout.index', compact('cart'));
+        $user = auth()->user();
+
+        return view('checkout.index', compact('cart', 'user'));
     }
 
     public function process(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
+            'phone' => 'required|string|max:20',
             'address' => 'required|string',
             'payment' => 'required|string',
         ]);
@@ -35,26 +36,70 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío.');
         }
 
-        // Crear la orden
-        $order = Order::create([
-            'customer_name' => $request->name,
-            'customer_email' => $request->email,
+        $user = auth()->user();
+
+        // Actualizar datos del usuario si no los tiene o si han cambiado
+        $user->update([
+            'phone' => $request->phone,
             'address' => $request->address,
-            'payment_method' => $request->payment,
-            'total' => collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']),
-            'total_bs' => collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']) * Product::getDollarRate(),
-            'exchange_rate' => Product::getDollarRate(),
         ]);
 
-        // Crear los items de la orden
+        $total = 0;
+        $totalTaxableBase = 0;
+        $totalTaxAmount = 0;
+        $exchangeRate = Product::getDollarRate();
+
+        $itemsToCreate = [];
+
         foreach ($cart as $productId => $item) {
-            OrderItem::create([
-                'order_id' => $order->id,
+            $product = Product::with('tax')->find($productId);
+            $taxRate = $product->tax->rate ?? 0;
+
+            $itemTotal = $item['price'] * $item['quantity'];
+            if ($taxRate > 0) {
+                $itemTaxableBase = $itemTotal / (1 + ($taxRate / 100));
+                $itemTaxAmount = $itemTotal - $itemTaxableBase;
+            } else {
+                $itemTaxableBase = 0;
+                $itemTaxAmount = 0;
+            }
+
+            $total += $itemTotal;
+            $totalTaxableBase += $itemTaxableBase;
+            $totalTaxAmount += $itemTaxAmount;
+
+            $itemsToCreate[] = [
                 'product_id' => $productId,
                 'name' => $item['name'],
                 'price' => $item['price'],
                 'quantity' => $item['quantity'],
-            ]);
+                'tax_id' => $product->tax_id,
+                'tax_rate' => $taxRate,
+                'taxable_base' => $itemTaxableBase * $exchangeRate,
+                'tax_amount' => $itemTaxAmount * $exchangeRate,
+                'total_bs' => $itemTotal * $exchangeRate,
+                'exchange_rate' => $exchangeRate,
+            ];
+        }
+
+        // Crear la orden
+        $order = Order::create([
+            'user_id' => $user->id,
+            'customer_name' => $user->name,
+            'customer_email' => $user->email,
+            'address' => $request->address,
+            'payment_method' => $request->payment,
+            'total' => $total,
+            'total_bs' => $total * $exchangeRate,
+            'taxable_base' => $totalTaxableBase * $exchangeRate,
+            'tax_amount' => $totalTaxAmount * $exchangeRate,
+            'exchange_rate' => $exchangeRate,
+        ]);
+
+        // Crear los items de la orden
+        foreach ($itemsToCreate as $itemData) {
+            $itemData['order_id'] = $order->id;
+            OrderItem::create($itemData);
         }
 
         // Vaciar carrito

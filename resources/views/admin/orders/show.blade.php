@@ -17,6 +17,14 @@
                     <div>
                         <p><strong>Nombre:</strong> {{ $order->customer_name }}</p>
                         <p><strong>Email:</strong> {{ $order->customer_email }}</p>
+                        @if($order->user_id)
+                            <p><strong>Cliente Registrado:</strong>
+                                <a href="{{ route('admin.customers.show', $order->user_id) }}"
+                                    class="text-indigo-600 hover:underline">
+                                    Ver Perfil de Usuario
+                                </a>
+                            </p>
+                        @endif
                     </div>
                     <div>
                         <p><strong>Dirección:</strong> {{ $order->address }}</p>
@@ -38,6 +46,13 @@
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subtotal
                                 </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase bg-indigo-50">
+                                    Subtotal BS
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase bg-gray-50">
+                                    Tasa
+                                </th>
                             </tr>
                         </thead>
 
@@ -49,6 +64,16 @@
                                     <td class="px-6 py-4">{{ $item->quantity }}</td>
                                     <td class="px-6 py-4 font-semibold">
                                         ${{ number_format($item->price * $item->quantity, 2) }}
+                                        @if($item->tax_rate > 0)
+                                            <div class="text-[10px] text-gray-400">Incluye IVA
+                                                ({{ number_format($item->tax_rate, 0) }}%)</div>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 font-semibold text-indigo-700 bg-indigo-50">
+                                        Bs. {{ number_format($item->total_bs, 2) }}
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs bg-gray-50">
+                                        Bs. {{ number_format($item->exchange_rate, 2) }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -83,6 +108,17 @@
                                 <span class="font-bold text-xl">${{ number_format($order->total, 2) }}</span>
                             </div>
 
+                            @if($order->taxable_base)
+                                <div class="flex justify-between py-2 border-b text-sm text-gray-500">
+                                    <span>Base Imponible:</span>
+                                    <span>${{ number_format($order->taxable_base, 2) }}</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b text-sm text-gray-500">
+                                    <span>Impuesto (IVA):</span>
+                                    <span>${{ number_format($order->tax_amount, 2) }}</span>
+                                </div>
+                            @endif
+
                             @if($order->total_bs)
                                 <div class="flex justify-between py-2 border-b bg-gray-50">
                                     <span class="font-semibold text-gray-600">Tasa de Cambio:</span>
@@ -93,6 +129,16 @@
                                     <span class="font-bold text-xl text-indigo-800">Bs.
                                         {{ number_format($order->total_bs, 2) }}</span>
                                 </div>
+                                @if($order->taxable_base)
+                                    <div class="flex justify-between py-2 border-b bg-indigo-50 text-xs text-indigo-600">
+                                        <span>Base Imponible (BS):</span>
+                                        <span>Bs. {{ number_format($order->taxable_base * $order->exchange_rate, 2) }}</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b bg-indigo-50 text-xs text-indigo-600">
+                                        <span>Impuesto (BS):</span>
+                                        <span>Bs. {{ number_format($order->tax_amount * $order->exchange_rate, 2) }}</span>
+                                    </div>
+                                @endif
                             @endif
                         </div>
                     </div>

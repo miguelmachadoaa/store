@@ -44,6 +44,7 @@ class Product extends Model
         'is_active',
         'is_featured',
         'category_id',
+        'tax_id',
     ];
 
     protected $casts = [
@@ -51,6 +52,7 @@ class Product extends Model
         'compare_price' => 'decimal:2',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'tax_id' => 'integer',
     ];
 
     /**
@@ -129,6 +131,14 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function tax()
+    {
+        return $this->belongsTo(Tax::class)->withDefault([
+            'name' => 'Exento',
+            'rate' => 0
+        ]);
     }
 
 }

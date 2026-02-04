@@ -7,16 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
+        'user_id',
         'customer_name',
         'customer_email',
         'address',
         'payment_method',
         'total',
         'total_bs',
+        'taxable_base',
+        'tax_amount',
         'exchange_rate',
         'status',
     ];
 
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function items()
     {
