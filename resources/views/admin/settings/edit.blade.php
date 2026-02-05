@@ -89,6 +89,21 @@
                             <x-input-error class="mt-2" :messages="$errors->get('currency_preference')" />
                         </div>
 
+                        {{-- Integración con Brevo (Sendinblue) --}}
+                        <div>
+                            <x-input-label for="use_brevo" :value="__('Integración con Brevo (Sendinblue)')" />
+                            <select id="use_brevo" name="use_brevo"
+                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                <option value="0" {{ old('use_brevo', $setting->use_brevo) == '0' ? 'selected' : '' }}>
+                                    Desactivado</option>
+                                <option value="1" {{ old('use_brevo', $setting->use_brevo) == '1' ? 'selected' : '' }}>
+                                    Activado</option>
+                            </select>
+                            <p class="text-sm text-gray-500 mt-1">Si se activa, los usuarios se sincronizarán con Brevo
+                                al registrarse.</p>
+                            <x-input-error class="mt-2" :messages="$errors->get('use_brevo')" />
+                        </div>
+
                         <div class="flex items-center gap-4">
                             <x-primary-button>{{ __('Guardar Configuración') }}</x-primary-button>
 

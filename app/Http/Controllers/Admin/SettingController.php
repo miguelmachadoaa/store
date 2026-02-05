@@ -12,7 +12,8 @@ class SettingController extends Controller
     public function edit()
     {
         // Obtener la configuración o crear una vacía si no existe
-        $setting = Setting::first() ?? new Setting();
+        $setting = Setting::first() ?? new Setting;
+
         return view('admin.settings.edit', compact('setting'));
     }
 
@@ -26,13 +27,14 @@ class SettingController extends Controller
             'rif' => 'required|string',
             'email' => 'required|email',
             'currency_preference' => 'required|in:usd,bs,both',
+            'use_brevo' => 'nullable|boolean',
         ]);
 
         $setting = Setting::first();
 
         // Si no existe, lo creamos
-        if (!$setting) {
-            $setting = new Setting();
+        if (! $setting) {
+            $setting = new Setting;
         }
 
         $data = $request->except('logo');
@@ -41,7 +43,7 @@ class SettingController extends Controller
         if ($request->hasFile('logo')) {
             // Eliminar logo anterior si existe
             if ($setting->logo) {
-                Storage::delete('public/' . $setting->logo);
+                Storage::delete('public/'.$setting->logo);
             }
             // Guardar nuevo
             $path = $request->file('logo')->store('settings', 'public');

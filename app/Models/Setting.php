@@ -17,6 +17,7 @@ class Setting extends Model
         'rif',
         'email',
         'currency_preference',
+        'use_brevo',
     ];
 
     /**
