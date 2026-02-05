@@ -145,16 +145,42 @@
                                 </div>
                             @endif
 
-                            <!-- Nueva imagen -->
+                            <!-- Imagen Principal -->
                             <div class="md:col-span-2">
                                 <label for="image" class="block text-sm font-medium text-gray-700">
-                                    {{ $product->image ? 'Cambiar Imagen' : 'Imagen del Producto' }}
+                                    {{ $product->image ? 'Cambiar Imagen Principal' : 'Imagen Principal' }}
                                 </label>
                                 <input type="file" name="image" id="image" accept="image/*"
                                     class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 @error('image') border-red-500 @enderror">
                                 @error('image')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
+                            </div>
+
+                            <!-- Galería -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Galería de Imágenes</label>
+                                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-4">
+                                    @foreach($product->images as $img)
+                                        <div class="relative group" id="image-{{ $img->id }}">
+                                            <img src="{{ asset('storage/' . $img->image) }}"
+                                                class="h-24 w-full object-cover rounded-lg border border-gray-200">
+                                            <button type="button" onclick="deleteProductImage({{ $img->id }})"
+                                                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition opacity-0 group-hover:opacity-100">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <label for="images" class="block text-sm font-medium text-gray-700">Agregar más
+                                    imágenes</label>
+                                <input type="file" name="images[]" id="images" accept="image/*" multiple
+                                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                <p class="mt-1 text-sm text-gray-500">Puedes seleccionar varias imágenes a la vez.</p>
                             </div>
 
                             <!-- Checkboxes -->
@@ -193,5 +219,25 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function deleteProductImage(imageId) {
+            if (!confirm('¿Estás seguro de que deseas eliminar esta imagen?')) return;
+
+            fetch(`/admin/products/images/${imageId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(`image-${imageId}`).remove();
+                    }
+                });
+        }
+    </script>
 </x-app-layout>
 <<<

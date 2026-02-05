@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Tax;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -66,6 +65,7 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
             'sku' => 'nullable|string|unique:products,sku',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'category_id' => 'nullable|exists:categories,id',
             'tax_id' => 'nullable|exists:taxes,id',
             'is_active' => 'boolean',
@@ -76,9 +76,6 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
         }
-
-
-
 
         $validated['is_active'] = $request->has('is_active');
         $validated['is_featured'] = $request->has('is_featured');
@@ -91,7 +88,7 @@ class ProductController extends Controller
 
                 ProductImage::create([
                     'product_id' => $product->id,
-                    'image' => $path
+                    'image' => $path,
                 ]);
             }
         }
@@ -133,8 +130,9 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
             'category_id' => 'nullable|exists:categories,id',
             'tax_id' => 'nullable|exists:taxes,id',
-            'sku' => 'nullable|string|unique:products,sku,' . $product->id,
+            'sku' => 'nullable|string|unique:products,sku,'.$product->id,
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
         ]);
@@ -159,11 +157,10 @@ class ProductController extends Controller
 
                 ProductImage::create([
                     'product_id' => $product->id,
-                    'image' => $path
+                    'image' => $path,
                 ]);
             }
         }
-
 
         return redirect()->route('products.index')
             ->with('success', 'Producto actualizado exitosamente.');
@@ -190,7 +187,7 @@ class ProductController extends Controller
         $request->validate([
             'field' => 'required|string',
             'value' => 'nullable',
-            'image' => 'nullable|image|max:2048'
+            'image' => 'nullable|image|max:2048',
         ]);
 
         // Si es imagen
@@ -200,13 +197,13 @@ class ProductController extends Controller
 
             return response()->json([
                 'success' => true,
-                'image_url' => asset('storage/' . $path)
+                'image_url' => asset('storage/'.$path),
             ]);
         }
 
         // Campos simples
         $product->update([
-            $request->field => $request->value
+            $request->field => $request->value,
         ]);
 
         return response()->json(['success' => true]);
@@ -225,7 +222,6 @@ class ProductController extends Controller
         if ($request->brand) {
             $query->whereIn('brand_id', $request->brand);
         }
-
 
         // Filtro por precio
         if ($request->min_price) {
@@ -283,5 +279,14 @@ class ProductController extends Controller
         return view('shop.detail', compact('product', 'related'));
     }
 
+    public function deleteImage(ProductImage $image)
+    {
+        // Eliminar del almacenamiento
+        Storage::disk('public')->delete($image->image);
 
+        // Eliminar de la base de datos
+        $image->delete();
+
+        return response()->json(['success' => true]);
+    }
 }

@@ -1,6 +1,10 @@
 <x-front-layout>
 
-    <div class="max-w-7xl mx-auto py-12 px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+    <div class="max-w-7xl mx-auto pt-6 px-6">
+        <x-breadcrumb :items="[['label' => 'Productos']]" />
+    </div>
+
+    <div class="max-w-7xl mx-auto py-8 px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
 
         {{-- Sidebar de filtros --}}
         <aside class="bg-white p-6 rounded-lg shadow border h-fit">

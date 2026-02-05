@@ -1,23 +1,50 @@
 <x-front-layout>
 
-    <div class="max-w-7xl mx-auto py-10 px-6 grid grid-cols-1 lg:grid-cols-2 gap-10">
+    <div class="max-w-7xl mx-auto pt-6 px-6">
+        <x-breadcrumb :items="[
+        ['label' => 'Productos', 'url' => route('shop.index')],
+        ['label' => $product->category->name ?? 'Sin Categoría', 'url' => $product->category ? route('shop.byCategory', $product->category->slug) : null],
+        ['label' => $product->name]
+    ]" />
+    </div>
+
+    <div class="max-w-7xl mx-auto py-4 px-6 grid grid-cols-1 lg:grid-cols-2 gap-10">
 
         {{-- Galería de imágenes --}}
         <div>
-            {{-- Imagen principal --}}
-            <img id="main-image" src="{{ asset('storage/' . ($product->images->first()->image ?? $product->image)) }}"
-                class="w-full h-[450px] object-cover rounded-lg shadow">
+            {{-- Imagen principal con Zoom --}}
+            <div class="relative overflow-hidden rounded-lg shadow cursor-zoom-in group mb-4"
+                x-data="{ zoom: false, x: 0, y: 0 }"
+                @mousemove="x = ($event.offsetX / $event.target.offsetWidth) * 100; y = ($event.offsetY / $event.target.offsetHeight) * 100"
+                @mouseenter="zoom = true" @mouseleave="zoom = false">
 
-            {{-- Miniaturas --}}
-            <div class="flex gap-3 mt-4">
-                {{-- Imagen principal --}}
-                <img src="{{ asset('storage/' . $product->image) }}"
-                    class="h-20 w-20 rounded border cursor-pointer thumb">
+                <img id="main-image" src="{{ asset('storage/' . $product->image) }}"
+                    class="w-full h-[500px] object-contain bg-white transition-transform duration-300"
+                    :style="zoom ? `transform: scale(2); transform-origin: ${x}% ${y}%` : ''">
+            </div>
 
-                {{-- Imágenes adicionales --}}
-                @foreach($product->images as $img)
-                    <img src="{{ asset('storage/' . $img->image) }}" class="h-20 w-20 rounded border cursor-pointer thumb">
-                @endforeach
+            {{-- Slider de Miniaturas (Swiper) --}}
+            <div class="swiper thumbSwiper">
+                <div class="swiper-wrapper">
+                    {{-- Imagen principal --}}
+                    <div class="swiper-slide cursor-pointer">
+                        <img src="{{ asset('storage/' . $product->image) }}"
+                            class="h-24 w-full object-cover rounded border thumb-item active"
+                            onclick="changeMainImage('{{ asset('storage/' . $product->image) }}', this)">
+                    </div>
+
+                    {{-- Imágenes adicionales --}}
+                    @foreach($product->images as $img)
+                        <div class="swiper-slide cursor-pointer">
+                            <img src="{{ asset('storage/' . $img->image) }}"
+                                class="h-24 w-full object-cover rounded border thumb-item"
+                                onclick="changeMainImage('{{ asset('storage/' . $img->image) }}', this)">
+                        </div>
+                    @endforeach
+                </div>
+                {{-- Navegación --}}
+                <div class="swiper-button-next !text-pink-600 !w-6 !h-6 after:text-sm"></div>
+                <div class="swiper-button-prev !text-pink-600 !w-6 !h-6 after:text-sm"></div>
             </div>
         </div>
 
@@ -137,14 +164,41 @@
         @endif
     </div>
 
+    <style>
+        .thumb-item.active {
+            border-color: #db2777;
+            /* pink-600 */
+            border-width: 2px;
+        }
+    </style>
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            document.querySelectorAll('.thumb').forEach(img => {
-                img.addEventListener('click', function () {
-                    document.getElementById('main-image').src = this.src;
-                });
+            // Inicializar Swiper para miniaturas
+            new Swiper(".thumbSwiper", {
+                slidesPerView: 4,
+                spaceBetween: 10,
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+                breakpoints: {
+                    640: { slidesPerView: 4 },
+                    1024: { slidesPerView: 5 },
+                }
             });
         });
+
+        function changeMainImage(src, el) {
+            // Cambiar imagen principal
+            document.getElementById('main-image').src = src;
+
+            // Actualizar clase activa
+            document.querySelectorAll('.thumb-item').forEach(img => {
+                img.classList.remove('active');
+            });
+            el.classList.add('active');
+        }
     </script>
 
 </x-front-layout>

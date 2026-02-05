@@ -137,9 +137,12 @@
                                 @enderror
                             </div>
 
-                            <div class="mb-4">
-                                <label class="font-semibold">Imágenes adicionales</label>
-                                <input type="file" name="images[]" multiple class="w-full border rounded p-2">
+                            <!-- Imágenes Adicionales -->
+                            <div class="md:col-span-2">
+                                <label for="images" class="block text-sm font-medium text-gray-700">Imágenes Adicionales (Galería)</label>
+                                <input type="file" name="images[]" id="images" accept="image/*" multiple
+                                       class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                <p class="mt-1 text-sm text-gray-500">Puedes seleccionar varias imágenes para la galería del producto.</p>
                             </div>
 
 

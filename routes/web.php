@@ -1,27 +1,25 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\SliderController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\BrandController;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\WishlistController;
-
-use App\Http\Controllers\Admin\OrderAdminController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\CustomerAdminController;
 use App\Http\Controllers\Admin\CategoryAdminController;
-use App\Http\Controllers\Customer\CustomerDashboardController;
-use App\Http\Controllers\Admin\PostAdminController;
-use App\Http\Controllers\BlogController;
-use App\Http\Controllers\NewsletterController;
-use App\Http\Controllers\Admin\NewsletterAdminController;
-use App\Http\Controllers\NewsletterSendController;
+use App\Http\Controllers\Admin\CustomerAdminController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DollarValueController;
+use App\Http\Controllers\Admin\NewsletterAdminController;
+use App\Http\Controllers\Admin\OrderAdminController;
+use App\Http\Controllers\Admin\PostAdminController;
 use App\Http\Controllers\Admin\SettingController;
-
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\Customer\CustomerDashboardController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\NewsletterSendController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SliderController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -35,6 +33,7 @@ Route::get('/dashboard', function () {
     if (auth()->user()->isAdmin()) {
         return redirect()->route('admin.dashboard');
     }
+
     return redirect()->route('customer.dashboard');
 })->middleware(['auth'])->name('dashboard');
 
@@ -52,8 +51,7 @@ Route::post('/cart/ajax-add/{id}', [CartController::class, 'ajaxAdd'])->name('ca
 
 Route::get('/shop', [ProductController::class, 'shop'])->name('shop.index');
 
-//area clienets 
-
+// area clienets
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -78,9 +76,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{orderId}/invoice', [CheckoutController::class, 'downloadInvoice'])->name('orders.invoice');
 });
 
-
-//area admin
-
+// area admin
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
@@ -102,6 +98,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     Route::resource('products', ProductController::class);
+    Route::delete('/products/images/{image}', [ProductController::class, 'deleteImage'])
+        ->name('products.images.destroy');
     Route::post('/products/{product}/inline-update', [ProductController::class, 'inlineUpdate'])
         ->name('products.inline-update');
 
@@ -127,6 +125,4 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('taxes', \App\Http\Controllers\Admin\TaxController::class)->names('admin.taxes');
 });
 
-
-
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
