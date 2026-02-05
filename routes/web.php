@@ -45,6 +45,8 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon.apply');
+Route::post('/cart/coupon/remove', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
 
 Route::get('/marca/{slug}', [ProductController::class, 'byBrand'])->name('shop.byBrand');
 Route::get('/category/{slug}', [ProductController::class, 'byCategory'])->name('shop.byCategory');
@@ -133,6 +135,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
 
     Route::resource('taxes', \App\Http\Controllers\Admin\TaxController::class)->names('admin.taxes');
+
+    Route::resource('coupons', \App\Http\Controllers\Admin\CouponController::class)->names('admin.coupons');
 });
 
 // Rutas de Reseñas (Públicas)
@@ -140,4 +144,4 @@ Route::post('/productos/{product}/reviews', [ReviewController::class, 'store'])
     ->middleware(['auth'])
     ->name('products.reviews.store');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

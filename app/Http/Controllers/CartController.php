@@ -4,11 +4,50 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Product;
+use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
+    // Aplicar cupón
+    public function applyCoupon(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string',
+        ]);
+
+        $coupon = Coupon::where('code', $request->code)->first();
+
+        if (!$coupon) {
+            return redirect()->back()->with('error', 'Código de cupón no válido.');
+        }
+
+        $items = $this->getCartItems();
+        $total = 0;
+        foreach ($items as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+
+        if (!$coupon->isValid(Auth::user(), $total)) {
+            return redirect()->back()->with('error', 'El cupón no es válido o ha expirado.');
+        }
+
+        session()->put('coupon', [
+            'code' => $coupon->code,
+            'discount' => $coupon->calculateDiscount($total, $items),
+        ]);
+
+        return redirect()->back()->with('success', 'Cupón aplicado correctamente.');
+    }
+
+    // Quitar cupón
+    public function removeCoupon()
+    {
+        session()->forget('coupon');
+        return redirect()->back()->with('success', 'Cupón removido.');
+    }
+
     // Mostrar carrito
     public function index()
     {
@@ -66,10 +105,13 @@ class CartController extends Controller
                 $items = [];
                 foreach ($cart->items as $item) {
                     $items[$item->product_id] = [
+                        'product_id' => $item->product_id,
                         'name' => $item->product->name,
                         'price' => $item->product->price,
                         'image' => $item->product->image,
                         'quantity' => $item->quantity,
+                        'category_id' => $item->product->category_id,
+                        'brand_id' => $item->product->brand_id,
                     ];
                 }
 
@@ -112,10 +154,13 @@ class CartController extends Controller
                 $cart[$productId]['quantity']++;
             } else {
                 $cart[$productId] = [
+                    'product_id' => $productId,
                     'name' => $product->name,
                     'price' => $product->price,
                     'image' => $product->image,
                     'quantity' => 1,
+                    'category_id' => $product->category_id,
+                    'brand_id' => $product->brand_id,
                 ];
             }
 

@@ -86,6 +86,19 @@ class CheckoutController extends Controller
             ];
         }
 
+        // Calcular descuento si hay cupón
+        $discountAmount = 0;
+        $couponId = null;
+        if (session()->has('coupon')) {
+            $coupon = \App\Models\Coupon::where('code', session('coupon.code'))->first();
+            if ($coupon && $coupon->isValid($user, $total)) {
+                $couponId = $coupon->id;
+                $discountAmount = $coupon->calculateDiscount($total, $cart);
+                $total -= $discountAmount;
+                $coupon->increment('used_count');
+            }
+        }
+
         // Crear la orden
         $order = Order::create([
             'user_id' => $user->id,
@@ -99,6 +112,8 @@ class CheckoutController extends Controller
             'taxable_base' => $totalTaxableBase * $exchangeRate,
             'tax_amount' => $totalTaxAmount * $exchangeRate,
             'exchange_rate' => $exchangeRate,
+            'coupon_id' => $couponId,
+            'discount_amount' => $discountAmount,
         ]);
 
         // Crear los items de la orden
@@ -107,8 +122,9 @@ class CheckoutController extends Controller
             OrderItem::create($itemData);
         }
 
-        // Vaciar carrito
+        // Vaciar carrito y cupón
         session()->forget('cart');
+        session()->forget('coupon');
 
         return redirect()->route('checkout.success', $order->id);
     }

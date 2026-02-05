@@ -54,9 +54,38 @@
                 </select>
             </div>
 
+            <div class="mb-8 p-6 bg-gray-50 rounded-lg border">
+                <h3 class="font-bold text-lg mb-4">Resumen del Pedido</h3>
+                @php
+                    $subtotal = 0;
+                    foreach ($cart as $item) {
+                        $subtotal += $item['price'] * $item['quantity'];
+                    }
+                    $discount = session('coupon.discount', 0);
+                    $total = $subtotal - $discount;
+                @endphp
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span>Subtotal:</span>
+                        <span>${{ number_format($subtotal, 2) }}</span>
+                    </div>
+                    @if($discount > 0)
+                        <div class="flex justify-between text-green-600">
+                            <span>Descuento ({{ session('coupon.code') }}):</span>
+                            <span>-${{ number_format($discount, 2) }}</span>
+                        </div>
+                    @endif
+                    <div class="flex justify-between font-bold text-xl border-t pt-2 mt-2">
+                        <span>Total:</span>
+                        <span class="text-indigo-700">${{ number_format($total, 2) }}</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="text-right">
-                <button type="submit" class="bg-pink-600 text-white px-6 py-2 rounded hover:bg-pink-700">
-                    Confirm Order
+                <button type="submit"
+                    class="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 font-bold shadow-md transition transform hover:-translate-y-0.5">
+                    Confirm Order / Confirmar Pedido
                 </button>
             </div>
         </form>

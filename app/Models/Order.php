@@ -19,7 +19,14 @@ class Order extends Model
         'tax_amount',
         'exchange_rate',
         'status',
+        'coupon_id',
+        'discount_amount',
     ];
+
+    public function coupon()
+    {
+        return $this->belongsTo(Coupon::class);
+    }
 
 
     public function user()

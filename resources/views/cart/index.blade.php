@@ -8,6 +8,18 @@
             $rate = \App\Models\Product::getDollarRate();
         @endphp
 
+        @if(session('success'))
+            <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                {{ session('error') }}
+            </div>
+        @endif
+
         @if(count($cart) > 0)
             <div class="overflow-x-auto bg-white shadow rounded-lg border border-gray-200">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -21,9 +33,9 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @php $total = 0; @endphp
+                        @php $subtotal = 0; @endphp
                         @foreach($cart as $id => $item)
-                            @php $total += $item['price'] * $item['quantity']; @endphp
+                            @php $subtotal += $item['price'] * $item['quantity']; @endphp
                             <tr>
                                 <td class="px-6 py-4">
                                     <div class="font-medium text-gray-900">{{ $item['name'] }}</div>
@@ -61,11 +73,41 @@
                                 </td>
                             </tr>
                         @endforeach
-                        <tr class="font-bold bg-gray-50">
+
+                        @php
+                            $discount = session('coupon.discount', 0);
+                            $total = $subtotal - $discount;
+                        @endphp
+
+                        <tr class="bg-gray-50">
+                            <td colspan="3" class="px-6 py-2 text-right text-gray-600">Subtotal:</td>
+                            <td class="px-6 py-2">
+                                ${{ number_format($subtotal, 2) }}
+                            </td>
+                            <td></td>
+                        </tr>
+
+                        @if($discount > 0)
+                        <tr class="bg-gray-50 text-green-600">
+                            <td colspan="3" class="px-6 py-2 text-right">
+                                Descuento ({{ session('coupon.code') }}):
+                                <form action="{{ route('cart.coupon.remove') }}" method="POST" class="inline ml-1">
+                                    @csrf
+                                    <button class="text-red-500 text-xs hover:underline">Eliminar</button>
+                                </form>
+                            </td>
+                            <td class="px-6 py-2 font-medium">
+                                -${{ number_format($discount, 2) }}
+                            </td>
+                            <td></td>
+                        </tr>
+                        @endif
+
+                        <tr class="font-bold bg-gray-50 border-t-2">
                             <td colspan="3" class="px-6 py-4 text-right">Total:</td>
                             <td class="px-6 py-4">
                                 @if($showUsd)
-                                    <div class="text-lg">${{ number_format($total, 2) }}</div>
+                                    <div class="text-lg text-indigo-700">${{ number_format($total, 2) }}</div>
                                 @endif
                                 @if($showBs)
                                     <div class="text-sm text-gray-700">Bs. {{ number_format($total * $rate, 2) }}</div>
@@ -79,11 +121,22 @@
                 </table>
             </div>
 
-            <div class="mt-6 text-right">
-                <a href="{{ route('checkout.index') }}"
-                    class="bg-indigo-600 text-white px-6 py-3 rounded-lg shadow hover:bg-indigo-700 font-bold">
-                    Proceed to Checkout / Proceder al Pago
-                </a>
+            <div class="flex flex-col md:flex-row justify-between items-start mt-6 gap-4">
+                <form action="{{ route('cart.coupon.apply') }}" method="POST" class="flex gap-2 w-full md:w-auto">
+                    @csrf
+                    <input type="text" name="code" placeholder="Código de cupón" required
+                           class="border rounded px-4 py-2 w-full md:w-48 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-900 transition font-semibold">
+                        Aplicar
+                    </button>
+                </form>
+
+                <div class="w-full md:w-auto text-right">
+                    <a href="{{ route('checkout.index') }}"
+                        class="inline-block bg-indigo-600 text-white px-8 py-3 rounded-lg shadow-md hover:bg-indigo-700 transition font-bold transform hover:-translate-y-0.5">
+                        Proceed to Checkout / Proceder al Pago
+                    </a>
+                </div>
             </div>
         @else
             <div class="text-center py-12">
