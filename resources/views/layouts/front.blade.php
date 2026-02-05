@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Tienda Online' }}</title>
+    <title>@yield('title', $title ?? config('app.name', 'Tienda Online'))</title>
+    <meta name="description" content="@yield('meta_description', 'Tu tienda online de confianza')">
+    @yield('meta')
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
@@ -85,7 +87,7 @@
                     <div>
                         <h2 class="text-4xl font-bold mb-4">{{ $sliders->first()->title ?? 'Bienvenido' }}</h2>
                         <p class="text-lg text-gray-300 mb-6">{{ $sliders->first()->description ?? '' }}</p>
-                        <a href="{{ route('products.index') }}" class="bg-blue-600 px-6 py-2 rounded hover:bg-blue-700">
+                        <a href="{{ route('shop.index') }}" class="bg-blue-600 px-6 py-2 rounded hover:bg-blue-700">
                             Ver productos
                         </a>
                     </div>
@@ -136,9 +138,10 @@
                 <h3 class="text-lg font-semibold mb-3">Enlaces</h3>
                 <ul class="space-y-2 text-sm">
                     <li><a href="{{ route('home') }}" class="hover:text-white">Inicio</a></li>
-                    <li><a href="{{ route('products.index') }}" class="hover:text-white">Productos</a></li>
+                    <li><a href="{{ route('shop.index') }}" class="hover:text-white">Productos</a></li>
                     <li><a href="#" class="hover:text-white">Marcas</a></li>
                     <li><a href="{{ route('cart.index') }}" class="hover:text-white">Carrito</a></li>
+                    <li><a href="/sitemap.xml" class="hover:text-white">Sitemap</a></li>
                 </ul>
             </div>
 

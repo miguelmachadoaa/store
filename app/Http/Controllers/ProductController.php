@@ -70,6 +70,8 @@ class ProductController extends Controller
             'tax_id' => 'nullable|exists:taxes,id',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
         ]);
 
         // Manejar la imagen
@@ -135,6 +137,8 @@ class ProductController extends Controller
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
         ]);
 
         // Manejar la imagen
@@ -253,7 +257,9 @@ class ProductController extends Controller
             ->where('is_active', 1)
             ->paginate(12);
 
-        return view('shop.by-brand', compact('brand', 'products'));
+        $title = "Productos marca {$brand->name} - ".config('app.name');
+
+        return view('shop.by-brand', compact('brand', 'products', 'title'));
     }
 
     public function byCategory($slug)
@@ -264,7 +270,9 @@ class ProductController extends Controller
             ->where('is_active', 1)
             ->paginate(12);
 
-        return view('shop.by-category', compact('category', 'products'));
+        $title = "Productos en {$category->name} - ".config('app.name');
+
+        return view('shop.by-category', compact('category', 'products', 'title'));
     }
 
     public function detail($slug)

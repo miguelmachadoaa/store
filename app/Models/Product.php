@@ -48,6 +48,8 @@ class Product extends Model
         'is_featured',
         'category_id',
         'tax_id',
+        'meta_title',
+        'meta_description',
     ];
 
     protected $casts = [
