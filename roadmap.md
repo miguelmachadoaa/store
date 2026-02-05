@@ -43,6 +43,7 @@ Vamos a dividirlo en **3 meses**, cada uno con objetivos concretos.
 ---
 
 ## **4. Mejoras de UX en productos**
+- Cargar multiples imagenes a productos 
 - Zoom en imágenes  
 - Slider de miniaturas  
 - Breadcrumbs  

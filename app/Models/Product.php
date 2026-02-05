@@ -20,15 +20,18 @@ class Product extends Model
     public function getPriceBsAttribute()
     {
         $rate = self::getDollarRate();
+
         return $this->price * $rate;
     }
 
     // Accessor para precio comparativo en Bolívares
     public function getComparePriceBsAttribute()
     {
-        if (!$this->compare_price)
+        if (! $this->compare_price) {
             return 0;
+        }
         $rate = self::getDollarRate();
+
         return $this->compare_price * $rate;
     }
 
@@ -107,6 +110,7 @@ class Product extends Model
         if ($this->compare_price && $this->compare_price > $this->price) {
             return round((($this->compare_price - $this->price) / $this->compare_price) * 100);
         }
+
         return 0;
     }
 
@@ -137,7 +141,7 @@ class Product extends Model
     {
         return $this->belongsTo(Tax::class)->withDefault([
             'name' => 'Exento',
-            'rate' => 0
+            'rate' => 0,
         ]);
     }
 
@@ -148,9 +152,38 @@ class Product extends Model
 
     public function isFavoritedBy(?User $user): bool
     {
-        if (!$user) {
+        if (! $user) {
             return false;
         }
+
         return $this->favoritedBy()->where('user_id', $user->id)->exists();
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function approvedReviews()
+    {
+        return $this->hasMany(Review::class)->where('is_approved', true);
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return round($this->approvedReviews()->avg('rating') ?? 0, 1);
+    }
+
+    public function hasUserPurchased(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        return \App\Models\Order::where('user_id', $user->id)
+            ->where('status', 'pagada')
+            ->whereHas('items', function ($query) {
+                $query->where('product_id', $this->id);
+            })->exists();
     }
 }

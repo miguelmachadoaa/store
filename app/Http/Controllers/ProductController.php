@@ -276,7 +276,12 @@ class ProductController extends Controller
             ->take(6)
             ->get();
 
-        return view('shop.detail', compact('product', 'related'));
+        $relatedProducts = Product::where('brand_id', $product->brand_id)
+            ->where('id', '!=', $product->id)
+            ->take(6)
+            ->get();
+
+        return view('shop.detail', compact('product', 'related', 'relatedProducts'));
     }
 
     public function deleteImage(ProductImage $image)

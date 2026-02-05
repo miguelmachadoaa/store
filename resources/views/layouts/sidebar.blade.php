@@ -73,6 +73,8 @@
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.orders.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Órdenes</a>
                     <a href="{{ route('admin.customers.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.customers.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Clientes</a>
+                    <a href="{{ route('admin.reviews.index') }}"
+                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.reviews.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Reseñas</a>
                 </div>
             </li>
 

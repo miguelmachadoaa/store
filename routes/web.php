@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DollarValueController;
 use App\Http\Controllers\Admin\NewsletterAdminController;
 use App\Http\Controllers\Admin\OrderAdminController;
 use App\Http\Controllers\Admin\PostAdminController;
+use App\Http\Controllers\Admin\ReviewAdminController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BrandController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NewsletterSendController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
@@ -103,6 +105,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/products/{product}/inline-update', [ProductController::class, 'inlineUpdate'])
         ->name('products.inline-update');
 
+    // Rutas de Reseñas (Admin)
+    Route::get('/reviews', [ReviewAdminController::class, 'index'])->name('admin.reviews.index');
+    Route::get('/reviews/{review}', [ReviewAdminController::class, 'show'])->name('admin.reviews.show');
+    Route::put('/reviews/{review}/approve', [ReviewAdminController::class, 'approve'])->name('admin.reviews.approve');
+    Route::delete('/reviews/{review}', [ReviewAdminController::class, 'destroy'])->name('admin.reviews.destroy');
+
     Route::resource('categories', CategoryAdminController::class)->names('admin.categories');
 
     Route::resource('sliders', SliderController::class);
@@ -124,5 +132,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     Route::resource('taxes', \App\Http\Controllers\Admin\TaxController::class)->names('admin.taxes');
 });
+
+// Rutas de Reseñas (Públicas)
+Route::post('/productos/{product}/reviews', [ReviewController::class, 'store'])
+    ->middleware(['auth'])
+    ->name('products.reviews.store');
 
 require __DIR__.'/auth.php';
