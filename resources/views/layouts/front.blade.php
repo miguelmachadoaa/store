@@ -178,33 +178,6 @@
 
         document.addEventListener("DOMContentLoaded", () => {
 
-            document.querySelectorAll('.add-to-cart').forEach(btn => {
-                btn.addEventListener('click', function () {
-
-                    const productId = this.dataset.id;
-
-                    fetch(`/cart/ajax-add/${productId}`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Accept': 'application/json'
-                        }
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Actualizar contador
-                                document.getElementById('cart-count').textContent = data.count;
-
-                                // Animación visual
-                                document.getElementById('cart-count').classList.add('scale-125');
-                                setTimeout(() => {
-                                    document.getElementById('cart-count').classList.remove('scale-125');
-                                }, 200);
-                            }
-                        });
-                });
-            });
 
         });
         function toggleWishlist(productId, btn) {

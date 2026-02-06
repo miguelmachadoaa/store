@@ -192,11 +192,7 @@
             </p>
 
             {{-- Botón agregar al carrito --}}
-            <div class="flex items-center gap-4 mt-6">
-                <button data-id="{{ $product->id }}"
-                    class="add-to-cart bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 rounded-lg shadow text-lg font-semibold flex-grow transition">
-                    Agregar al carrito
-                </button>
+                <x-add-to-cart-button :product="$product" />
 
                 @auth
                     <button onclick="toggleWishlist({{ $product->id }}, this)"

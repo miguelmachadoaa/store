@@ -35,27 +35,3 @@
         @endforeach
     </ol>
 </nav>
-
-{{-- Breadcrumb Structured Data --}}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Inicio",
-      "item": "{{ route('home') }}"
-    }
-    @foreach($items as $index => $item)
-        ,{
-          "@type": "ListItem",
-          "position": {{ $index + 2 }},
-          "name": "{{ $item['label'] }}",
-          "item": "{{ $item['url'] ?? url()->current() }}"
-        }
-    @endforeach
-  ]
-}
-</script>

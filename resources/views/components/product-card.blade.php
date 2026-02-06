@@ -73,9 +73,6 @@
         </div>
     </a>
 
-    <button type="button" class="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 add-to-cart mt-3 w-full"
-        data-id="{{ $product->id }}">
-        Add to Cart
-    </button>
+    <x-add-to-cart-button :product="$product" />
 
 </div>

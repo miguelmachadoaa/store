@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
-use App\Models\Product;
 use App\Models\Coupon;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +19,7 @@ class CartController extends Controller
 
         $coupon = Coupon::where('code', $request->code)->first();
 
-        if (!$coupon) {
+        if (! $coupon) {
             return redirect()->back()->with('error', 'Código de cupón no válido.');
         }
 
@@ -29,7 +29,7 @@ class CartController extends Controller
             $total += $item['price'] * $item['quantity'];
         }
 
-        if (!$coupon->isValid(Auth::user(), $total)) {
+        if (! $coupon->isValid(Auth::user(), $total)) {
             return redirect()->back()->with('error', 'El cupón no es válido o ha expirado.');
         }
 
@@ -45,6 +45,7 @@ class CartController extends Controller
     public function removeCoupon()
     {
         session()->forget('coupon');
+
         return redirect()->back()->with('success', 'Cupón removido.');
     }
 
@@ -69,6 +70,16 @@ class CartController extends Controller
     {
         $this->updateItemQuantity($id, $request->quantity);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            $cart = $this->getCartItems();
+
+            return response()->json([
+                'success' => true,
+                'count' => count($cart),
+                'quantity' => $request->quantity,
+            ]);
+        }
+
         return redirect()->back();
     }
 
@@ -84,10 +95,12 @@ class CartController extends Controller
     {
         $this->addItemToCart($id);
         $cart = $this->getCartItems();
+        $quantity = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
 
         return response()->json([
             'success' => true,
             'count' => count($cart),
+            'quantity' => $quantity,
         ]);
     }
 
