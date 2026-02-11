@@ -83,7 +83,8 @@
             </li>
 
             {{-- Contenido --}}
-            <li x-data="{ open: {{ request()->routeIs('sliders.*', 'admin.posts.*') ? 'true' : 'false' }} }">
+            <li
+                x-data="{ open: {{ request()->routeIs('sliders.*', 'admin.posts.*', 'admin.services.*') ? 'true' : 'false' }} }">
                 <button @click="open = !open"
                     class="flex items-center justify-between w-full px-4 py-3 hover:bg-gray-100 rounded-lg text-gray-700 font-medium transition">
                     <div class="flex items-center">
@@ -100,6 +101,8 @@
                     </svg>
                 </button>
                 <div x-show="open" x-transition class="pl-11 pr-2 space-y-1 mt-1">
+                    <a href="{{ route('admin.services.index') }}"
+                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.services.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Servicios</a>
                     <a href="{{ route('sliders.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('sliders.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Sliders</a>
                     <a href="{{ route('admin.posts.index') }}"

@@ -31,6 +31,10 @@ Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/etiqueta/{slug}', [BlogController::class, 'tag'])->name('blog.tag');
 
+// Services Routes
+Route::get('/servicios', [\App\Http\Controllers\ServiceController::class, 'index'])->name('services.index');
+Route::get('/servicios/{slug}', [\App\Http\Controllers\ServiceController::class, 'show'])->name('services.show');
+
 Route::post('/newsletter', [NewsletterController::class, 'store'])->name('newsletter.store');
 
 Route::get('/dashboard', function () {
@@ -137,6 +141,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('taxes', \App\Http\Controllers\Admin\TaxController::class)->names('admin.taxes');
 
     Route::resource('coupons', \App\Http\Controllers\Admin\CouponController::class)->names('admin.coupons');
+
+    // Services Routes
+    Route::resource('services', \App\Http\Controllers\Admin\ServiceAdminController::class)->names('admin.services');
+    Route::post('services/reorder', [\App\Http\Controllers\Admin\ServiceAdminController::class, 'reorder'])->name('admin.services.reorder');
 
     // POS Routes
     Route::prefix('pos')->name('admin.pos.')->group(function () {
