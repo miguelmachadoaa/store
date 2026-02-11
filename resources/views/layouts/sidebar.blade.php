@@ -52,7 +52,8 @@
             </li>
 
             {{-- Ventas --}}
-            <li x-data="{ open: {{ request()->routeIs('admin.orders.*', 'admin.customers.*') ? 'true' : 'false' }} }">
+            <li
+                x-data="{ open: {{ request()->routeIs('admin.orders.*', 'admin.customers.*', 'admin.pos.*') ? 'true' : 'false' }} }">
                 <button @click="open = !open"
                     class="flex items-center justify-between w-full px-4 py-3 hover:bg-gray-100 rounded-lg text-gray-700 font-medium transition">
                     <div class="flex items-center">
@@ -69,6 +70,9 @@
                     </svg>
                 </button>
                 <div x-show="open" x-transition class="pl-11 pr-2 space-y-1 mt-1">
+                    <a href="{{ route('admin.pos.index') }}"
+                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.pos.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">🛒
+                        Punto de Venta</a>
                     <a href="{{ route('admin.orders.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.orders.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Órdenes</a>
                     <a href="{{ route('admin.customers.index') }}"

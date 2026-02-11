@@ -137,6 +137,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('taxes', \App\Http\Controllers\Admin\TaxController::class)->names('admin.taxes');
 
     Route::resource('coupons', \App\Http\Controllers\Admin\CouponController::class)->names('admin.coupons');
+
+    // POS Routes
+    Route::prefix('pos')->name('admin.pos.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\PosController::class, 'index'])->name('index');
+        Route::post('/customers/search', [\App\Http\Controllers\Admin\PosController::class, 'searchCustomers'])->name('customers.search');
+        Route::post('/customers/store', [\App\Http\Controllers\Admin\PosController::class, 'storeCustomer'])->name('customers.store');
+        Route::post('/products/search', [\App\Http\Controllers\Admin\PosController::class, 'searchProducts'])->name('products.search');
+        Route::post('/orders/create', [\App\Http\Controllers\Admin\PosController::class, 'createOrder'])->name('orders.create');
+    });
 });
 
 // Rutas de Reseñas (Públicas)
@@ -144,4 +153,4 @@ Route::post('/productos/{product}/reviews', [ReviewController::class, 'store'])
     ->middleware(['auth'])
     ->name('products.reviews.store');
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
