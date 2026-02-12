@@ -35,6 +35,12 @@ Route::get('/etiqueta/{slug}', [BlogController::class, 'tag'])->name('blog.tag')
 Route::get('/servicios', [\App\Http\Controllers\ServiceController::class, 'index'])->name('services.index');
 Route::get('/servicios/{slug}', [\App\Http\Controllers\ServiceController::class, 'show'])->name('services.show');
 
+// Appointments Routes
+Route::get('/citas', [\App\Http\Controllers\AppointmentController::class, 'create'])->name('appointments.create');
+Route::post('/citas', [\App\Http\Controllers\AppointmentController::class, 'store'])->name('appointments.store');
+Route::get('/citas/exito', [\App\Http\Controllers\AppointmentController::class, 'success'])->name('appointments.success');
+Route::post('/citas/check-availability', [\App\Http\Controllers\AppointmentController::class, 'checkAvailability'])->name('appointments.check');
+
 Route::post('/newsletter', [NewsletterController::class, 'store'])->name('newsletter.store');
 
 Route::get('/dashboard', function () {
@@ -145,6 +151,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // Services Routes
     Route::resource('services', \App\Http\Controllers\Admin\ServiceAdminController::class)->names('admin.services');
     Route::post('services/reorder', [\App\Http\Controllers\Admin\ServiceAdminController::class, 'reorder'])->name('admin.services.reorder');
+
+    // Appointments Routes
+    Route::resource('appointments', \App\Http\Controllers\Admin\AppointmentAdminController::class)->names('admin.appointments');
+    Route::post('appointments/{appointment}/status', [\App\Http\Controllers\Admin\AppointmentAdminController::class, 'updateStatus'])->name('admin.appointments.status');
 
     // POS Routes
     Route::prefix('pos')->name('admin.pos.')->group(function () {
