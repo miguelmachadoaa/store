@@ -36,7 +36,7 @@
                     {{-- Cart Count --}}
                     <span id="cart-count"
                         class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full px-2 py-0.5">
-                        {{ session('cart') ? count(session('cart')) : 0 }}
+                        {{ count($cartItems ?? []) }}
                     </span>
                 </a>
 

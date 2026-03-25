@@ -28,6 +28,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        app()->make(\App\Http\Controllers\CartController::class)->mergeSessionCartIntoDatabase();
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

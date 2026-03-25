@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
 {
     public function index()
     {
-        $cart = session()->get('cart', []);
+        $cart = app()->make(\App\Http\Controllers\CartController::class)->getCartItems();
 
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío.');
@@ -33,7 +33,7 @@ class CheckoutController extends Controller
             'payment' => 'required|string',
         ]);
 
-        $cart = session()->get('cart', []);
+        $cart = app()->make(\App\Http\Controllers\CartController::class)->getCartItems();
 
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío.');
@@ -123,7 +123,10 @@ class CheckoutController extends Controller
         }
 
         // Vaciar carrito y cupón
-        session()->forget('cart');
+        if (auth()->check()) {
+            auth()->user()->cart()->delete(); // Limpia el del DB
+        }
+        session()->forget('cart'); // Limpia el de la sesión
         session()->forget('coupon');
 
         return redirect()->route('checkout.success', $order->id);
@@ -149,6 +152,6 @@ class CheckoutController extends Controller
 
         $pdf = Pdf::loadView('pdf.invoice', compact('order', 'settings'));
 
-        return $pdf->download('Factura_' . $order->id . '.pdf');
+        return $pdf->download('Factura_'.$order->id.'.pdf');
     }
 }

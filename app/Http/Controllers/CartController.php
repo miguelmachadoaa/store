@@ -60,7 +60,7 @@ class CartController extends Controller
     // Agregar producto
     public function add(Request $request, $id)
     {
-        $this->addItemToCart($id);
+        $this->addItemToCart($id, $request->get('quantity', 1));
 
         return redirect()->back()->with('success', 'Producto agregado al carrito');
     }
@@ -93,7 +93,7 @@ class CartController extends Controller
 
     public function ajaxAdd(Request $request, $id)
     {
-        $this->addItemToCart($id);
+        $this->addItemToCart($id, $request->get('quantity', 1));
         $cart = $this->getCartItems();
         $quantity = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
 
@@ -107,7 +107,7 @@ class CartController extends Controller
     /**
      * Helper to get cart items from session or database.
      */
-    private function getCartItems(): array
+    public function getCartItems(): array
     {
         if (Auth::check()) {
             $user = Auth::user();
@@ -138,7 +138,7 @@ class CartController extends Controller
     /**
      * Helper to add an item to the cart.
      */
-    private function addItemToCart(int $productId): void
+    private function addItemToCart(int $productId, int $quantityToAdd = 1): void
     {
         $product = Product::findOrFail($productId);
 
@@ -153,25 +153,25 @@ class CartController extends Controller
             $item = $cart->items()->where('product_id', $productId)->first();
 
             if ($item) {
-                $item->increment('quantity');
+                $item->increment('quantity', $quantityToAdd);
             } else {
                 $cart->items()->create([
                     'product_id' => $productId,
-                    'quantity' => 1,
+                    'quantity' => $quantityToAdd,
                 ]);
             }
         } else {
             $cart = session()->get('cart', []);
 
             if (isset($cart[$productId])) {
-                $cart[$productId]['quantity']++;
+                $cart[$productId]['quantity'] += $quantityToAdd;
             } else {
                 $cart[$productId] = [
                     'product_id' => $productId,
                     'name' => $product->name,
                     'price' => $product->price,
                     'image' => $product->image,
-                    'quantity' => 1,
+                    'quantity' => $quantityToAdd,
                     'category_id' => $product->category_id,
                     'brand_id' => $product->brand_id,
                 ];
@@ -237,5 +237,27 @@ class CartController extends Controller
                 session()->put('cart', $cart);
             }
         }
+    }
+
+    /**
+     * Merges session cart items into the authenticated user's database cart.
+     */
+    public function mergeSessionCartIntoDatabase(): void
+    {
+        if (! Auth::check()) {
+            return;
+        }
+
+        $sessionCart = session()->get('cart', []);
+
+        if (empty($sessionCart)) {
+            return;
+        }
+
+        foreach ($sessionCart as $productId => $item) {
+            $this->addItemToCart($productId, $item['quantity'] ?? 1);
+        }
+
+        session()->forget('cart');
     }
 }

@@ -36,11 +36,7 @@ class ViewServiceProvider extends ServiceProvider
 
             // Compartir items del carrito
             if (! app()->runningInConsole()) {
-                $cartController = app()->make(\App\Http\Controllers\CartController::class);
-                $reflection = new \ReflectionClass($cartController);
-                $method = $reflection->getMethod('getCartItems');
-                $method->setAccessible(true);
-                $cartItems = $method->invoke($cartController);
+                $cartItems = app()->make(\App\Http\Controllers\CartController::class)->getCartItems();
                 $view->with('cartItems', $cartItems);
             } else {
                 $view->with('cartItems', []);
