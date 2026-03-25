@@ -1,5 +1,5 @@
-<x-front-layout>
-    <x-slider :sliders="$sliders" />
+<x-front-layout :sliders="$sliders" :brands="$brands">
+   
 
     {{-- Servicios --}}
     <section class="py-10 bg-white">

@@ -80,27 +80,7 @@
     </header>
 
     {{-- SLIDER --}}
-    @isset($sliders)
-        <section class="w-full overflow-hidden bg-gray-900 text-white">
-            <div class="max-w-7xl mx-auto py-10 px-6">
-                <div class="grid md:grid-cols-2 gap-6 items-center">
-                    <div>
-                        <h2 class="text-4xl font-bold mb-4">{{ $sliders->first()->title ?? 'Bienvenido' }}</h2>
-                        <p class="text-lg text-gray-300 mb-6">{{ $sliders->first()->description ?? '' }}</p>
-                        <a href="{{ route('shop.index') }}" class="bg-blue-600 px-6 py-2 rounded hover:bg-blue-700">
-                            Ver productos
-                        </a>
-                    </div>
-
-                    <div>
-                        @if(isset($sliders->first()->image))
-                            <img src="{{ asset('storage/' . $sliders->first()->image) }}" class="rounded shadow-lg">
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </section>
-    @endisset
+    <x-slider :sliders="$sliders" />
 
     {{-- MARCAS --}}
     @isset($brands)

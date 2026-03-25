@@ -2,59 +2,7 @@
     @section('title', $product->meta_title ?: $product->name . ' - ' . config('app.name'))
     @section('meta_description', $product->meta_description ?: Str::limit(strip_tags($product->description), 160))
 
-    @section('meta')
-        {{-- Schema.org Structured Data --}}
-        <script type="application/ld+json">
-        {
-            "@context": "https://schema.org/",
-            "@type": "Product",
-            "name": "{{ $product->name }}",
-            "image": [
-                "{{ asset('storage/' . $product->image) }}"
-                @foreach($product->images as $img)
-                ,"{{ asset('storage/' . $img->image) }}"
-                @endforeach
-            ],
-            "description": "{{ $product->meta_description ?: Str::limit(strip_tags($product->description), 160) }}",
-            "sku": "{{ $product->sku }}",
-            "brand": {
-                "@type": "Brand",
-                "name": "{{ $product->brand->name ?? config('app.name') }}"
-            },
-            "review": [
-                @foreach($product->approvedReviews as $review)
-                {
-                    "@type": "Review",
-                    "reviewRating": {
-                        "@type": "Rating",
-                        "ratingValue": "{{ $review->rating }}",
-                        "bestRating": "5"
-                    },
-                    "author": {
-                        "@type": "Person",
-                        "name": "{{ $review->user->name }}"
-                    },
-                    "datePublished": "{{ $review->created_at->format('Y-m-d') }}",
-                    "reviewBody": "{{ e($review->comment) }}"
-                }{{ !$loop->last ? ',' : '' }}
-                @endforeach
-            ],
-            "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "{{ $product->average_rating }}",
-                "reviewCount": "{{ $product->approvedReviews->count() ?: 1 }}"
-            },
-            "offers": {
-                "@type": "Offer",
-                "url": "{{ url()->current() }}",
-                "priceCurrency": "USD",
-                "price": "{{ $product->price }}",
-                "availability": "https://schema.org/{{ $product->stock > 0 ? 'InStock' : 'OutOfStock' }}",
-                "itemCondition": "https://schema.org/NewCondition"
-            }
-        }
-        </script>
-    @endsection
+   
 
     <div class="max-w-7xl mx-auto pt-6 px-6">
         <x-breadcrumb :items="[

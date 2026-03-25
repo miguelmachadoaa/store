@@ -14,7 +14,7 @@ class FrontLayout extends Component
 
     public $sliders;
     public $brands;
-    
+
     public function __construct($sliders = null, $brands = null)
     {
         $this->sliders = $sliders;
@@ -27,6 +27,9 @@ class FrontLayout extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.front-layout');
+        return view('components.front-layout', [
+            'sliders' => $this->sliders,
+            'brands' => $this->brands,
+        ]);
     }
 }
