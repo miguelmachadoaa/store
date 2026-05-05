@@ -152,6 +152,6 @@ class CheckoutController extends Controller
 
         $pdf = Pdf::loadView('pdf.invoice', compact('order', 'settings'));
 
-        return $pdf->download('Factura_'.$order->id.'.pdf');
+        return $pdf->download('Factura_' . $order->id . '.pdf');
     }
 }

@@ -74,10 +74,10 @@ class UpdateBcvDollarValue extends Command
             }
 
             // 3. Guardar o Actualizar en la base de datos
-            $dollarValue = DollarValue::updateOrCreate(
-                ['date' => $date->format('Y-m-d')],
-                ['value' => $value]
-            );
+            $dollarValue = DollarValue::create([
+                'date' => $date->format('Y-m-d'),
+                'value' => $value
+            ]);
 
             $this->info('¡Valor del dólar actualizado correctamente!');
             $this->info("Fecha: {$dollarValue->date->format('d/m/Y')} - Valor: {$dollarValue->value}");

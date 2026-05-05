@@ -25,6 +25,23 @@ use App\Http\Controllers\SliderController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
+
+Route::get('/storage/{path}', function ($path) {
+    $path = str_replace('../', '', $path); // Seguridad básica
+    $fullPath = "public/" . $path;
+
+    if (!Storage::exists($fullPath)) {
+        abort(404);
+    }
+
+    $file = Storage::get($fullPath);
+    $type = Storage::mimeType($fullPath);
+
+    return Response::make($file, 200)->header("Content-Type", $type);
+})->where('path', '.*');
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
@@ -171,4 +188,4 @@ Route::post('/productos/{product}/reviews', [ReviewController::class, 'store'])
     ->middleware(['auth'])
     ->name('products.reviews.store');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

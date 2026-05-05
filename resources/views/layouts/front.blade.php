@@ -80,7 +80,9 @@
     </header>
 
     {{-- SLIDER --}}
-    <x-slider :sliders="$sliders" />
+    @isset($sliders)
+        <x-slider :sliders="$sliders" />
+    @endisset
 
     {{-- MARCAS --}}
     @isset($brands)
