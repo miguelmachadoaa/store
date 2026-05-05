@@ -27,11 +27,11 @@
                 <a href="{{ route('blog.index') }}" class="hover:text-blue-600">Noticias</a>
                 {{-- Cart Icon --}}
                 <a href="{{ route('cart.index') }}" class="relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-700 hover:text-pink-600 transition"
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m5-9v9m4-9v9m4-9l2 9" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 120 120" fill="none">
+  <path d="M0 0 L8 0 L22 90 L98 90 L112 30 L18 30" stroke="#000000" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="38" cy="108" r="10" fill="#000000"/>
+  <circle cx="82" cy="108" r="10" fill="#000000"/>
+</svg>
 
                     {{-- Cart Count --}}
                     <span id="cart-count"
