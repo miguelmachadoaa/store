@@ -5,7 +5,7 @@
         <div class="absolute top-0 left-0 w-72 h-72 bg-pink-200 rounded-full opacity-20 blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
         <div class="absolute bottom-0 right-0 w-96 h-96 bg-pink-300 rounded-full opacity-10 blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
 
-        <div class="relative w-full max-w-md">
+        <div class="relative w-full max-w-sm">
 
             {{-- Card --}}
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
