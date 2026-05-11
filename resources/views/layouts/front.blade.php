@@ -29,17 +29,7 @@
                 <a href="{{ route('shop.index') }}" class="text-gray-700 hover:text-pink-600 font-medium transition">Productos</a>
                 <a href="{{ route('blog.index') }}" class="text-gray-700 hover:text-pink-600 font-medium transition">Noticias</a>
 
-                {{-- Cart --}}
-                <a href="{{ route('cart.index') }}" class="relative text-gray-700 hover:text-pink-600 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 120 120" fill="none">
-                        <path d="M0 0 L8 0 L22 90 L98 90 L112 30 L18 30" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="38" cy="108" r="10" fill="currentColor"/>
-                        <circle cx="82" cy="108" r="10" fill="currentColor"/>
-                    </svg>
-                    <span id="cart-count" class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full px-2 py-0.5">
-                        {{ count($cartItems ?? []) }}
-                    </span>
-                </a>
+               
 
                 @auth
                     @if(auth()->user()->role === 'customer')
@@ -61,18 +51,7 @@
             {{-- Mobile right side: cart + hamburger --}}
             <div class="flex items-center gap-4 md:hidden">
 
-                {{-- Cart (always visible on mobile) --}}
-                <a href="{{ route('cart.index') }}" class="relative text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 120 120" fill="none">
-                        <path d="M0 0 L8 0 L22 90 L98 90 L112 30 L18 30" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="38" cy="108" r="10" fill="currentColor"/>
-                        <circle cx="82" cy="108" r="10" fill="currentColor"/>
-                    </svg>
-                    <span class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full px-2 py-0.5">
-                        {{ count($cartItems ?? []) }}
-                    </span>
-                </a>
-
+                
                 {{-- Hamburger button --}}
                 <button
                     id="menu-toggle"
@@ -197,6 +176,53 @@
         </div>
     </footer>
 
+
+      {{-- ====== BOTONES FLOTANTES ====== --}}
+<div class="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-50">
+
+    {{-- WhatsApp --}}
+    
+        <a href="https://wa.me/584243101775?text=Hola%2C%20quisiera%20m%C3%A1s%20informaci%C3%B3n"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group flex items-center gap-2"
+        aria-label="Contactar por WhatsApp"
+    >
+        <span class="hidden group-hover:flex items-center bg-white text-gray-700 text-sm font-medium px-3 py-1.5 rounded-lg shadow border border-gray-200 whitespace-nowrap transition">
+            Contactar por WhatsApp
+        </span>
+        <div class="w-13 h-13 flex items-center justify-center rounded-full shadow-lg transition hover:scale-105 active:scale-95"
+             style="width:52px;height:52px;background:#25D366;">
+            <svg width="28" height="28" viewBox="0 0 32 32" fill="white">
+                <path d="M16 3C9.373 3 4 8.373 4 15c0 2.385.663 4.61 1.807 6.508L4 29l7.747-1.78A12.9 12.9 0 0016 28c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 2c5.523 0 10 4.477 10 10s-4.477 10-10 10a9.94 9.94 0 01-4.934-1.302L10.5 23.5l.854-.197-1.347-5.867-.146.084A9.96 9.96 0 016 15c0-5.523 4.477-10 10-10zm-3.5 5c-.3 0-.8.1-1.2.55-.4.45-1.3 1.3-1.3 3.15s1.35 3.65 1.55 3.9c.2.25 2.6 4.1 6.4 5.55 3.15 1.2 3.8.95 4.5.9.7-.1 2.25-.95 2.55-1.85.3-.9.3-1.7.2-1.85-.1-.15-.35-.25-.7-.4-.35-.2-2.25-1.1-2.6-1.25-.35-.15-.6-.2-.85.2-.25.4-.95 1.2-1.15 1.45-.2.25-.4.3-.75.1-.35-.2-1.5-.55-2.85-1.75a10.7 10.7 0 01-2-2.45c-.2-.35-.02-.55.15-.7.15-.15.35-.4.5-.6.15-.2.2-.35.3-.55.1-.2.05-.4-.03-.55-.1-.15-.85-2.1-1.2-2.85-.3-.7-.6-.6-.85-.6z"/>
+            </svg>
+        </div>
+    </a>
+
+    {{-- Carrito flotante --}}
+    
+        <a href="{{ route('cart.index') }}"
+        class="group flex items-center gap-2"
+        aria-label="Ver carrito"
+    >
+        <span class="hidden group-hover:flex items-center bg-white text-gray-700 text-sm font-medium px-3 py-1.5 rounded-lg shadow border border-gray-200 whitespace-nowrap transition">
+            Ver carrito
+        </span>
+        <div class="relative flex items-center justify-center rounded-full shadow-lg bg-pink-600 hover:bg-pink-700 transition hover:scale-105 active:scale-95"
+             style="width:52px;height:52px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 120 120" fill="none">
+                <path d="M0 0 L8 0 L22 90 L98 90 L112 30 L18 30" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="38" cy="108" r="10" fill="white"/>
+                <circle cx="82" cy="108" r="10" fill="white"/>
+            </svg>
+            <span id="cart-count-fab" class="absolute -top-1 -right-1 bg-white text-pink-600 text-xs font-bold rounded-full border border-pink-600 min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                {{ count($cartItems ?? []) }}
+            </span>
+        </div>
+    </a>
+
+</div>
+
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
@@ -256,6 +282,8 @@
             });
         }
     </script>
+
+  
 
 </body>
 

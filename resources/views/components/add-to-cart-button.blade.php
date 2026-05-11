@@ -27,12 +27,14 @@
             
             if (data.success) {
                 this.quantity = data.quantity;
-                const cartCount = document.getElementById('cart-count');
-                if (cartCount) {
-                    cartCount.textContent = data.count;
-                    cartCount.classList.add('scale-125');
-                    setTimeout(() => cartCount.classList.remove('scale-125'), 200);
-                }
+                ['cart-count', 'cart-count-fab'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.textContent = data.count;
+                        el.classList.add('scale-125');
+                        setTimeout(() => el.classList.remove('scale-125'), 200);
+                    }
+                });
             }
         } catch (error) {
             console.error('Error updating cart:', error);
