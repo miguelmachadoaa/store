@@ -99,6 +99,31 @@
                                 @enderror
                             </div>
 
+                            <div class="md:col-span-2 my-2">
+                                <hr class="border-gray-200">
+                                <p class="text-sm font-semibold text-gray-500 mt-2">Configuración SEO (Opcional)</p>
+                            </div>
+
+                            <!-- NUEVO: Meta Title -->
+                            <div class="md:col-span-2">
+                                <label for="meta_title" class="block text-sm font-medium text-gray-700">Meta Title</label>
+                                <input type="text" name="meta_title" id="meta_title" value="{{ old('meta_title') }}"
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('meta_title') border-red-500 @enderror">
+                                @error('meta_title')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- NUEVO: Meta Description -->
+                            <div class="md:col-span-2">
+                                <label for="meta_description" class="block text-sm font-medium text-gray-700">Meta Description</label>
+                                <textarea name="meta_description" id="meta_description" rows="2"
+                                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('meta_description') border-red-500 @enderror">{{ old('meta_description') }}</textarea>
+                                @error('meta_description')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <!-- Checkboxes -->
                             <div class="md:col-span-2 space-y-4">
                                 <div class="flex items-center">
@@ -133,4 +158,6 @@
             </div>
         </div>
     </div>
+
+   
 </x-app-layout>

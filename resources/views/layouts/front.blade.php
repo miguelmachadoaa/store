@@ -5,112 +5,406 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', $title ?? config('app.name', 'Tienda Online'))</title>
-    <meta name="description" content="@yield('meta_description', 'Tu tienda online de confianza')">
+    <title>@yield('title', $title ?? config('app.name', 'Alma de Piedra'))</title>
+    <meta name="description" content="@yield('meta_description', 'Pulseras con piedras naturales y energía holística')">
     @yield('meta')
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        :root {
+            --amethyst:     #4A2C6E;
+            --amethyst-mid: #6B3F9E;
+            --amethyst-light: #C9A8E8;
+            --amethyst-pale: #F3EDF9;
+            --gold:         #C8973A;
+            --gold-light:   #E8C97A;
+            --gold-pale:    #FDF6E3;
+            --stone:        #8B7355;
+            --stone-light:  #C4B49A;
+            --stone-pale:   #F7F3EE;
+            --dark:         #1A1020;
+            --dark-mid:     #2D1F3D;
+            --text-main:    #2D1F3D;
+            --text-muted:   #7A6589;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #FAF8F5;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--amethyst-pale); }
+        ::-webkit-scrollbar-thumb { background: var(--amethyst-light); border-radius: 3px; }
+
+        /* ── Utility ── */
+        .font-display { font-family: 'Cormorant Garamond', serif; }
+
+        /* ── Header ── */
+        .site-header {
+            background: var(--dark);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(200, 151, 58, 0.25);
+        }
+
+        .header-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            height: 72px;
+        }
+
+        /* Logo */
+        .site-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--gold-light);
+            text-decoration: none;
+            letter-spacing: 0.04em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .site-logo .logo-symbol {
+            width: 32px;
+            height: 32px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* Desktop Nav */
+        .desktop-nav {
+            display: none;
+            align-items: center;
+            gap: 2rem;
+        }
+        @media (min-width: 768px) {
+            .desktop-nav { display: flex; }
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 400;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--gold-light); }
+
+        .nav-btn-primary {
+            background: var(--gold);
+            color: var(--dark);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.55rem 1.4rem;
+            border-radius: 2rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .nav-btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+        .nav-logout-btn {
+            background: transparent;
+            border: 1px solid rgba(200,151,58,0.4);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-logout-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+
+        /* Mobile menu */
+        .mobile-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        @media (min-width: 768px) { .mobile-actions { display: none; } }
+
+        #menu-toggle {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: rgba(255,255,255,0.8);
+            padding: 0.25rem;
+            transition: color 0.2s;
+        }
+        #menu-toggle:hover { color: var(--gold-light); }
+
+        #mobile-menu {
+            background: var(--dark-mid);
+            border-top: 1px solid rgba(200,151,58,0.15);
+            padding: 1rem 2rem 1.5rem;
+        }
+        #mobile-menu.hidden { display: none; }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 0;
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            transition: color 0.2s;
+        }
+        .mobile-nav-link:hover { color: var(--gold-light); }
+        .mobile-nav-link .mnav-icon { font-size: 1.1rem; opacity: 0.6; }
+
+        /* ── Marcas ── */
+        .brands-section {
+            background: var(--dark);
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(200,151,58,0.15);
+        }
+        .brands-scroll {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            align-items: center;
+            scrollbar-width: none;
+        }
+        .brands-scroll::-webkit-scrollbar { display: none; }
+        .brand-item {
+            min-width: 90px;
+            text-align: center;
+            opacity: 0.55;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+        }
+        .brand-item:hover { opacity: 1; }
+        .brand-item img { height: 36px; filter: brightness(0) invert(1); }
+        .brand-item p { color: #fff; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0.3rem 0 0; }
+
+        /* ── Main content ── */
+        main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        /* ── Footer ── */
+        .site-footer {
+            background: var(--dark);
+            color: rgba(255,255,255,0.6);
+            padding: 4rem 0 0;
+        }
+        .footer-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+        }
+        @media (min-width: 768px) {
+            .footer-inner { grid-template-columns: 1.5fr 1fr 1fr; }
+        }
+        .footer-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--gold-light);
+            margin: 0 0 0.75rem;
+        }
+        .footer-tagline { font-size: 0.875rem; line-height: 1.7; color: rgba(255,255,255,0.45); }
+        .footer-heading {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin: 0 0 1rem;
+        }
+        .footer-links { list-style: none; padding: 0; margin: 0; }
+        .footer-links li { margin-bottom: 0.5rem; }
+        .footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.875rem; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--gold-light); }
+        .footer-contact-line { font-size: 0.875rem; margin-bottom: 0.4rem; color: rgba(255,255,255,0.5); }
+        .footer-contact-line a { color: var(--gold-light); text-decoration: none; }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
+            padding: 1.5rem 2rem;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.25);
+            margin-top: 3rem;
+        }
+
+        /* ── Floating buttons ── */
+        .floating-actions {
+            position: fixed;
+            bottom: 1.75rem;
+            right: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.75rem;
+            z-index: 200;
+        }
+
+        .float-btn {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        .float-btn-label {
+            display: none;
+            background: var(--dark);
+            color: var(--gold-light);
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            padding: 0.35rem 0.85rem;
+            border-radius: 2rem;
+            border: 1px solid rgba(200,151,58,0.3);
+            white-space: nowrap;
+        }
+        .float-btn:hover .float-btn-label { display: flex; align-items: center; }
+        .float-btn-circle {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        .float-btn:hover .float-btn-circle { transform: scale(1.07); }
+        .float-btn:active .float-btn-circle { transform: scale(0.95); }
+
+        #cart-count-fab {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            background: var(--gold);
+            color: var(--dark);
+            font-size: 0.65rem;
+            font-weight: 700;
+            border-radius: 50%;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+        }
+    </style>
 </head>
 
-<body class="bg-gray-50 text-gray-800">
+<body>
 
-    {{-- HEADER / MENU --}}
-    <header class="bg-white shadow relative z-50">
-        <div class="max-w-7xl mx-auto flex items-center justify-between py-4 px-6">
+    {{-- HEADER --}}
+    <header class="site-header">
+        <div class="header-inner">
 
             {{-- Logo --}}
-            <a href="{{ route('home') }}" class="text-2xl font-bold text-pink-600">MiTienda</a>
+            <a href="{{ route('home') }}" class="site-logo">
+                <span class="logo-symbol">✦</span>
+                Alma de Piedra
+            </a>
 
             {{-- Desktop nav --}}
-            <nav class="hidden md:flex items-center gap-6">
-                <a href="{{ route('home') }}" class="text-gray-700 hover:text-pink-600 font-medium transition">Inicio</a>
-                <a href="{{ route('shop.index') }}" class="text-gray-700 hover:text-pink-600 font-medium transition">Productos</a>
-                <a href="{{ route('blog.index') }}" class="text-gray-700 hover:text-pink-600 font-medium transition">Noticias</a>
-
-               
+            <nav class="desktop-nav">
+                <a href="{{ route('home') }}" class="nav-link">Inicio</a>
+                <a href="{{ route('shop.index') }}" class="nav-link">Tienda</a>
+                <a href="{{ route('blog.index') }}" class="nav-link">Blog</a>
 
                 @auth
                     @if(auth()->user()->role === 'customer')
-                        <a href="{{ route('customer.dashboard') }}" class="text-gray-700 hover:text-pink-600 font-medium transition">Mi Área</a>
+                        <a href="{{ route('customer.dashboard') }}" class="nav-link">Mi Cuenta</a>
                     @endif
                     @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-pink-600 font-medium transition">Admin</a>
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link">Admin</a>
                     @endif
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                    <form method="POST" action="{{ route('logout') }}" style="display:inline">
                         @csrf
-                        <button class="text-gray-700 hover:text-pink-600 font-medium transition">Cerrar sesión</button>
+                        <button type="submit" class="nav-logout-btn">Salir</button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="text-gray-700 hover:text-pink-600 font-medium transition">Iniciar sesión</a>
-                    <a href="{{ route('register') }}" class="bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">Registrarse</a>
+                    <a href="{{ route('login') }}" class="nav-link">Ingresar</a>
+                    <a href="{{ route('register') }}" class="nav-btn-primary">Crear cuenta</a>
                 @endauth
             </nav>
 
-            {{-- Mobile right side: cart + hamburger --}}
-            <div class="flex items-center gap-4 md:hidden">
-
-                
-                {{-- Hamburger button --}}
-                <button
-                    id="menu-toggle"
-                    aria-label="Abrir menú"
-                    aria-expanded="false"
-                    class="text-gray-700 hover:text-pink-600 transition focus:outline-none"
-                >
-                    {{-- Hamburger icon --}}
-                    <svg id="icon-open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            {{-- Mobile --}}
+            <div class="mobile-actions">
+                <button id="menu-toggle" aria-label="Abrir menú" aria-expanded="false">
+                    <svg id="icon-open" xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
-                    {{-- Close icon --}}
-                    <svg id="icon-close" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg id="icon-close" xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="display:none">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
         </div>
 
-        {{-- Mobile menu drawer --}}
-        <div
-            id="mobile-menu"
-            class="hidden md:hidden bg-white border-t border-gray-100 px-6 pb-6 pt-4 space-y-1"
-        >
-            <a href="{{ route('home') }}" class="flex items-center gap-2 py-3 text-gray-700 hover:text-pink-600 font-medium border-b border-gray-100 transition">
-                <span>🏠</span> Inicio
-            </a>
-            <a href="{{ route('shop.index') }}" class="flex items-center gap-2 py-3 text-gray-700 hover:text-pink-600 font-medium border-b border-gray-100 transition">
-                <span>🛍️</span> Productos
-            </a>
-            <a href="{{ route('blog.index') }}" class="flex items-center gap-2 py-3 text-gray-700 hover:text-pink-600 font-medium border-b border-gray-100 transition">
-                <span>📰</span> Noticias
-            </a>
-
+        {{-- Mobile drawer --}}
+        <div id="mobile-menu" class="hidden">
+            <a href="{{ route('home') }}" class="mobile-nav-link"><span class="mnav-icon">✦</span>Inicio</a>
+            <a href="{{ route('shop.index') }}" class="mobile-nav-link"><span class="mnav-icon">◈</span>Tienda</a>
+            <a href="{{ route('blog.index') }}" class="mobile-nav-link"><span class="mnav-icon">◉</span>Blog</a>
             @auth
                 @if(auth()->user()->role === 'customer')
-                    <a href="{{ route('customer.dashboard') }}" class="flex items-center gap-2 py-3 text-gray-700 hover:text-pink-600 font-medium border-b border-gray-100 transition">
-                        <span>👤</span> Mi Área
-                    </a>
+                    <a href="{{ route('customer.dashboard') }}" class="mobile-nav-link"><span class="mnav-icon">◎</span>Mi Cuenta</a>
                 @endif
                 @if(auth()->user()->role === 'admin')
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 py-3 text-gray-700 hover:text-pink-600 font-medium border-b border-gray-100 transition">
-                        <span>⚙️</span> Admin
-                    </a>
+                    <a href="{{ route('admin.dashboard') }}" class="mobile-nav-link"><span class="mnav-icon">⚙</span>Admin</a>
                 @endif
-                <form method="POST" action="{{ route('logout') }}" class="pt-2">
+                <form method="POST" action="{{ route('logout') }}" style="padding-top:0.75rem">
                     @csrf
-                    <button class="w-full text-left flex items-center gap-2 py-3 text-gray-700 hover:text-pink-600 font-medium transition">
-                        <span>🚪</span> Cerrar sesión
+                    <button type="submit" class="mobile-nav-link" style="background:transparent;border:none;cursor:pointer;width:100%;text-align:left">
+                        <span class="mnav-icon">→</span>Cerrar sesión
                     </button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="flex items-center gap-2 py-3 text-gray-700 hover:text-pink-600 font-medium border-b border-gray-100 transition">
-                    <span>🔑</span> Iniciar sesión
-                </a>
-                <div class="pt-3">
-                    <a href="{{ route('register') }}" class="block text-center bg-pink-600 hover:bg-pink-700 text-white font-semibold px-4 py-3 rounded-xl transition">
-                        Registrarse gratis
-                    </a>
+                <a href="{{ route('login') }}" class="mobile-nav-link"><span class="mnav-icon">◐</span>Ingresar</a>
+                <div style="padding-top:1rem">
+                    <a href="{{ route('register') }}" class="nav-btn-primary" style="display:block;text-align:center">Crear cuenta gratis</a>
                 </div>
             @endauth
         </div>
@@ -123,118 +417,95 @@
 
     {{-- MARCAS --}}
     @isset($brands)
-        <section class="py-10 bg-white">
-            <div class="max-w-7xl mx-auto px-6">
-                <h2 class="text-xl font-semibold mb-4">Marcas destacadas</h2>
-                <div class="flex gap-6 overflow-x-auto">
-                    @foreach($brands as $brand)
-                        <div class="min-w-[120px] bg-gray-100 p-4 rounded shadow text-center">
-                            <img src="{{ asset('storage/' . $brand->logo) }}" class="h-12 mx-auto mb-2">
-                            <p class="text-sm font-semibold">{{ $brand->name }}</p>
-                        </div>
-                    @endforeach
-                </div>
+        @if(count($brands) > 0)
+        <div class="brands-section">
+            <div class="brands-scroll">
+                @foreach($brands as $brand)
+                    <div class="brand-item">
+                        <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}">
+                        <p>{{ $brand->name }}</p>
+                    </div>
+                @endforeach
             </div>
-        </section>
+        </div>
+        @endif
     @endisset
 
     {{-- CONTENIDO PRINCIPAL --}}
-    <main class="max-w-7xl mx-auto py-10 px-6">
+    <main>
         {{ $slot }}
     </main>
 
     {{-- FOOTER --}}
-    <footer class="bg-gray-900 text-gray-300 py-10 mt-10">
-        <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-6 px-6">
-
+    <footer class="site-footer">
+        <div class="footer-inner">
             <div>
-                <h3 class="text-lg font-semibold mb-3 text-white">MiTienda</h3>
-                <p class="text-sm">Tu tienda de confianza para productos tecnológicos.</p>
+                <p class="footer-logo">Alma de Piedra</p>
+                <p class="footer-tagline">Pulseras con piedras naturales cargadas de energía. Cada pieza es única, como tú.</p>
             </div>
-
             <div>
-                <h3 class="text-lg font-semibold mb-3 text-white">Enlaces</h3>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="{{ route('home') }}" class="hover:text-white transition">Inicio</a></li>
-                    <li><a href="{{ route('shop.index') }}" class="hover:text-white transition">Productos</a></li>
-                    <li><a href="#" class="hover:text-white transition">Marcas</a></li>
-                    <li><a href="{{ route('cart.index') }}" class="hover:text-white transition">Carrito</a></li>
-                    <li><a href="/sitemap.xml" class="hover:text-white transition">Sitemap</a></li>
+                <p class="footer-heading">Navegar</p>
+                <ul class="footer-links">
+                    <li><a href="{{ route('home') }}">Inicio</a></li>
+                    <li><a href="{{ route('shop.index') }}">Tienda</a></li>
+                    <li><a href="{{ route('blog.index') }}">Blog</a></li>
+                    <li><a href="{{ route('cart.index') }}">Mi carrito</a></li>
+                    <li><a href="/sitemap.xml">Sitemap</a></li>
                 </ul>
             </div>
-
             <div>
-                <h3 class="text-lg font-semibold mb-3 text-white">Contacto</h3>
-                <p class="text-sm">Email: soporte@mitienda.com</p>
-                <p class="text-sm mt-1">Teléfono: +58 000 0000000</p>
+                <p class="footer-heading">Contacto</p>
+                <p class="footer-contact-line">✉ <a href="mailto:hola@almadepiedra.com">hola@almadepiedra.com</a></p>
+                <p class="footer-contact-line">📞 +58 000 000 0000</p>
+                <p style="margin-top:1rem;font-size:0.78rem;color:rgba(255,255,255,0.3);line-height:1.6">
+                    Lun–Vie · 9:00am – 6:00pm
+                </p>
             </div>
-
         </div>
-
-        <div class="text-center text-gray-500 text-sm mt-8 border-t border-gray-800 pt-6">
-            © {{ date('Y') }} MiTienda. Todos los derechos reservados.
+        <div class="footer-bottom">
+            © {{ date('Y') }} Alma de Piedra · Todos los derechos reservados
         </div>
     </footer>
 
-
-      {{-- ====== BOTONES FLOTANTES ====== --}}
-<div class="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-50">
-
-    {{-- WhatsApp --}}
-    
+    {{-- FLOTANTES --}}
+    <div class="floating-actions">
+        {{-- WhatsApp --}}
         <a href="https://wa.me/584243101775?text=Hola%2C%20quisiera%20m%C3%A1s%20informaci%C3%B3n"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="group flex items-center gap-2"
-        aria-label="Contactar por WhatsApp"
-    >
-        <span class="hidden group-hover:flex items-center bg-white text-gray-700 text-sm font-medium px-3 py-1.5 rounded-lg shadow border border-gray-200 whitespace-nowrap transition">
-            Contactar por WhatsApp
-        </span>
-        <div class="w-13 h-13 flex items-center justify-center rounded-full shadow-lg transition hover:scale-105 active:scale-95"
-             style="width:52px;height:52px;background:#25D366;">
-            <svg width="28" height="28" viewBox="0 0 32 32" fill="white">
-                <path d="M16 3C9.373 3 4 8.373 4 15c0 2.385.663 4.61 1.807 6.508L4 29l7.747-1.78A12.9 12.9 0 0016 28c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 2c5.523 0 10 4.477 10 10s-4.477 10-10 10a9.94 9.94 0 01-4.934-1.302L10.5 23.5l.854-.197-1.347-5.867-.146.084A9.96 9.96 0 016 15c0-5.523 4.477-10 10-10zm-3.5 5c-.3 0-.8.1-1.2.55-.4.45-1.3 1.3-1.3 3.15s1.35 3.65 1.55 3.9c.2.25 2.6 4.1 6.4 5.55 3.15 1.2 3.8.95 4.5.9.7-.1 2.25-.95 2.55-1.85.3-.9.3-1.7.2-1.85-.1-.15-.35-.25-.7-.4-.35-.2-2.25-1.1-2.6-1.25-.35-.15-.6-.2-.85.2-.25.4-.95 1.2-1.15 1.45-.2.25-.4.3-.75.1-.35-.2-1.5-.55-2.85-1.75a10.7 10.7 0 01-2-2.45c-.2-.35-.02-.55.15-.7.15-.15.35-.4.5-.6.15-.2.2-.35.3-.55.1-.2.05-.4-.03-.55-.1-.15-.85-2.1-1.2-2.85-.3-.7-.6-.6-.85-.6z"/>
-            </svg>
-        </div>
-    </a>
-
-    {{-- Carrito flotante --}}
-    
-        <a href="{{ route('cart.index') }}"
-        class="group flex items-center gap-2"
-        aria-label="Ver carrito"
-    >
-        <span class="hidden group-hover:flex items-center bg-white text-gray-700 text-sm font-medium px-3 py-1.5 rounded-lg shadow border border-gray-200 whitespace-nowrap transition">
-            Ver carrito
-        </span>
-        <div class="relative flex items-center justify-center rounded-full shadow-lg bg-pink-600 hover:bg-pink-700 transition hover:scale-105 active:scale-95"
-             style="width:52px;height:52px;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 120 120" fill="none">
-                <path d="M0 0 L8 0 L22 90 L98 90 L112 30 L18 30" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="38" cy="108" r="10" fill="white"/>
-                <circle cx="82" cy="108" r="10" fill="white"/>
-            </svg>
-            <span id="cart-count-fab" class="absolute -top-1 -right-1 bg-white text-pink-600 text-xs font-bold rounded-full border border-pink-600 min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                {{ count($cartItems ?? []) }}
+           target="_blank" rel="noopener noreferrer"
+           class="float-btn" aria-label="Contactar por WhatsApp">
+            <span class="float-btn-label">Escríbenos por WhatsApp</span>
+            <span class="float-btn-circle" style="background:#25D366">
+                <svg width="26" height="26" viewBox="0 0 32 32" fill="white">
+                    <path d="M16 3C9.373 3 4 8.373 4 15c0 2.385.663 4.61 1.807 6.508L4 29l7.747-1.78A12.9 12.9 0 0016 28c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 2c5.523 0 10 4.477 10 10s-4.477 10-10 10a9.94 9.94 0 01-4.934-1.302L10.5 23.5l.854-.197-1.347-5.867-.146.084A9.96 9.96 0 016 15c0-5.523 4.477-10 10-10zm-3.5 5c-.3 0-.8.1-1.2.55-.4.45-1.3 1.3-1.3 3.15s1.35 3.65 1.55 3.9c.2.25 2.6 4.1 6.4 5.55 3.15 1.2 3.8.95 4.5.9.7-.1 2.25-.95 2.55-1.85.3-.9.3-1.7.2-1.85-.1-.15-.35-.25-.7-.4-.35-.2-2.25-1.1-2.6-1.25-.35-.15-.6-.2-.85.2-.25.4-.95 1.2-1.15 1.45-.2.25-.4.3-.75.1-.35-.2-1.5-.55-2.85-1.75a10.7 10.7 0 01-2-2.45c-.2-.35-.02-.55.15-.7.15-.15.35-.4.5-.6.15-.2.2-.35.3-.55.1-.2.05-.4-.03-.55-.1-.15-.85-2.1-1.2-2.85-.3-.7-.6-.6-.85-.6z"/>
+                </svg>
             </span>
-        </div>
-    </a>
+        </a>
 
-</div>
+        {{-- Carrito --}}
+        <a href="{{ route('cart.index') }}" class="float-btn" aria-label="Ver carrito">
+            <span class="float-btn-label">Ver carrito</span>
+            <span class="float-btn-circle" style="background:var(--amethyst)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 120 120" fill="none">
+                    <path d="M0 0 L8 0 L22 90 L98 90 L112 30 L18 30" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="38" cy="108" r="10" fill="white"/>
+                    <circle cx="82" cy="108" r="10" fill="white"/>
+                </svg>
+                <span id="cart-count-fab">{{ count($cartItems ?? []) }}</span>
+            </span>
+        </a>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
     <script>
-        // Swiper
         new Swiper(".mySwiper", {
             loop: true,
-            autoplay: { delay: 4000 },
+            autoplay: { delay: 5000, disableOnInteraction: false },
             pagination: { el: ".swiper-pagination", clickable: true },
             navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+            effect: 'fade',
+            fadeEffect: { crossFade: true },
         });
 
-        // Mobile menu toggle
         const menuToggle = document.getElementById('menu-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
         const iconOpen   = document.getElementById('icon-open');
@@ -242,24 +513,21 @@
 
         menuToggle.addEventListener('click', () => {
             const isOpen = !mobileMenu.classList.contains('hidden');
-
             mobileMenu.classList.toggle('hidden');
-            iconOpen.classList.toggle('hidden', !isOpen ? true : false);
-            iconClose.classList.toggle('hidden', !isOpen ? false : true);
+            iconOpen.style.display  = isOpen ? '' : 'none';
+            iconClose.style.display = isOpen ? 'none' : '';
             menuToggle.setAttribute('aria-expanded', String(!isOpen));
         });
 
-        // Close menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!menuToggle.contains(e.target) && !mobileMenu.contains(e.target)) {
                 mobileMenu.classList.add('hidden');
-                iconOpen.classList.remove('hidden');
-                iconClose.classList.add('hidden');
+                iconOpen.style.display = '';
+                iconClose.style.display = 'none';
                 menuToggle.setAttribute('aria-expanded', 'false');
             }
         });
 
-        // Wishlist toggle
         function toggleWishlist(productId, btn) {
             fetch(`/wishlist/toggle/${productId}`, {
                 method: 'POST',
@@ -271,20 +539,11 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    if (data.status === 'added') {
-                        btn.classList.add('text-pink-600');
-                        btn.classList.remove('text-gray-400');
-                    } else {
-                        btn.classList.remove('text-pink-600');
-                        btn.classList.add('text-gray-400');
-                    }
+                    btn.classList.toggle('is-wishlisted', data.status === 'added');
                 }
             });
         }
     </script>
 
-  
-
 </body>
-
 </html>

@@ -67,6 +67,47 @@
             });
     </script>
 
+     <!-- Script para autocompletar campos SEO -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const nameInput = document.getElementById('name');
+            const descriptionInput = document.getElementById('description');
+            const metaTitleInput = document.getElementById('meta_title');
+            const metaDescriptionInput = document.getElementById('meta_description');
+
+            // Banderas para saber si el usuario ha editado manualmente los campos SEO
+            let metaTitleEdited = false;
+            let metaDescriptionEdited = false;
+
+            // Detectar si el usuario escribe directamente en Meta Title
+            metaTitleInput.addEventListener('input', () => {
+                metaTitleEdited = true;
+                if (metaTitleInput.value.trim() === "") metaTitleEdited = false; // Si lo borra todo, vuelve a automatizarse
+            });
+
+            // Detectar si el usuario escribe directamente en Meta Description
+            metaDescriptionInput.addEventListener('input', () => {
+                metaDescriptionEdited = true;
+                if (metaDescriptionInput.value.trim() === "") metaDescriptionEdited = false;
+            });
+
+            // Escuchar el tipeo en el nombre del producto
+            nameInput.addEventListener('input', () => {
+                if (!metaTitleEdited) {
+                    metaTitleInput.value = nameInput.value;
+                }
+            });
+
+            // Escuchar el tipeo en la descripción del producto
+            descriptionInput.addEventListener('input', () => {
+                if (!metaDescriptionEdited) {
+                    // Copia el texto y opcionalmente limita los caracteres para SEO (ej: 160 caracteres)
+                    metaDescriptionInput.value = descriptionInput.value.substring(0, 160);
+                }
+            });
+        });
+    </script>
+
 </body>
 
 </html>
