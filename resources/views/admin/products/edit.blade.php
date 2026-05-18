@@ -54,15 +54,18 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="font-semibold">Categoría</label>
-                                <select name="category_id" class="w-full border rounded p-2">
-                                    <option value="">Seleccione una categoría</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                               <div class="md:col-span-2">
+                                    <label for="categories" class="block text-sm font-medium text-gray-700">Categorías</label>
+                                    <select name="categories[]" id="categories" multiple 
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}" 
+                                                {{ (is_array(old('categories', $product->categories->pluck('id')->toArray())) && in_array($category->id, old('categories', $product->categories->pluck('id')->toArray()))) ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="mb-4">

@@ -31,8 +31,13 @@ class Category extends Model
         });
     }
 
-    public function products()
+    public function productsOld()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
     }
 }

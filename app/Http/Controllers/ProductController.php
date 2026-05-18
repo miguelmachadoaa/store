@@ -67,6 +67,8 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'category_id' => 'nullable|exists:categories,id',
+            'categories' => 'nullable|array',
+                'categories.*' => 'exists:categories,id',
             'tax_id' => 'nullable|exists:taxes,id',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
@@ -83,6 +85,10 @@ class ProductController extends Controller
         $validated['is_featured'] = $request->has('is_featured');
 
         $product = Product::create($validated);
+
+        if ($request->has('categories')) {
+            $product->categories()->sync($request->categories);
+        }
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
@@ -139,6 +145,8 @@ class ProductController extends Controller
             'is_featured' => 'boolean',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
+            'categories' => 'nullable|array',
+            'categories.*' => 'exists:categories,id',
         ]);
 
         // Manejar la imagen
@@ -154,6 +162,8 @@ class ProductController extends Controller
         $validated['is_featured'] = $request->has('is_featured');
 
         $product->update($validated);
+
+        $product->categories()->sync($request->categories ?? []);
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {

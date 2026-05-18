@@ -49,16 +49,18 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="font-semibold">Categoría</label>
-                                <select name="category_id" class="w-full border rounded p-2">
-                                    <option value="">Seleccione una categoría</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}"
-                                            {{ isset($product) && $product->category_id == $category->id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <div class="md:col-span-2">
+                                    <label for="categories" class="block text-sm font-medium text-gray-700">Categorías</label>
+                                    <select name="categories[]" id="categories" multiple 
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}" {{ (is_array(old('categories')) && in_array($category->id, old('categories'))) ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-xs text-gray-500 mt-1">Mantén presionado Ctrl (o Cmd) para seleccionar varias.</p>
+                                </div>
                             </div>
 
                             <div class="mb-4">

@@ -341,7 +341,7 @@
         }
 
         function updateTotals() {
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const subtotal = (cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)/1.16); // Asumiendo que el precio incluye impuestos
             const taxes = subtotal * 0.16; // Simplificado, deberías calcular por producto
             let discount = 0;
 
