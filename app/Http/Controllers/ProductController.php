@@ -251,7 +251,20 @@ class ProductController extends Controller
             $query->orderBy('price', $request->sort === 'asc' ? 'ASC' : 'DESC');
         }
 
-        $products = $query->paginate(12);
+        // Mantenemos los filtros activos en la paginación con withQueryString()
+        $products = $query->paginate(12)->withQueryString();
+
+        // Si la petición es AJAX, devolvemos solo las tarjetas renderizadas
+        if ($request->ajax()) {
+            $view = '';
+            foreach ($products as $product) {
+                $view .= view('components.product-card', compact('product'))->render();
+            }
+            return response()->json([
+                'html' => $view,
+                'nextPageUrl' => $products->nextPageUrl()
+            ]);
+        }
 
         $categories = Category::all();
         $brands = Brand::all();
@@ -259,7 +272,7 @@ class ProductController extends Controller
         return view('shop.index', compact('products', 'categories', 'brands'));
     }
 
-    public function byBrand($slug)
+    public function byBrand(Request $request, $slug) // Añadimos Request $request aquí
     {
         $brand = Brand::where('slug', $slug)->firstOrFail();
 
@@ -267,18 +280,43 @@ class ProductController extends Controller
             ->where('is_active', 1)
             ->paginate(12);
 
+        // Si la petición es AJAX (scroll infinito), devolvemos solo las tarjetas
+        if ($request->ajax()) {
+            $view = '';
+            foreach ($products as $product) {
+                $view .= view('components.product-card', compact('product'))->render();
+            }
+            return response()->json([
+                'html' => $view,
+                'nextPageUrl' => $products->nextPageUrl()
+            ]);
+        }
+
         $title = "Productos marca {$brand->name} - ".config('app.name');
 
         return view('shop.by-brand', compact('brand', 'products', 'title'));
     }
 
-    public function byCategory($slug)
+    public function byCategory(Request $request, $slug) // Añadimos Request $request
     {
         $category = Category::where('slug', $slug)->firstOrFail();
 
         $products = Product::where('category_id', $category->id)
             ->where('is_active', 1)
             ->paginate(12);
+
+        // Si la petición es AJAX, solo devolvemos las tarjetas renderizadas
+        if ($request->ajax()) {
+            $view = '';
+            foreach ($products as $product) {
+                // Renderizamos dinámicamente el componente de Blade
+                $view .= view('components.product-card', compact('product'))->render();
+            }
+            return response()->json([
+                'html' => $view,
+                'nextPageUrl' => $products->nextPageUrl() // URL de la página que sigue (o null si es la última)
+            ]);
+        }
 
         $title = "Productos en {$category->name} - ".config('app.name');
 

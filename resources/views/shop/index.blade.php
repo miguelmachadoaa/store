@@ -87,16 +87,17 @@
             <h2 class="text-2xl font-bold mb-6">Productos</h2>
 
             @if($products->count() > 0)
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Añadimos el ID 'products-wrapper' para inyectar los nuevos productos -->
+                <div id="products-wrapper" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($products as $product)
                         <x-product-card :product="$product" />
                     @endforeach
                 </div>
 
-                <div class="mt-6">
-                    {{ $products->appends(request()->query())->links() }}
+                <!-- Gatillo de scroll infinito cargado con la URL inicial paginada y filtrada -->
+                <div id="infinite-scroll-trigger" class="mt-12 text-center" data-next-page="{{ $products->nextPageUrl() }}">
+                    <div id="loading-spinner" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-pink-600 border-r-transparent hidden" role="status"></div>
                 </div>
-
 
             @else
                 <p class="text-gray-600">No se encontraron productos con los filtros seleccionados.</p>
@@ -105,5 +106,61 @@
         </section>
 
     </div>
+
+    <!-- Script de Scroll Infinito para la Tienda -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const trigger = document.getElementById('infinite-scroll-trigger');
+            const wrapper = document.getElementById('products-wrapper');
+            const spinner = document.getElementById('loading-spinner');
+            
+            if (!trigger) return;
+
+            let nextPageUrl = trigger.getAttribute('data-next-page');
+            let isLoading = false;
+
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && nextPageUrl && !isLoading) {
+                    loadMoreProducts();
+                }
+            }, {
+                rootMargin: '150px' // Se activa un poco antes para que la experiencia sea fluida
+            });
+
+            observer.observe(trigger);
+
+            function loadMoreProducts() {
+                isLoading = true;
+                spinner.classList.remove('hidden');
+
+                fetch(nextPageUrl, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Inyectamos el HTML de las nuevas tarjetas
+                    wrapper.insertAdjacentHTML('beforeend', data.html);
+                    
+                    // Actualizamos la URL para la siguiente página (esta ya incluye los filtros query)
+                    nextPageUrl = data.nextPageUrl;
+                    
+                    if (!nextPageUrl) {
+                        observer.disconnect();
+                        trigger.remove();
+                    }
+                    
+                    isLoading = false;
+                    spinner.classList.add('hidden');
+                })
+                .catch(error => {
+                    console.error('Error al cargar más productos en la tienda:', error);
+                    isLoading = false;
+                    spinner.classList.add('hidden');
+                });
+            }
+        });
+    </script>
 
 </x-front-layout>

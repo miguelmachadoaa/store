@@ -190,16 +190,6 @@
         @endif
     </div>
 
-        @if($related->count() > 0)
-            <div class="mt-16">
-                <h2 class="text-2xl font-bold text-gray-900 mb-8">Productos Relacionados</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    @foreach($relatedProducts as $related)
-                        <x-product-card :product="$related" />
-                    @endforeach
-                </div>
-            </div>
-        @endif
 
         {{-- Sección de Reseñas --}}
         <div class="mt-16 border-t pt-10">
