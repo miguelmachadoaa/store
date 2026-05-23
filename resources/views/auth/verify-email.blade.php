@@ -1,89 +1,106 @@
 <x-front-layout>
-    <section class="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-100 flex items-center justify-center py-16 px-4">
+    <section class="min-h-screen bg-[#0d0e12] flex items-center justify-center py-16 px-4 relative overflow-hidden font-sans">
 
-        <div class="absolute top-0 left-0 w-80 h-80 bg-pink-200 rounded-full opacity-20 blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-        <div class="absolute bottom-0 right-0 w-72 h-72 bg-rose-200 rounded-full opacity-10 blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+        {{-- Grid decorativo técnico de fondo --}}
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f242e_1px,transparent_1px),linear-gradient(to_bottom,#1f242e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-25 pointer-events-none"></div>
+        
+        {{-- Resplandor asimétrico de fondo --}}
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-blue-500/10 rounded-full opacity-30 blur-3xl pointer-events-none"></div>
 
-        <div class="relative w-full max-w-sm">
+        <div class="relative w-full max-w-md">
 
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-                <div class="h-1.5 w-full bg-gradient-to-r from-pink-400 via-pink-600 to-rose-500"></div>
+            {{-- Card de estilo Industrial / Terminal --}}
+            <div class="bg-[#14161d] border border-[#262b36] rounded-sm shadow-2xl overflow-hidden">
+
+                {{-- Barra de acento tecnológico superior (Racing Blue) --}}
+                <div class="h-1 w-full bg-blue-600 shadow-[0_2px_10px_rgba(37,99,235,0.5)]"></div>
 
                 <div class="px-8 pt-10 pb-10">
 
-                    {{-- Header --}}
+                    {{-- Header / Logotipo --}}
                     <div class="text-center mb-8">
-                        <div class="inline-flex items-center justify-center w-14 h-14 bg-pink-50 rounded-2xl mb-4 shadow-inner">
-                            <span class="text-3xl">📬</span>
+                        <div class="inline-flex items-center justify-center w-12 h-12 bg-[#1b1e26] border border-[#262b36] rounded-sm mb-4 tracking-wider text-xl font-bold text-blue-500 shadow-inner [font-family:'Orbitron',sans-serif]">
+                            ENV
                         </div>
-                        <h1 class="text-2xl font-bold text-gray-800">Check Your Email</h1>
-                        <p class="text-gray-500 text-sm mt-2 leading-relaxed">
-                            We sent a verification link to your email address. Click the link to activate your account.
+                        <h1 class="text-xl font-bold text-white tracking-wider uppercase [font-family:'Orbitron',sans-serif]">
+                            Verify Identity
+                        </h1>
+                        <p class="text-gray-400 text-xs mt-1.5 uppercase tracking-widest font-mono">
+                            Awaiting validation token dispatch
                         </p>
                     </div>
 
-                    {{-- Success status --}}
+                    {{-- Estado de Éxito (Reenvío de Token) --}}
                     @if (session('status') == 'verification-link-sent')
-                        <div class="mb-6 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3 flex items-start gap-2">
-                            <span class="mt-0.5">✅</span>
-                            <span>A new verification link has been sent to your email address.</span>
+                        <div class="mb-6 bg-emerald-950/40 border border-emerald-800/60 text-emerald-400 text-xs rounded-sm p-4 font-mono">
+                            <div class="flex items-center gap-2 font-bold mb-1 uppercase tracking-wider text-emerald-500">
+                                <span>✓</span> Token_Dispatched:
+                            </div>
+                            <span class="opacity-90">A new verification link has been successfully transmitted to your registered gateway.</span>
                         </div>
                     @endif
 
-                    {{-- Steps visual --}}
-                    <div class="bg-gray-50 rounded-xl p-4 mb-6 space-y-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-full bg-pink-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">1</div>
-                            <p class="text-sm text-gray-700">Open your email inbox</p>
+                    {{-- Secuencia de Pasos en Consola --}}
+                    <div class="bg-[#1b1e26] border border-[#262b36] rounded-sm p-4 mb-6 space-y-3 font-mono text-xs">
+                        <div class="text-gray-500 uppercase tracking-widest font-bold text-[10px] pb-1 border-b border-[#262b36] flex items-center justify-between">
+                            <span>Execution_Sequence</span>
+                            <span class="text-blue-500 animate-pulse">● AWAITING</span>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-full bg-pink-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">2</div>
-                            <p class="text-sm text-gray-700">Find the email from us</p>
+                        <div class="flex items-start gap-3">
+                            <span class="text-blue-500 font-bold">[01]</span>
+                            <p class="text-gray-300 uppercase tracking-wide">Access target mail infrastructure</p>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-full bg-pink-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">3</div>
-                            <p class="text-sm text-gray-700">Click the verification link</p>
+                        <div class="flex items-start gap-3">
+                            <span class="text-blue-500 font-bold">[02]</span>
+                            <p class="text-gray-300 uppercase tracking-wide">Locate inbound security transmission</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-blue-500 font-bold">[03]</span>
+                            <p class="text-gray-300 uppercase tracking-wide">Execute validation payload link</p>
                         </div>
                     </div>
 
-                    {{-- Resend form --}}
+                    {{-- Formulario de Reenvío --}}
                     <form method="POST" action="{{ route('verification.send') }}">
                         @csrf
                         <button
                             type="submit"
-                            class="w-full bg-pink-600 hover:bg-pink-700 active:bg-pink-800 text-white font-semibold py-3 rounded-xl transition duration-200 shadow-md shadow-pink-200 hover:shadow-pink-300 text-sm tracking-wide"
+                            class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-3 px-4 rounded-sm transition duration-150 text-xs tracking-widest uppercase shadow-[0_4px_12px_rgba(37,99,235,0.15)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.3)] [font-family:'Orbitron',sans-serif]"
                         >
-                            Resend Verification Email
+                            Retransmit Verification Token
                         </button>
                     </form>
 
+                    {{-- Divisor Técnico --}}
                     <div class="flex items-center gap-3 my-5">
-                        <div class="flex-1 h-px bg-gray-200"></div>
-                        <span class="text-xs text-gray-400 font-medium">or</span>
-                        <div class="flex-1 h-px bg-gray-200"></div>
+                        <div class="flex-1 h-px bg-[#262b36]"></div>
+                        <span class="text-[10px] text-gray-500 font-mono uppercase tracking-widest">OR</span>
+                        <div class="flex-1 h-px bg-[#262b36]"></div>
                     </div>
 
-                    {{-- Logout form --}}
+                    {{-- Formulario de Cierre de Sesión --}}
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button
                             type="submit"
-                            class="w-full border border-gray-200 text-gray-600 hover:text-pink-600 hover:border-pink-300 font-medium py-3 rounded-xl transition duration-200 text-sm"
+                            class="w-full bg-transparent border border-[#262b36] text-gray-400 hover:text-red-400 hover:border-red-900/60 font-mono text-xs py-2.5 px-4 rounded-sm transition duration-150 uppercase tracking-wider"
                         >
-                            Sign Out
+                            Disconnect Terminal
                         </button>
                     </form>
 
-                    <p class="text-center text-xs text-gray-400 mt-5 leading-relaxed">
-                        Didn't receive the email? Check your spam folder or resend using the button above.
+                    {{-- Nota de Advertencia --}}
+                    <p class="text-center text-[10px] text-gray-500 mt-5 font-mono uppercase tracking-wide leading-relaxed">
+                        Transmission failure? Inspect junk/spam filters or trigger a structural retransmission above.
                     </p>
 
                 </div>
             </div>
 
-            <div class="mt-6 flex items-center justify-center gap-6 text-xs text-gray-400">
-                <span class="flex items-center gap-1">📧 Check spam folder</span>
-                <span class="flex items-center gap-1">⏱️ Link expires in 60 min</span>
+            {{-- Estado del Proceso --}}
+            <div class="mt-6 flex items-center justify-center gap-5 text-[10px] text-gray-500 font-mono uppercase tracking-wider">
+                <span class="flex items-center gap-1.5"><span class="text-blue-500">■</span> CHECK_SPAM_FILTER</span>
+                <span class="flex items-center gap-1.5"><span class="text-blue-500">■</span> EXPIRY_T_MIN_60</span>
             </div>
 
         </div>

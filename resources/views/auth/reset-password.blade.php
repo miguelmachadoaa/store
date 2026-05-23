@@ -1,31 +1,42 @@
 <x-front-layout>
-    <section class="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-100 flex items-center justify-center py-16 px-4">
+    <section class="min-h-screen bg-[#0d0e12] flex items-center justify-center py-16 px-4 relative overflow-hidden font-sans">
 
-        <div class="absolute top-0 left-0 w-80 h-80 bg-pink-200 rounded-full opacity-20 blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-        <div class="absolute bottom-0 right-0 w-72 h-72 bg-rose-200 rounded-full opacity-10 blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+        {{-- Grid decorativo técnico de fondo --}}
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f242e_1px,transparent_1px),linear-gradient(to_bottom,#1f242e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-25 pointer-events-none"></div>
+        
+        {{-- Resplandor asimétrico de fondo --}}
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-blue-500/10 rounded-full opacity-30 blur-3xl pointer-events-none"></div>
 
-        <div class="relative w-full max-w-sm">
+        <div class="relative w-full max-w-md">
 
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-                <div class="h-1.5 w-full bg-gradient-to-r from-pink-400 via-pink-600 to-rose-500"></div>
+            {{-- Card de estilo Industrial / Terminal --}}
+            <div class="bg-[#14161d] border border-[#262b36] rounded-sm shadow-2xl overflow-hidden">
+
+                {{-- Barra de acento tecnológico superior (Racing Blue) --}}
+                <div class="h-1 w-full bg-blue-600 shadow-[0_2px_10px_rgba(37,99,235,0.5)]"></div>
 
                 <div class="px-8 pt-10 pb-10">
 
-                    {{-- Header --}}
+                    {{-- Header / Logotipo --}}
                     <div class="text-center mb-8">
-                        <div class="inline-flex items-center justify-center w-14 h-14 bg-pink-50 rounded-2xl mb-4 shadow-inner">
-                            <span class="text-3xl">🛡️</span>
+                        <div class="inline-flex items-center justify-center w-12 h-12 bg-[#1b1e26] border border-[#262b36] rounded-sm mb-4 tracking-wider text-xl font-bold text-blue-500 shadow-inner [font-family:'Orbitron',sans-serif]">
+                            UPD
                         </div>
-                        <h1 class="text-2xl font-bold text-gray-800">Reset Password</h1>
-                        <p class="text-gray-500 text-sm mt-2">
-                            Choose a strong new password for your account.
+                        <h1 class="text-xl font-bold text-white tracking-wider uppercase [font-family:'Orbitron',sans-serif]">
+                            Reset Password
+                        </h1>
+                        <p class="text-gray-400 text-xs mt-1.5 uppercase tracking-widest font-mono">
+                            Overwriting access credentials
                         </p>
                     </div>
 
-                    {{-- Errors --}}
+                    {{-- Manejo de Errores del Sistema --}}
                     @if ($errors->any())
-                        <div class="mb-6 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">
-                            <ul class="list-disc list-inside space-y-1">
+                        <div class="mb-6 bg-red-950/40 border border-red-800/60 text-red-400 text-xs rounded-sm p-4 font-mono">
+                            <div class="flex items-center gap-2 font-bold mb-1 uppercase tracking-wider text-red-500">
+                                <span>⚠️</span> Write_Error:
+                            </div>
+                            <ul class="list-disc list-inside space-y-1 opacity-90">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -33,19 +44,22 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('password.store') }}" class="space-y-5">
+                    {{-- Formulario --}}
+                    <form method="POST" action="{{ route('password.store') }}" class="space-y-5 font-mono">
                         @csrf
 
                         {{-- Hidden token --}}
                         <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-                        {{-- Email --}}
+                        {{-- Input: Email --}}
                         <div>
-                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                                Email Address
+                            <label for="email" class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2 [font-family:'Orbitron',sans-serif]">
+                                Identity Target (Email)
                             </label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 text-lg pointer-events-none">✉️</span>
+                                <span class="absolute inset-y-0 left-3 flex items-center text-gray-500 text-sm pointer-events-none">
+                                    [ID]
+                                </span>
                                 <input
                                     type="email"
                                     id="email"
@@ -54,18 +68,20 @@
                                     required
                                     autofocus
                                     autocomplete="username"
-                                    class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition @error('email') border-red-400 bg-red-50 @enderror"
+                                    class="w-full pl-12 pr-4 py-2.5 bg-[#1b1e26] border border-[#262b36] rounded-sm text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition duration-150 @error('email') border-red-500 focus:ring-red-500 @enderror"
                                 >
                             </div>
                         </div>
 
-                        {{-- New Password --}}
+                        {{-- Input: Nueva Contraseña --}}
                         <div>
-                            <label for="password" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                                New Password
+                            <label for="password" class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2 [font-family:'Orbitron',sans-serif]">
+                                New Access Key
                             </label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 text-lg pointer-events-none">🔒</span>
+                                <span class="absolute inset-y-0 left-3 flex items-center text-gray-500 text-sm pointer-events-none">
+                                    ***
+                                </span>
                                 <input
                                     type="password"
                                     id="password"
@@ -73,18 +89,20 @@
                                     placeholder="••••••••"
                                     required
                                     autocomplete="new-password"
-                                    class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition @error('password') border-red-400 bg-red-50 @enderror"
+                                    class="w-full pl-12 pr-4 py-2.5 bg-[#1b1e26] border border-[#262b36] rounded-sm text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition duration-150 @error('password') border-red-500 focus:ring-red-500 @enderror"
                                 >
                             </div>
                         </div>
 
-                        {{-- Confirm Password --}}
+                        {{-- Input: Confirmar Contraseña --}}
                         <div>
-                            <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                                Confirm New Password
+                            <label for="password_confirmation" class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2 [font-family:'Orbitron',sans-serif]">
+                                Confirm New Key
                             </label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 text-lg pointer-events-none">🔑</span>
+                                <span class="absolute inset-y-0 left-3 flex items-center text-gray-500 text-sm pointer-events-none">
+                                    ✓✓
+                                </span>
                                 <input
                                     type="password"
                                     id="password_confirmation"
@@ -92,36 +110,39 @@
                                     placeholder="••••••••"
                                     required
                                     autocomplete="new-password"
-                                    class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition @error('password_confirmation') border-red-400 bg-red-50 @enderror"
+                                    class="w-full pl-12 pr-4 py-2.5 bg-[#1b1e26] border border-[#262b36] rounded-sm text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition duration-150 @error('password_confirmation') border-red-500 focus:ring-red-500 @enderror"
                                 >
                             </div>
                         </div>
 
-                        {{-- Password hint --}}
-                        <p class="text-xs text-gray-400 -mt-2">
-                            Use at least 8 characters with a mix of letters and numbers.
+                        {{-- Requisitos de Seguridad --}}
+                        <p class="text-[11px] text-gray-500 -mt-2 uppercase tracking-wide">
+                            Enforcement: Alphanumeric string, minimum 8 characters.
                         </p>
 
+                        {{-- Botón de Acción --}}
                         <button
                             type="submit"
-                            class="w-full bg-pink-600 hover:bg-pink-700 active:bg-pink-800 text-white font-semibold py-3 rounded-xl transition duration-200 shadow-md shadow-pink-200 hover:shadow-pink-300 text-sm tracking-wide"
+                            class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-3 px-4 rounded-sm transition duration-150 text-xs tracking-widest uppercase shadow-[0_4px_12px_rgba(37,99,235,0.15)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.3)] [font-family:'Orbitron',sans-serif]"
                         >
-                            Reset Password
+                            Commit Credential Change
                         </button>
                     </form>
 
-                    <div class="mt-6 text-center">
-                        <a href="{{ route('login') }}" class="text-sm text-pink-600 font-semibold hover:text-pink-700 transition">
-                            ← Back to Sign In
+                    {{-- Retorno al Login --}}
+                    <div class="mt-6 text-center font-mono">
+                        <a href="{{ route('login') }}" class="text-xs text-gray-500 hover:text-blue-500 transition uppercase tracking-wider block [font-family:'Orbitron',sans-serif] font-bold">
+                            ← Abort & Return to Authentication
                         </a>
                     </div>
 
                 </div>
             </div>
 
-            <div class="mt-6 flex items-center justify-center gap-6 text-xs text-gray-400">
-                <span class="flex items-center gap-1">🔒 Encrypted & Secure</span>
-                <span class="flex items-center gap-1">🛡️ Privacy Protected</span>
+            {{-- Estado del Terminal --}}
+            <div class="mt-6 flex items-center justify-center gap-5 text-[10px] text-gray-500 font-mono uppercase tracking-wider">
+                <span class="flex items-center gap-1.5"><span class="text-blue-500">■</span> CRYPTO_ENG_AES_256</span>
+                <span class="flex items-center gap-1.5"><span class="text-blue-500">■</span> PRIVACY_LOCK</span>
             </div>
 
         </div>

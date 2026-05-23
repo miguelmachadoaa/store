@@ -32,8 +32,8 @@
 @if(isset($categories) && $categories->count() > 0)
 <section class="cat-section">
     <div class="cat-section__inner">
-        <p class="section-eyebrow">Explora nuestra colección</p>
-        <h2 class="section-title">Pulseras por <em>piedra</em> y propósito</h2>
+        <p class="section-eyebrow">Explora nuestro catalogo</p>
+        <h2 class="section-title">Repuestos  <em>originales</em> y genericos</h2>
 
         <div class="cat-grid">
             @forelse($categories as $category)
@@ -86,8 +86,8 @@
      ╚══════════════════════╝ --}}
 <section class="products-section products-section--alt">
     <div class="products-section__inner">
-        <p class="section-eyebrow">Recién llegadas</p>
-        <h2 class="section-title">Nuevas <em>piezas</em> para ti</h2>
+        <p class="section-eyebrow">Recién llegados</p>
+        <h2 class="section-title">Repuestos  <em>originales</em> para tu moto</h2>
 
         <div class="products-grid-3">
             @foreach($recentProducts as $product)
@@ -106,10 +106,10 @@
      ╚══════════════════════╝ --}}
 <section class="newsletter-section">
     <div class="newsletter-inner">
-        <p class="newsletter-eyebrow">Comunidad holística</p>
-        <h2 class="newsletter-title">Únete a nuestra <em>energía</em></h2>
+        <p class="newsletter-eyebrow">Comunidad de entusiastas</p>
+        <h2 class="newsletter-title">Únete a nuestra <em>comunidad </em></h2>
         <p class="newsletter-sub">
-            Recibe rituales de uso, guías de piedras y ofertas exclusivas directamente en tu correo.
+            Recibe actualizaciones sobre nuevos productos, ofertas especiales y contenido exclusivo.
         </p>
 
         <form action="{{ route('newsletter.store') }}" method="POST" class="newsletter-form">
@@ -134,8 +134,8 @@
      ║  Promo strip         ║
      ╚══════════════════════╝ --}}
 <div class="promo-strip">
-    <h2>Encuentra tu <em>piedra</em> perfecta</h2>
-    <p>Cada pulsera lleva consigo siglos de energía natural y propósito</p>
+    <h2>Encuentra tu <em>repuesto</em> perfecto</h2>
+    <p>Cada pieza lleva consigo años de calidad y durabilidad</p>
     <a href="{{ route('shop.index') }}">Explorar colección</a>
 </div>
 

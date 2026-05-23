@@ -7,20 +7,21 @@
     <div class="max-w-7xl mx-auto py-8 px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
 
         {{-- Sidebar de filtros --}}
-        <aside class="bg-white p-6 rounded-lg shadow border h-fit">
+        <aside class="ap-sidebar">
 
-            <h3 class="text-lg font-bold mb-4">Filtros</h3>
+            <h3 class="ap-sidebar__title">Filtros</h3>
 
             <form method="GET" action="{{ route('shop.index') }}" class="space-y-6">
 
                 {{-- Categorías --}}
-                <div>
-                    <h4 class="font-semibold mb-2">Categorías</h4>
-                    <ul class="space-y-1">
+                <div class="ap-sidebar__section">
+                    <h4 class="ap-sidebar__section-title">Categorías</h4>
+                    <ul class="space-y-2">
                         @foreach($categories as $category)
                             <li>
-                                <label class="flex items-center gap-2">
+                                <label class="ap-sidebar__label">
                                     <input type="radio" name="category" value="{{ $category->id }}"
+                                           class="ap-sidebar__radio"
                                            {{ request('category') == $category->id ? 'checked' : '' }}>
                                     <span>{{ $category->name }}</span>
                                 </label>
@@ -29,15 +30,16 @@
                     </ul>
                 </div>
 
-               {{-- Marcas --}}
-                <div>
-                    <h4 class="font-semibold mb-2">Marcas</h4>
-                    <ul class="space-y-1">
+                {{-- Marcas --}}
+                <div class="ap-sidebar__section">
+                    <h4 class="ap-sidebar__section-title">Marcas</h4>
+                    <ul class="space-y-2">
                         @foreach($brands as $brand)
                             <li>
-                                <label class="flex items-center gap-2">
+                                <label class="ap-sidebar__label">
                                     <input type="checkbox" name="brand[]" value="{{ $brand->id }}"
-                                        {{ collect(request('brand'))->contains($brand->id) ? 'checked' : '' }}>
+                                           class="ap-sidebar__checkbox"
+                                           {{ collect(request('brand'))->contains($brand->id) ? 'checked' : '' }}>
                                     <span>{{ $brand->name }}</span>
                                 </label>
                             </li>
@@ -46,36 +48,37 @@
                 </div>
 
                 {{-- Precio --}}
-                <div>
-                    <h4 class="font-semibold mb-2">Precio</h4>
+                <div class="ap-sidebar__section">
+                    <h4 class="ap-sidebar__section-title">Precio</h4>
                     <div class="flex gap-2">
-                        <input type="number" name="min_price" placeholder="Min"
+                        <input type="number" name="min_price" placeholder="Mín"
                                value="{{ request('min_price') }}"
-                               class="w-full border rounded p-2">
-                        <input type="number" name="max_price" placeholder="Max"
+                               class="ap-sidebar__input">
+                        <input type="number" name="max_price" placeholder="Máx"
                                value="{{ request('max_price') }}"
-                               class="w-full border rounded p-2">
+                               class="ap-sidebar__input">
                     </div>
                 </div>
 
                 {{-- Ordenar --}}
-                <div>
-                    <h4 class="font-semibold mb-2">Ordenar por</h4>
-                    <select name="sort" class="w-full border rounded p-2">
+                <div class="ap-sidebar__section">
+                    <h4 class="ap-sidebar__section-title">Ordenar por</h4>
+                    <select name="sort" class="ap-sidebar__select">
                         <option value="">Por defecto</option>
                         <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Precio: Menor a Mayor</option>
                         <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Precio: Mayor a Menor</option>
                     </select>
                 </div>
 
-                <button class="w-full bg-pink-600 text-white py-2 rounded hover:bg-pink-700">
-                    Aplicar Filtros
-                </button>
+                <div class="pt-2 space-y-2">
+                    <button type="submit" class="ap-sidebar__btn-submit">
+                        Aplicar Filtros
+                    </button>
 
-                <a href="{{ route('shop.index') }}"
-                   class="block text-center bg-gray-200 py-2 rounded hover:bg-gray-300">
-                    Limpiar
-                </a>
+                    <a href="{{ route('shop.index') }}" class="ap-sidebar__btn-clear">
+                        Limpiar Filtros
+                    </a>
+                </div>
 
             </form>
 
@@ -84,30 +87,31 @@
         {{-- Listado de productos --}}
         <section class="md:col-span-3">
 
-            <h2 class="text-2xl font-bold mb-6">Productos</h2>
+            <h2 class="ap-catalog__title">Productos disponibles</h2>
 
             @if($products->count() > 0)
-                <!-- Añadimos el ID 'products-wrapper' para inyectar los nuevos productos -->
                 <div id="products-wrapper" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($products as $product)
                         <x-product-card :product="$product" />
                     @endforeach
                 </div>
 
-                <!-- Gatillo de scroll infinito cargado con la URL inicial paginada y filtrada -->
+                {{-- Gatillo de scroll infinito --}}
                 <div id="infinite-scroll-trigger" class="mt-12 text-center" data-next-page="{{ $products->nextPageUrl() }}">
-                    <div id="loading-spinner" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-pink-600 border-r-transparent hidden" role="status"></div>
+                    <div id="loading-spinner" class="ap-catalog__spinner hidden" role="status"></div>
                 </div>
 
             @else
-                <p class="text-gray-600">No se encontraron productos con los filtros seleccionados.</p>
+                <div class="ap-catalog__empty">
+                    <p>No se encontraron productos con los filtros seleccionados.</p>
+                </div>
             @endif
 
         </section>
 
     </div>
 
-    <!-- Script de Scroll Infinito para la Tienda -->
+    {{-- Script de Scroll Infinito --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const trigger = document.getElementById('infinite-scroll-trigger');
@@ -124,7 +128,7 @@
                     loadMoreProducts();
                 }
             }, {
-                rootMargin: '150px' // Se activa un poco antes para que la experiencia sea fluida
+                rootMargin: '150px'
             });
 
             observer.observe(trigger);
@@ -134,16 +138,11 @@
                 spinner.classList.remove('hidden');
 
                 fetch(nextPageUrl, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
                 .then(response => response.json())
                 .then(data => {
-                    // Inyectamos el HTML de las nuevas tarjetas
                     wrapper.insertAdjacentHTML('beforeend', data.html);
-                    
-                    // Actualizamos la URL para la siguiente página (esta ya incluye los filtros query)
                     nextPageUrl = data.nextPageUrl;
                     
                     if (!nextPageUrl) {
@@ -155,7 +154,7 @@
                     spinner.classList.add('hidden');
                 })
                 .catch(error => {
-                    console.error('Error al cargar más productos en la tienda:', error);
+                    console.error('Error al cargar más productos:', error);
                     isLoading = false;
                     spinner.classList.add('hidden');
                 });

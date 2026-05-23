@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Mary Mystic Stones | Pulseras con piedras naturales')</title>
+    <title>@yield('title', 'Inversiones Rojas 2016 | Repuestos para tu moto')</title>
     <meta name="description" content="@yield('meta_description', 'Pulseras con piedras naturales y energía holística')">
     @yield('meta')
 
@@ -13,6 +13,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -27,7 +33,7 @@
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="site-logo">
                 <span class="logo-symbol">✦</span>
-                Mary Mystic Stones
+                Inversiones Rojas 2016
             </a>
 
             {{-- Desktop nav --}}
@@ -123,8 +129,8 @@
     <footer class="site-footer">
         <div class="footer-inner">
             <div>
-                <p class="footer-logo">Alma de Piedra</p>
-                <p class="footer-tagline">Pulseras con piedras naturales cargadas de energía. Cada pieza es única, como tú.</p>
+                <p class="footer-logo">Inversiones Rojas 2016</p>
+                <p class="footer-tagline">Repuestos para tu moto. Cada pieza es única, como tú.</p>
             </div>
             <div>
                 <p class="footer-heading">Navegar</p>
@@ -146,7 +152,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            © {{ date('Y') }} Alma de Piedra · Todos los derechos reservados
+            © {{ date('Y') }} Inversiones Rojas 2016 · Todos los derechos reservados
         </div>
     </footer>
 

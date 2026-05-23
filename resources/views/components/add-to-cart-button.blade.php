@@ -5,87 +5,6 @@
     $initialQuantity = $cartItem ? $cartItem['quantity'] : 0;
 @endphp
 
-<style>
-    /* ── Add to Cart Button ── */
-    .ap-atc-btn {
-        width: 100%;
-        background: var(--ap-amethyst, #4A2C6E);
-        color: #fff;
-        border: none;
-        border-radius: 2rem;
-        padding: 0.6rem 1rem;
-        font-family: 'DM Sans', sans-serif;
-        font-size: 0.75rem;
-        font-weight: 500;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        transition: background 0.2s, transform 0.15s;
-    }
-    .ap-atc-btn:hover:not(:disabled) {
-        background: var(--ap-amethyst-mid, #6B3F9E);
-        transform: translateY(-1px);
-    }
-    .ap-atc-btn:active:not(:disabled) { transform: scale(0.97); }
-    .ap-atc-btn:disabled { opacity: 0.65; cursor: not-allowed; }
-
-    /* ── Quantity stepper ── */
-    .ap-qty {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: var(--ap-amethyst-pale, #F3EDF9);
-        border-radius: 2rem;
-        padding: 0.25rem;
-        gap: 0.25rem;
-    }
-    .ap-qty__btn {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        border: none;
-        background: #fff;
-        color: var(--ap-amethyst, #4A2C6E);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background 0.15s, transform 0.15s;
-        flex-shrink: 0;
-        box-shadow: 0 1px 4px rgba(74,44,110,0.12);
-    }
-    .ap-qty__btn:hover:not(:disabled) {
-        background: var(--ap-amethyst, #4A2C6E);
-        color: #fff;
-        transform: scale(1.08);
-    }
-    .ap-qty__btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .ap-qty__num {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 1.15rem;
-        font-weight: 600;
-        color: var(--ap-amethyst, #4A2C6E);
-        min-width: 28px;
-        text-align: center;
-    }
-
-    /* ── Spinner ── */
-    .ap-spinner {
-        width: 14px;
-        height: 14px;
-        border: 2px solid rgba(255,255,255,0.4);
-        border-top-color: #fff;
-        border-radius: 50%;
-        animation: ap-spin 0.6s linear infinite;
-        display: inline-block;
-    }
-    @keyframes ap-spin { to { transform: rotate(360deg); } }
-</style>
-
 <div x-data="{
     quantity: {{ $initialQuantity }},
     loading: false,
@@ -161,8 +80,7 @@
                 class="ap-atc-btn">
 
             <template x-if="!loading">
-                <span style="display:flex;align-items:center;gap:.45rem">
-                    {{-- Ícono bolsa --}}
+                <span class="ap-atc-btn__inner">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2"
                          stroke-linecap="round" stroke-linejoin="round">
@@ -170,7 +88,7 @@
                         <line x1="3" y1="6" x2="21" y2="6"/>
                         <path d="M16 10a4 4 0 01-8 0"/>
                     </svg>
-                    Agregar al carrito
+                    Añadir al carrito
                 </span>
             </template>
 
