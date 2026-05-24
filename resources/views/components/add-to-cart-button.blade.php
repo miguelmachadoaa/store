@@ -1,6 +1,7 @@
 @props(['product'])
 
 @php
+    // Asegúrate de que $cartItems venga de tu vista global compartida o controlador
     $cartItem = $cartItems[$product->id] ?? null;
     $initialQuantity = $cartItem ? $cartItem['quantity'] : 0;
 @endphp
