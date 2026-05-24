@@ -1,6 +1,7 @@
 @props(['product'])
 
 @php
+    // Asegúrate de que $cartItems venga de tu vista global compartida o controlador
     $cartItem = $cartItems[$product->id] ?? null;
     $initialQuantity = $cartItem ? $cartItem['quantity'] : 0;
 @endphp
@@ -55,6 +56,7 @@
                 }
             });
             const data = await response.json();
+            
             if (data.success) {
                 this.quantity = 1;
                 ['cart-count', 'cart-count-fab'].forEach(id => {
@@ -64,7 +66,9 @@
                         el.classList.add('scale-125');
                         setTimeout(() => el.classList.remove('scale-125'), 200);
                     }
-            }
+                });
+            } // <-- ¡AQUÍ ESTABA LA LLAVE FALTANTE!
+            
         } catch (error) {
             console.error('Error adding to cart:', error);
         } finally {
@@ -72,11 +76,12 @@
         }
     }
 }" class="mt-3">
+
     <template x-if="quantity === 0">
         <button type="button" @click="addToCart()" :disabled="loading"
             class="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 w-full transition flex items-center justify-center gap-2">
             <span x-show="!loading">Agregar al carrito</span>
-            <span x-show="loading"
+            <span x-show="loading" style="display: none;"
                 class="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
         </button>
     </template>

@@ -23,6 +23,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\Admin\AnalyticsController;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Storage;
@@ -181,6 +182,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::post('/products/search', [\App\Http\Controllers\Admin\PosController::class, 'searchProducts'])->name('products.search');
         Route::post('/orders/create', [\App\Http\Controllers\Admin\PosController::class, 'createOrder'])->name('orders.create');
     });
+
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics.index');
+
+    
 });
 
 // Rutas de Reseñas (Públicas)
