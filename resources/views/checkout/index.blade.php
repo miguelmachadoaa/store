@@ -106,14 +106,30 @@
 
                     <div class="mb-4">
                         <label class="block text-sm text-gray-500 mb-1">Nombre completo</label>
-                        <input type="text" value="{{ $user->name }}" readonly
-                            class="w-full border border-gray-200 rounded-lg p-2.5 text-sm bg-gray-50 text-gray-400">
+                        @if(auth()->check())
+                            <input type="text" value="{{ $user->name }}" readonly
+                                class="w-full border border-gray-200 rounded-lg p-2.5 text-sm bg-gray-50 text-gray-400">
+                        @else
+                            <input type="text" name="name" value="{{ old('name') }}" required placeholder="Juan Pérez"
+                                class="w-full border rounded-lg p-2.5 text-sm @error('name') border-red-400 @else border-gray-200 @enderror">
+                            @error('name')
+                                <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        @endif
                     </div>
 
                     <div class="mb-4">
                         <label class="block text-sm text-gray-500 mb-1">Correo electrónico</label>
-                        <input type="email" value="{{ $user->email }}" readonly
-                            class="w-full border border-gray-200 rounded-lg p-2.5 text-sm bg-gray-50 text-gray-400">
+                        @if(auth()->check())
+                            <input type="email" value="{{ $user->email }}" readonly
+                                class="w-full border border-gray-200 rounded-lg p-2.5 text-sm bg-gray-50 text-gray-400">
+                        @else
+                            <input type="email" name="email" value="{{ old('email') }}" required placeholder="juan@gmail.com"
+                                class="w-full border rounded-lg p-2.5 text-sm @error('email') border-red-400 @else border-gray-200 @enderror">
+                            @error('email')
+                                <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        @endif
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 mb-4">
