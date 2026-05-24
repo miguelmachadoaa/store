@@ -9,6 +9,9 @@
     <meta name="description" content="@yield('meta_description', 'Pulseras con piedras naturales y energía holística')">
     @yield('meta')
 
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
