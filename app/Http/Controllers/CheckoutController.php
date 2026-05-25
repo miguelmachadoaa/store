@@ -6,8 +6,13 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Models\User;
+use App\Models\PaymentReport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
 
 class CheckoutController extends Controller
 {
@@ -19,19 +24,29 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío.');
         }
 
-        $user = auth()->user();
+        // Si el usuario es invitado, pasamos una instancia vacía de User para no romper la vista
+        $user = auth()->user() ?? new User();
 
         return view('checkout.index', compact('cart', 'user'));
     }
 
     public function process(Request $request)
     {
-        $request->validate([
+        // Validación base obligatoria para todos
+        $rules = [
             'phone' => 'required|string|max:20',
             'rif' => 'required|string|max:20',
             'address' => 'required|string',
             'payment' => 'required|string',
-        ]);
+        ];
+
+        // Si es invitado, exigimos nombre y correo electrónico
+        if (!auth()->check()) {
+            $rules['name'] = 'required|string|max:255';
+            $rules['email'] = 'required|email|max:255';
+        }
+
+        $request->validate($rules);
 
         $cart = app()->make(\App\Http\Controllers\CartController::class)->getCartItems();
 
@@ -39,14 +54,29 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío.');
         }
 
-        $user = auth()->user();
+        // Determinar u obtener el usuario asociado a la compra
+        if (auth()->check()) {
+            $user = auth()->user();
+            $user->update([
+                'phone' => $request->phone,
+                'rif' => $request->rif,
+                'address' => $request->address,
+            ]);
+        } else {
+            // Si el correo ya existe en la DB, lo usamos; si no, creamos un usuario "en caliente"
+            $user = User::where('email', $request->email)->first();
 
-        // Actualizar datos del usuario si no los tiene o si han cambiado
-        $user->update([
-            'phone' => $request->phone,
-            'rif' => $request->rif,
-            'address' => $request->address,
-        ]);
+            if (!$user) {
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                    'rif' => $request->rif,
+                    'address' => $request->address,
+                    'password' => Hash::make(Str::random(16)), // Contraseña aleatoria segura
+                ]);
+            }
+        }
 
         $total = 0;
         $totalTaxableBase = 0;
@@ -86,7 +116,7 @@ class CheckoutController extends Controller
             ];
         }
 
-        // Calcular descuento si hay cupón
+        // Calcular descuento si hay cupón en sesión
         $discountAmount = 0;
         $couponId = null;
         if (session()->has('coupon')) {
@@ -99,7 +129,7 @@ class CheckoutController extends Controller
             }
         }
 
-        // Crear la orden
+        // Crear la orden vinculada al usuario
         $order = Order::create([
             'user_id' => $user->id,
             'customer_name' => $user->name,
@@ -116,17 +146,17 @@ class CheckoutController extends Controller
             'discount_amount' => $discountAmount,
         ]);
 
-        // Crear los items de la orden
+        // Crear los items correspondientes
         foreach ($itemsToCreate as $itemData) {
             $itemData['order_id'] = $order->id;
             OrderItem::create($itemData);
         }
 
-        // Vaciar carrito y cupón
+        // Vaciar el carrito físico/sesión y cupones utilizados
         if (auth()->check()) {
-            auth()->user()->cart()->delete(); // Limpia el del DB
+            auth()->user()->cart()->delete(); 
         }
-        session()->forget('cart'); // Limpia el de la sesión
+        session()->forget('cart'); 
         session()->forget('coupon');
 
         return redirect()->route('checkout.success', $order->id);
@@ -136,22 +166,73 @@ class CheckoutController extends Controller
     {
         $order = Order::with('items')->findOrFail($orderId);
 
-        return view('checkout.success', compact('order'));
+        // Generación de links firmados y seguros para el flujo de invitados
+        $viewOrderUrl = URL::signedRoute('guest.order.show', ['orderId' => $order->id]);
+        $reportPaymentUrl = URL::signedRoute('guest.payments.report', ['orderId' => $order->id]);
+
+        return view('checkout.success', compact('order', 'viewOrderUrl', 'reportPaymentUrl'));
     }
 
     public function downloadInvoice($orderId)
     {
         $order = Order::with('items.tax')->findOrFail($orderId);
 
-        // Security check: Only owner or admin can download
-        if (auth()->user()->role !== 'admin' && $order->user_id !== auth()->id()) {
-            abort(403, 'No tienes permiso para ver esta factura.');
+        // Permitir descarga si es admin, el dueño directo logueado, o si posee una firma de URL válida (invitados)
+        if (auth()->check() && (auth()->user()->role === 'admin' || $order->user_id === auth()->id())) {
+            // Autorizado por sesión
+        } else {
+            if (!request()->hasValidSignature()) {
+                abort(403, 'No tienes permiso para ver esta factura.');
+            }
         }
 
         $settings = Setting::first();
-
         $pdf = Pdf::loadView('pdf.invoice', compact('order', 'settings'));
 
         return $pdf->download('Factura_' . $order->id . '.pdf');
+    }
+
+    // =========================================================================
+    // FLUJO PÚBLICO SEGURO PARA CONSULTAS Y REPORTES DE INVITADOS (GUESTS)
+    // =========================================================================
+
+    public function guestViewOrder(Request $request, $orderId)
+    {
+        $order = Order::with('items')->findOrFail($orderId);
+        return view('checkout.view_guest_order', compact('order'));
+    }
+
+    public function guestReportPaymentForm(Request $request, $orderId)
+    {
+        $order = Order::findOrFail($orderId);
+        return view('checkout.report_guest_payment', compact('order'));
+    }
+
+    public function guestStorePaymentReport(Request $request, $orderId)
+    {
+        $order = Order::findOrFail($orderId);
+
+        $request->validate([
+            'amount_bs' => 'required|numeric|min:0.01',
+            'reference_number' => 'required|string',
+            'bank_name' => 'required|string',
+            'payment_date' => 'required|date',
+            'proof_image' => 'nullable|image|max:2048',
+        ]);
+
+        $data = $request->all();
+        $data['order_id'] = $order->id;
+        $data['user_id'] = $order->user_id; 
+        $data['status'] = 'pending';
+
+        if ($request->hasFile('proof_image')) {
+            $data['proof_image'] = $request->file('proof_image')->store('payment_proofs', 'public');
+        }
+
+        PaymentReport::create($data);
+
+        $viewOrderUrl = URL::signedRoute('guest.order.show', ['orderId' => $order->id]);
+
+        return redirect($viewOrderUrl)->with('success', 'El pago ha sido reportado exitosamente. Lo validaremos a la brevedad.');
     }
 }

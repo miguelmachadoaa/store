@@ -23,6 +23,8 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\LinkController;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Storage;
@@ -47,6 +49,7 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/etiqueta/{slug}', [BlogController::class, 'tag'])->name('blog.tag');
+Route::get('/links', [LinkController::class, 'publicIndex'])->name('links.public');
 
 // Services Routes
 Route::get('/servicios', [\App\Http\Controllers\ServiceController::class, 'index'])->name('services.index');
@@ -86,6 +89,27 @@ Route::get('/shop', [ProductController::class, 'shop'])->name('shop.index');
 
 // area clienets
 
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+Route::get('/checkout/success/{orderId}', [CheckoutController::class, 'success'])->name('checkout.success');
+
+// Endpoints firmados de autogestión para compras sin credenciales obligatorias
+Route::get('/pedido/{orderId}/ver', [CheckoutController::class, 'guestViewOrder'])
+    ->name('guest.order.show')
+    ->middleware('signed');
+
+Route::get('/pedido/{orderId}/reportar-pago', [CheckoutController::class, 'guestReportPaymentForm'])
+    ->name('guest.payments.report')
+    ->middleware('signed');
+
+Route::post('/pedido/{orderId}/reportar-pago', [CheckoutController::class, 'guestStorePaymentReport'])
+    ->name('guest.payments.store');
+
+Route::middleware('auth')->group(function () {
+    // Mantén tu ruta de descarga normal aquí; el controlador ya maneja la firma como excepción
+    Route::get('/orders/{orderId}/invoice', [CheckoutController::class, 'downloadInvoice'])->name('orders.invoice');
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -103,11 +127,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
-    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
-    Route::get('/checkout/success/{orderId}', [CheckoutController::class, 'success'])->name('checkout.success');
     Route::get('/orders/{orderId}/invoice', [CheckoutController::class, 'downloadInvoice'])->name('orders.invoice');
 });
+
+
 
 // area admin
 
@@ -181,6 +204,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::post('/products/search', [\App\Http\Controllers\Admin\PosController::class, 'searchProducts'])->name('products.search');
         Route::post('/orders/create', [\App\Http\Controllers\Admin\PosController::class, 'createOrder'])->name('orders.create');
     });
+
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics.index');
+
+    Route::resource('/links', LinkController::class)->except(['show'])->names('admin.links');
+    
 });
 
 // Rutas de Reseñas (Públicas)
