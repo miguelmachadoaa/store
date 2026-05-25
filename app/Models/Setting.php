@@ -18,6 +18,13 @@ class Setting extends Model
         'email',
         'currency_preference',
         'use_brevo',
+        'linktree_logo',
+        'linktree_bg_type',
+        'linktree_bg_color',
+        'linktree_bg_gradient_to',
+        'linktree_bg_image',
+        'linktree_button_bg',
+        'linktree_button_text'
     ];
 
     /**

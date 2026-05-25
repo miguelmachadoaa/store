@@ -24,6 +24,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\LinkController;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Storage;
@@ -48,6 +49,7 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/etiqueta/{slug}', [BlogController::class, 'tag'])->name('blog.tag');
+Route::get('/links', [LinkController::class, 'publicIndex'])->name('links.public');
 
 // Services Routes
 Route::get('/servicios', [\App\Http\Controllers\ServiceController::class, 'index'])->name('services.index');
@@ -205,6 +207,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics.index');
 
+    Route::resource('/links', LinkController::class)->except(['show'])->names('admin.links');
     
 });
 

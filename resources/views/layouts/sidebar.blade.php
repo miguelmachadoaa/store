@@ -115,7 +115,7 @@
 
             {{-- Marketing --}}
             <li
-                x-data="{ open: {{ request()->routeIs('admin.newsletters.*', 'admin.newsletter.*') ? 'true' : 'false' }} }">
+                x-data="{ open: {{ request()->routeIs('admin.newsletters.*', 'admin.newsletter.*', 'admin.links.*') ? 'true' : 'false' }} }">
                 <button @click="open = !open"
                     class="flex items-center justify-between w-full px-4 py-3 hover:bg-gray-100 rounded-lg text-gray-700 font-medium transition">
                     <div class="flex items-center">
@@ -134,9 +134,13 @@
                 <div x-show="open" x-transition class="pl-11 pr-2 space-y-1 mt-1">
                     <a href="{{ route('admin.newsletters.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.newsletters.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Suscriptores</a>
+                    
                     <a href="{{ route('admin.newsletter.form') }}"
-                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.newsletter.form') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Enviar
-                        Email</a>
+                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.newsletter.form') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Enviar Email</a>
+                    
+                    {{-- Nueva opción del Linktree configurable --}}
+                    <a href="{{ route('admin.links.index') }}"
+                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.links.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Linktree (Bio)</a>
                 </div>
             </li>
 
