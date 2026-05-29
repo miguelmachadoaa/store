@@ -70,6 +70,17 @@ class SliderController extends Controller
 
         Slider::create($validated);
 
+        $path = $validated['image'];
+
+        $from = storage_path('app/public/' . $path);
+                $to = public_path('storage/' . $path);
+
+                if (!file_exists(dirname($to))) {
+                    mkdir(dirname($to), 0775, true);
+                }
+
+                copy($from, $to);    
+
         return redirect()->route('sliders.index')
             ->with('success', 'Slider creado exitosamente.');
     }
@@ -115,11 +126,26 @@ class SliderController extends Controller
                 Storage::disk('public')->delete($slider->image);
             }
             $validated['image'] = $request->file('image')->store('sliders', 'public');
+
+            $path = $validated['image'];
+
+             $from = storage_path('app/public/' . $path);
+                $to = public_path('storage/' . $path);
+
+                if (!file_exists(dirname($to))) {
+                    mkdir(dirname($to), 0775, true);
+                }
+
+                copy($from, $to);
         }
 
         $validated['is_active'] = $request->has('is_active');
 
         $slider->update($validated);
+
+      
+
+           
 
         return redirect()->route('sliders.index')
             ->with('success', 'Slider actualizado exitosamente.');

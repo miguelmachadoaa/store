@@ -84,6 +84,26 @@ class SettingController extends Controller
         $setting->fill($data);
         $setting->save();
 
+        $path = $data['linktree_bg_image'];
+        $from = storage_path('app/public/' . $path);
+        $to = public_path('storage/' . $path);
+
+        if (!file_exists(dirname($to))) {
+            mkdir(dirname($to), 0775, true);
+        }
+
+        copy($from, $to);
+
+        $path = $data['logo'];
+        $from = storage_path('app/public/' . $path);
+        $to = public_path('storage/' . $path);
+
+        if (!file_exists(dirname($to))) {
+            mkdir(dirname($to), 0775, true);
+        }
+
+        copy($from, $to);    
+
         // Redirecciona con tu sesión de éxito original
         return redirect()->route('admin.settings.edit')->with('success', 'Configuración actualizada correctamente.');
     }

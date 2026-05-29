@@ -40,7 +40,19 @@ class CategoryAdminController extends Controller
             $data['image'] = $request->file('image')->store('categories', 'public');
         }
 
+        
+
         Category::create($data);
+
+        $path = $data['image'];
+        $from = storage_path('app/public/' . $path);
+        $to = public_path('storage/' . $path);
+
+        if (!file_exists(dirname($to))) {
+            mkdir(dirname($to), 0775, true);
+        }
+
+        copy($from, $to);
 
         return redirect()->route('admin.categories.index')
                         ->with('success', 'Categoría creada exitosamente!');
@@ -79,6 +91,16 @@ class CategoryAdminController extends Controller
             }
             $data['image'] = $request->file('image')->store('categories', 'public');
         }
+
+        $path = $data['image'];
+        $from = storage_path('app/public/' . $path);
+        $to = public_path('storage/' . $path);
+
+        if (!file_exists(dirname($to))) {
+            mkdir(dirname($to), 0775, true);
+        }
+
+        copy($from, $to);
 
         $category->update($data);
 

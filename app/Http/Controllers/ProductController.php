@@ -86,6 +86,17 @@ class ProductController extends Controller
 
         $product = Product::create($validated);
 
+        $path = $validated['image'] ?? null;    
+
+        $from = storage_path('app/public/' . $path);
+                $to = public_path('storage/' . $path);
+
+                if (!file_exists(dirname($to))) {
+                    mkdir(dirname($to), 0775, true);
+                }
+
+                copy($from, $to);    
+
         if ($request->has('categories')) {
             $product->categories()->sync($request->categories);
         }
@@ -98,6 +109,15 @@ class ProductController extends Controller
                     'product_id' => $product->id,
                     'image' => $path,
                 ]);
+
+                $from = storage_path('app/public/' . $path);
+                $to = public_path('storage/' . $path);
+
+                if (!file_exists(dirname($to))) {
+                    mkdir(dirname($to), 0775, true);
+                }
+
+                copy($from, $to);    
             }
         }
 
@@ -163,6 +183,17 @@ class ProductController extends Controller
 
         $product->update($validated);
 
+        $path = $validated['image'] ?? $product->image;
+
+        $from = storage_path('app/public/' . $path);
+        $to = public_path('storage/' . $path);
+
+        if (!file_exists(dirname($to))) {
+            mkdir(dirname($to), 0775, true);
+        }
+
+        copy($from, $to);    
+
         $product->categories()->sync($request->categories ?? []);
 
         if ($request->hasFile('images')) {
@@ -173,6 +204,17 @@ class ProductController extends Controller
                     'product_id' => $product->id,
                     'image' => $path,
                 ]);
+
+                $from = storage_path('app/public/' . $path);
+                $to = public_path('storage/' . $path);
+
+                if (!file_exists(dirname($to))) {
+                    mkdir(dirname($to), 0775, true);
+                }
+
+                copy($from, $to);    
+
+
             }
         }
 
