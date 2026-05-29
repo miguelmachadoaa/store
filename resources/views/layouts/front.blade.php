@@ -32,8 +32,7 @@
 
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="site-logo">
-                <span class="logo-symbol">✦</span>
-                Inversiones Rojas 2016
+                <img src="{{ asset('storage/logo.png') }}" alt="Inversiones Rojas 2016" class="logo-image" width="90"  >
             </a>
 
             {{-- Desktop nav --}}
@@ -129,7 +128,9 @@
     <footer class="site-footer">
         <div class="footer-inner">
             <div>
-                <p class="footer-logo">Inversiones Rojas 2016</p>
+                <p class="footer-logo">
+                    <img src="{{ asset('storage/logo.png') }}" alt="Inversiones Rojas 2016" class="footer-logo-image" width="320">
+                </p>
                 <p class="footer-tagline">Repuestos para tu moto. Cada pieza es única, como tú.</p>
             </div>
             <div>
@@ -144,7 +145,7 @@
             </div>
             <div>
                 <p class="footer-heading">Contacto</p>
-                <p class="footer-contact-line">✉ <a href="mailto:hola@almadepiedra.com">hola@almadepiedra.com</a></p>
+                <p class="footer-contact-line">✉ <a href="mailto:hola@inversionesrojas2016.com">hola@inversionesrojas2016.com</a></p>
                 <p class="footer-contact-line">📞 +58 000 000 0000</p>
                 <p style="margin-top:1rem;font-size:0.78rem;color:rgba(255,255,255,0.3);line-height:1.6">
                     Lun–Vie · 9:00am – 6:00pm
