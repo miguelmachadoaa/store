@@ -1,28 +1,30 @@
 <x-front-layout>
 
-    <div class="max-w-7xl mx-auto pt-6 px-6">
+    {{-- Contenedor del Breadcrumb forzado --}}
+    <div class="ap-breadcrumb-container">
         <x-breadcrumb :items="[['label' => 'Productos']]" />
     </div>
 
-    <div class="max-w-7xl mx-auto py-8 px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+    {{-- Layout unificado: Filtros a la izquierda, Productos a la derecha --}}
+    <div class="ap-catalog-layout">
 
-        {{-- Sidebar de filtros --}}
+        {{-- Sidebar de filtros fijo a la izquierda --}}
         <aside class="ap-sidebar">
-
             <h3 class="ap-sidebar__title">Filtros</h3>
 
-            <form method="GET" action="{{ route('shop.index') }}" class="space-y-6">
+            <form method="GET" action="{{ route('shop.index') }}">
 
                 {{-- Categorías --}}
                 <div class="ap-sidebar__section">
                     <h4 class="ap-sidebar__section-title">Categorías</h4>
-                    <ul class="space-y-2">
+                    <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px;">
                         @foreach($categories as $category)
                             <li>
                                 <label class="ap-sidebar__label">
                                     <input type="radio" name="category" value="{{ $category->id }}"
                                            class="ap-sidebar__radio"
-                                           {{ request('category') == $category->id ? 'checked' : '' }}>
+                                           {{ request('category') == $category->id ? 'checked' : '' }}
+                                           onchange="this.form.submit()">
                                     <span>{{ $category->name }}</span>
                                 </label>
                             </li>
@@ -33,13 +35,14 @@
                 {{-- Marcas --}}
                 <div class="ap-sidebar__section">
                     <h4 class="ap-sidebar__section-title">Marcas</h4>
-                    <ul class="space-y-2">
+                    <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px;">
                         @foreach($brands as $brand)
                             <li>
                                 <label class="ap-sidebar__label">
-                                    <input type="checkbox" name="brand[]" value="{{ $brand->id }}"
+                                    <input type="checkbox" name="brands[]" value="{{ $brand->id }}"
                                            class="ap-sidebar__checkbox"
-                                           {{ collect(request('brand'))->contains($brand->id) ? 'checked' : '' }}>
+                                           {{ in_array($brand->id, (array)request('brands')) ? 'checked' : '' }}
+                                           onchange="this.form.submit()">
                                     <span>{{ $brand->name }}</span>
                                 </label>
                             </li>
@@ -47,77 +50,75 @@
                     </ul>
                 </div>
 
-                {{-- Precio --}}
+                {{-- Rango de Precios --}}
                 <div class="ap-sidebar__section">
                     <h4 class="ap-sidebar__section-title">Precio</h4>
-                    <div class="flex gap-2">
-                        <input type="number" name="min_price" placeholder="Mín"
-                               value="{{ request('min_price') }}"
-                               class="ap-sidebar__input">
-                        <input type="number" name="max_price" placeholder="Máx"
-                               value="{{ request('max_price') }}"
-                               class="ap-sidebar__input">
+                    <div class="ap-sidebar__price-inputs">
+                        <div class="ap-sidebar__price-field">
+                            <span class="ap-sidebar__price-symbol">$</span>
+                            <input type="number" name="min_price" placeholder="Mín" 
+                                   value="{{ request('min_price') }}" class="ap-sidebar__input">
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 13px;">–</span>
+                        <div class="ap-sidebar__price-field">
+                            <span class="ap-sidebar__price-symbol">$</span>
+                            <input type="number" name="max_price" placeholder="Máx" 
+                                   value="{{ request('max_price') }}" class="ap-sidebar__input">
+                        </div>
                     </div>
+                    <button type="submit" class="ap-sidebar__btn-submit">Filtrar precio</button>
                 </div>
 
-                {{-- Ordenar --}}
-                <div class="ap-sidebar__section">
-                    <h4 class="ap-sidebar__section-title">Ordenar por</h4>
-                    <select name="sort" class="ap-sidebar__select">
-                        <option value="">Por defecto</option>
-                        <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Precio: Menor a Mayor</option>
-                        <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Precio: Mayor a Menor</option>
-                    </select>
-                </div>
-
-                <div class="pt-2 space-y-2">
-                    <button type="submit" class="ap-sidebar__btn-submit">
-                        Aplicar Filtros
-                    </button>
-
+                {{-- Botón limpiar filtros si hay alguno activo --}}
+                @if(request()->anyFilled(['category', 'brands', 'min_price', 'max_price']))
                     <a href="{{ route('shop.index') }}" class="ap-sidebar__btn-clear">
-                        Limpiar Filtros
+                        Limpiar filtros
                     </a>
-                </div>
+                @endif
 
             </form>
-
         </aside>
 
-        {{-- Listado de productos --}}
-        <section class="md:col-span-3">
+        {{-- Sección principal de la vitrina comercial --}}
+        <main class="ap-catalog-main">
 
-            <h2 class="ap-catalog__title">Productos disponibles</h2>
+            <div class="ap-catalog__header">
+                <span class="ap-catalog__count">
+                    Mostrando {{ $products->count() }} de {{ $products->total() }} repuestos encontrados
+                </span>
+            </div>
 
-            @if($products->count() > 0)
-                <div id="products-wrapper" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($products as $product)
-                        <x-product-card :product="$product" />
-                    @endforeach
-                </div>
+            {{-- Contenedor dinámico de productos --}}
+            <div id="products-wrapper" class="ap-catalog-grid">
+                @forelse($products as $product)
+                    <x-product-card :product="$product" />
+                @empty
+                    <div class="ap-catalog__empty" style="grid-column: 1 / -1;">
+                        <div class="ap-catalog__empty-icon">🔍</div>
+                        <h4 class="ap-catalog__empty-title">No encontramos resultados</h4>
+                        <p class="ap-catalog__empty-text">Prueba cambiando los filtros seleccionados o la palabra clave.</p>
+                    </div>
+                @endforelse
+            </div>
 
-                {{-- Gatillo de scroll infinito --}}
-                <div id="infinite-scroll-trigger" class="mt-12 text-center" data-next-page="{{ $products->nextPageUrl() }}">
-                    <div id="loading-spinner" class="ap-catalog__spinner hidden" role="status"></div>
-                </div>
-
-            @else
-                <div class="ap-catalog__empty">
-                    <p>No se encontraron productos con los filtros seleccionados.</p>
+            {{-- Trigger para el Scroll Infinito --}}
+            @if($products->hasMorePages())
+                <div id="infinite-scroll-trigger" class="ap-infinite-trigger" data-next-page="{{ $products->nextPageUrl() }}">
+                    <div id="infinite-scroll-spinner" class="ap-spinner-wheel hidden"></div>
                 </div>
             @endif
 
-        </section>
+        </main>
 
     </div>
 
-    {{-- Script de Scroll Infinito --}}
+    {{-- Script JavaScript de Scroll Infinito Adaptado para mantener el Layout --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const trigger = document.getElementById('infinite-scroll-trigger');
+            const spinner = document.getElementById('infinite-scroll-spinner');
             const wrapper = document.getElementById('products-wrapper');
-            const spinner = document.getElementById('loading-spinner');
-            
+
             if (!trigger) return;
 
             let nextPageUrl = trigger.getAttribute('data-next-page');

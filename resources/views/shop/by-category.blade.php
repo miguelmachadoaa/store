@@ -1,31 +1,43 @@
 <x-front-layout>
 
-    <div class="max-w-7xl mx-auto py-12 px-6">
+    <div class="ap-breadcrumb-container">
+        <x-breadcrumb :items="[
+            ['label' => 'Productos', 'url' => route('shop.index')],
+            ['label' => $category->name]
+        ]" />
+    </div>
 
-        <h1 class="text-3xl font-bold mb-6">
-            Productos de {{ $category->name }}
-        </h1>
+    <div class="container-custom" style="padding-top: 20px; padding-bottom: 40px;">
+        
+        <div class="ap-catalog__header">
+            <h1 class="section-title" style="margin-bottom: 0;">Repuestos de <em>{{ $category->name }}</em></h1>
+            <span class="ap-catalog__count">
+                Mostrando {{ $products->count() }} de {{ $products->total() }} artículos
+            </span>
+        </div>
 
         @if($products->count())
-            <!-- Añadimos un ID al contenedor para poder insertar los productos nuevos ahí -->
-            <div id="products-wrapper" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div id="products-wrapper" class="ap-catalog-grid">
                 @foreach($products as $product)
                     <x-product-card :product="$product" />
                 @endforeach
             </div>
 
-            <!-- Este elemento nos sirve de ancla. Cuando sea visible en pantalla, cargará más -->
-            <div id="infinite-scroll-trigger" class="mt-12 text-center" data-next-page="{{ $products->nextPageUrl() }}">
-                <div id="loading-spinner" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-gray-600 border-r-transparent hidden" role="status"></div>
-            </div>
-
+            @if($products->hasMorePages())
+                <div id="infinite-scroll-trigger" class="ap-infinite-trigger" data-next-page="{{ $products->nextPageUrl() }}">
+                    <div id="loading-spinner" class="ap-spinner-wheel hidden"></div>
+                </div>
+            @endif
         @else
-            <p class="text-gray-600">No hay productos disponibles para esta categoria.</p>
+            <div class="ap-catalog__empty">
+                <div class="ap-catalog__empty-icon">📂</div>
+                <h4 class="ap-catalog__empty-title">Sin productos</h4>
+                <p class="ap-catalog__empty-text">No hay repuestos disponibles actualmente para esta categoría.</p>
+            </div>
         @endif
 
     </div>
 
-    <!-- Script para controlar el scroll infinito -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const trigger = document.getElementById('infinite-scroll-trigger');
@@ -37,13 +49,12 @@
             let nextPageUrl = trigger.getAttribute('data-next-page');
             let isLoading = false;
 
-            // El IntersectionObserver vigila cuándo aparece el trigger en la pantalla
             const observer = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting && nextPageUrl && !isLoading) {
                     loadMoreProducts();
                 }
             }, {
-                rootMargin: '100px' // Se activa 100px antes de llegar al fondo absoluto para mejorar la experiencia
+                rootMargin: '150px'
             });
 
             observer.observe(trigger);
@@ -53,20 +64,14 @@
                 spinner.classList.remove('hidden');
 
                 fetch(nextPageUrl, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest' // Esto le dice a Laravel que es una petición AJAX
-                    }
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
                 .then(response => response.json())
                 .then(data => {
-                    // Insertamos las nuevas tarjetas al final del contenedor existente
                     wrapper.insertAdjacentHTML('beforeend', data.html);
-                    
-                    // Actualizamos la URL de la siguiente página
                     nextPageUrl = data.nextPageUrl;
                     
                     if (!nextPageUrl) {
-                        // Si ya no hay más páginas, dejamos de observar el trigger
                         observer.disconnect();
                         trigger.remove();
                     }

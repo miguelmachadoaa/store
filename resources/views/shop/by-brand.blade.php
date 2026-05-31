@@ -1,31 +1,43 @@
 <x-front-layout>
 
-    <div class="max-w-7xl mx-auto py-12 px-6">
+    <div class="ap-breadcrumb-container">
+        <x-breadcrumb :items="[
+            ['label' => 'Productos', 'url' => route('shop.index')],
+            ['label' => $brand->name]
+        ]" />
+    </div>
 
-        <h1 class="text-3xl font-bold mb-6">
-            Productos de {{ $brand->name }}
-        </h1>
+    <div class="container-custom" style="padding-top: 20px; padding-bottom: 40px;">
+
+        <div class="ap-catalog__header">
+            <h1 class="section-title" style="margin-bottom: 0;">Productos de la marca: <em>{{ $brand->name }}</em></h1>
+            <span class="ap-catalog__count">
+                Mostrando {{ $products->count() }} de {{ $products->total() }} artículos
+            </span>
+        </div>
 
         @if($products->count())
-            <!-- Añadimos el ID 'products-wrapper' para meter los nuevos productos aquí -->
-            <div id="products-wrapper" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div id="products-wrapper" class="ap-catalog-grid">
                 @foreach($products as $product)
                     <x-product-card :product="$product" />
                 @endforeach
             </div>
 
-            <!-- Div oculto que detecta cuando el usuario llega al final de la página -->
-            <div id="infinite-scroll-trigger" class="mt-12 text-center" data-next-page="{{ $products->nextPageUrl() }}">
-                <div id="loading-spinner" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-gray-600 border-r-transparent hidden" role="status"></div>
-            </div>
-
+            @if($products->hasMorePages())
+                <div id="infinite-scroll-trigger" class="ap-infinite-trigger" data-next-page="{{ $products->nextPageUrl() }}">
+                    <div id="loading-spinner" class="ap-spinner-wheel hidden"></div>
+                </div>
+            @endif
         @else
-            <p class="text-gray-600">No hay productos disponibles para esta marca.</p>
+            <div class="ap-catalog__empty">
+                <div class="ap-catalog__empty-icon">🏭</div>
+                <h4 class="ap-catalog__empty-title">Sin existencias</h4>
+                <p class="ap-catalog__empty-text">No hay repuestos asociados a esta marca en este momento.</p>
+            </div>
         @endif
 
     </div>
 
-    <!-- Script de Scroll Infinito -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const trigger = document.getElementById('infinite-scroll-trigger');
@@ -42,7 +54,7 @@
                     loadMoreProducts();
                 }
             }, {
-                rootMargin: '100px' // Se activa un poco antes de tocar el fondo total
+                rootMargin: '150px'
             });
 
             observer.observe(trigger);
@@ -52,19 +64,13 @@
                 spinner.classList.remove('hidden');
 
                 fetch(nextPageUrl, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
                 .then(response => response.json())
                 .then(data => {
-                    // Inyectamos el HTML de las nuevas tarjetas de productos
                     wrapper.insertAdjacentHTML('beforeend', data.html);
-                    
-                    // Actualizamos el link de la siguiente página
                     nextPageUrl = data.nextPageUrl;
                     
-                    // Si ya no hay más páginas que cargar, limpiamos el observador
                     if (!nextPageUrl) {
                         observer.disconnect();
                         trigger.remove();
