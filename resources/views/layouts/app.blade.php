@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Laravel Admin') }}</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -15,11 +15,12 @@
     
     @stack('css')
 
-    {{-- Forzamos a nivel de estilos internos que el admin ignore por completo el modo oscuro --}}
+    {{-- Forzamos a nivel de estilos internos que el admin ignore por completo el modo oscuro de Tailwind si estuviera activo --}}
     <style>
         html, body {
             background-color: #f3f4f6 !important; /* bg-gray-100 */
             color: #1f2937 !important;            /* text-gray-800 */
+            font-family: 'Figtree', system-ui, sans-serif !important;
         }
     </style>
 </head>

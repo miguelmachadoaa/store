@@ -5,234 +5,185 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Inversiones Rojas 2016 | Repuestos para tu moto')</title>
-    <meta name="description" content="@yield('meta_description', 'Pulseras con piedras naturales y energía holística')">
+    <title>@yield('title', 'Zolum Shop | Tu estilo de vida, evolucionado')</title>
+    <meta name="description" content="@yield('meta_description', 'Zolum Shop conecta lo último en tendencias con las necesidades de tu hogar, salud y bienestar.')">
     @yield('meta')
 
+    {{-- Tipografía de Retail Limpia e Internacional --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
-
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    {{-- Dentro de front.blade.php --}}
+    @vite(['resources/css/front.css', 'resources/js/app.js'])
 </head>
 
 <body>
 
-    {{-- HEADER --}}
-    <header class="site-header">
-        <div class="header-inner">
+    {{-- Barra superior informativa (Alta conversión) --}}
+    <div class="zolum-top-banner">
+        <span>Delivery GRATIS en compras mayores a $20 en Maracay</span>
+    </div>
 
-            {{-- Logo --}}
-            <a href="{{ route('home') }}" class="site-logo">
-                <img src="{{ asset('storage/logo.png') }}" alt="Inversiones Rojas 2016" class="logo-image" width="90"  >
-            </a>
-
-            {{-- Desktop nav --}}
-            <nav class="desktop-nav">
-                <a href="{{ route('home') }}" class="nav-link">Inicio</a>
-                <a href="{{ route('shop.index') }}" class="nav-link">Tienda</a>
-                <a href="{{ route('blog.index') }}" class="nav-link">Blog</a>
-
-                @auth
-                    @if(auth()->user()->role === 'customer')
-                        <a href="{{ route('customer.dashboard') }}" class="nav-link">Mi Cuenta</a>
-                    @endif
-                    @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}" class="nav-link">Admin</a>
-                    @endif
-                    <form method="POST" action="{{ route('logout') }}" style="display:inline">
-                        @csrf
-                        <button type="submit" class="nav-logout-btn">Salir</button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="nav-link">Ingresar</a>
-                    <a href="{{ route('register') }}" class="nav-btn-primary">Crear cuenta</a>
-                @endauth
-            </nav>
-
-            {{-- Mobile --}}
-            <div class="mobile-actions">
-                <button id="menu-toggle" aria-label="Abrir menú" aria-expanded="false">
-                    <svg id="icon-open" xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+    {{-- HEADER PRINCIPAL (Estilo Madison/Amazon) --}}
+    <header class="zolum-marketplace-header">
+        <div class="zolum-header-container">
+            
+            {{-- Bloque Izquierdo: Botón de Categorías + Logo --}}
+            <div class="zolum-header-left">
+                <button id="menu-toggle" class="zolum-menu-trigger" aria-label="Abrir menú" aria-expanded="false">
+                    <svg class="zolum-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
-                    <svg id="icon-close" xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="display:none">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+                    <span class="zolum-menu-text">Menú</span>
                 </button>
+
+                <a href="{{ route('home') }}" class="zolum-brand-logo">
+                    <img src="{{ asset('storage/logo_zolum.png') }}" alt="Zolum Shop" class="zolum-logo-img">
+                </a>
+            </div>
+
+            {{-- Bloque Central: Barra de búsqueda masiva --}}
+            <div class="zolum-header-center">
+                <form action="{{ route('shop.index') }}" method="GET" class="zolum-search-form">
+                    <input type="text" name="search" placeholder="¿Qué desearías buscar hoy?" class="zolum-search-input" value="{{ request('search') }}">
+                    <button type="submit" class="zolum-search-submit" aria-label="Buscar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
+
+            {{-- Bloque Derecho: Gestión de Cuenta, Rutas y Carrito --}}
+            <div class="zolum-header-right">
+                
+                {{-- Bloque de Autenticación --}}
+                <div class="zolum-account-block">
+                    @auth
+                        <span class="zolum-account-greet">Hola, {{ auth()->user()->name }}</span>
+                        <div class="zolum-account-links">
+                            @if(auth()->user()->role === 'customer')
+                                <a href="{{ route('customer.dashboard') }}" class="zolum-account-action">Mi Cuenta</a>
+                            @elseif(auth()->user()->role === 'admin')
+                                <a href="{{ route('admin.dashboard') }}" class="zolum-account-action-admin">Panel Admin</a>
+                            @endif
+                            <span class="zolum-divider">|</span>
+                            <form method="POST" action="{{ route('logout') }}" class="zolum-inline-form">
+                                @csrf
+                                <button type="submit" class="zolum-logout-link">Salir</button>
+                            </form>
+                        </div>
+                    @else
+                        <span class="zolum-account-greet">Inicia sesión / Regístrate</span>
+                        <div class="zolum-account-links">
+                            <a href="{{ route('login') }}" class="zolum-account-action">Mi cuenta</a>
+                            <span class="zolum-divider">|</span>
+                            <a href="{{ route('register') }}" class="zolum-account-action">Crear cuenta</a>
+                        </div>
+                    @endauth
+                </div>
+
+                {{-- Enlace Directo al Blog --}}
+                <a href="{{ route('blog.index') }}" class="zolum-header-blog-link">
+                    <span>Blog</span>
+                </a>
+
+                {{-- Carrito de Compras Dinámico --}}
+                <a href="{{ route('cart.index') }}" class="zolum-header-cart">
+                    <div class="zolum-cart-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 100 4 2 2 0 000-4z" />
+                        </svg>
+                        <span id="header-cart-count" class="zolum-cart-badge">{{ count($cartItems ?? []) }}</span>
+                    </div>
+                    <span class="zolum-cart-text">Carrito</span>
+                </a>
+
             </div>
         </div>
 
-        {{-- Mobile drawer --}}
-        <div id="mobile-menu" class="hidden">
-            <a href="{{ route('home') }}" class="mobile-nav-link"><span class="mnav-icon">✦</span>Inicio</a>
-            <a href="{{ route('shop.index') }}" class="mobile-nav-link"><span class="mnav-icon">◈</span>Tienda</a>
-            <a href="{{ route('blog.index') }}" class="mobile-nav-link"><span class="mnav-icon">◉</span>Blog</a>
-            @auth
-                @if(auth()->user()->role === 'customer')
-                    <a href="{{ route('customer.dashboard') }}" class="mobile-nav-link"><span class="mnav-icon">◎</span>Mi Cuenta</a>
-                @endif
-                @if(auth()->user()->role === 'admin')
-                    <a href="{{ route('admin.dashboard') }}" class="mobile-nav-link"><span class="mnav-icon">⚙</span>Admin</a>
-                @endif
-                <form method="POST" action="{{ route('logout') }}" style="padding-top:0.75rem">
-                    @csrf
-                    <button type="submit" class="mobile-nav-link" style="background:transparent;border:none;cursor:pointer;width:100%;text-align:left">
-                        <span class="mnav-icon">→</span>Cerrar sesión
-                    </button>
-                </form>
-            @else
-                <a href="{{ route('login') }}" class="mobile-nav-link"><span class="mnav-icon">◐</span>Ingresar</a>
-                <div style="padding-top:1rem">
-                    <a href="{{ route('register') }}" class="nav-btn-primary" style="display:block;text-align:center">Crear cuenta gratis</a>
+        {{-- Menú Drawer Lateral Desplegable (Mobile & Desktop Categorías) --}}
+        <div id="mobile-menu" class="zolum-drawer hidden">
+            <div class="zolum-drawer-overlay"></div>
+            <div class="zolum-drawer-content">
+                <div class="zolum-drawer-header">
+                    <h3>Categorías Zolum Shop</h3>
                 </div>
-            @endauth
+                <nav class="zolum-drawer-nav">
+                    <a href="{{ route('home') }}" class="zolum-drawer-link">Inicio</a>
+                    <a href="{{ route('shop.index') }}" class="zolum-drawer-link">Ver Toda la Tienda</a>
+                    <a href="{{ route('blog.index') }}" class="zolum-drawer-link">Blog & Novedades</a>
+                    <hr class="zolum-drawer-hr">
+                    {{-- Acceso rápido de cuenta en responsive --}}
+                    @auth
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="zolum-drawer-link zolum-text-danger">Cerrar sesión</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="zolum-drawer-link">Ingresar</a>
+                        <a href="{{ route('register') }}" class="zolum-drawer-link font-bold">Registrarse gratis</a>
+                    @endauth
+                </nav>
+            </div>
         </div>
     </header>
 
-    {{-- SLIDER --}}
-    @isset($sliders)
-        <x-slider :sliders="$sliders" />
-    @endisset
-
-    {{-- MARCAS --}}
-    @isset($brands)
-        @if(count($brands) > 0)
-        <div class="brands-section">
-            <div class="brands-scroll">
-                @foreach($brands as $brand)
-                    <div class="brand-item">
-                        <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}">
-                        <p>{{ $brand->name }}</p>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-        @endif
-    @endisset
-
     {{-- CONTENIDO PRINCIPAL --}}
-    <main>
+    <main class="zolum-main-viewport">
         {{ $slot }}
     </main>
 
-    {{-- FOOTER --}}
-    <footer class="site-footer">
-        <div class="footer-inner">
-            <div>
-                <p class="footer-logo">
-                    <img src="{{ asset('storage/logo.png') }}" alt="Inversiones Rojas 2016" class="footer-logo-image" width="320">
-                </p>
-                <p class="footer-tagline">Repuestos para tu moto. Cada pieza es única, como tú.</p>
+    {{-- FOOTER UNIFICADO --}}
+    <footer class="zolum-marketplace-footer">
+        <div class="zolum-footer-container">
+            <div class="zolum-footer-brand">
+                <img src="{{ asset('storage/logo_zolum.png') }}" alt="Zolum Shop" class="zolum-footer-logo" width="180">
+                <p class="zolum-footer-tagline">Tu estilo de vida, evolucionado.</p>
             </div>
-            <div>
-                <p class="footer-heading">Navegar</p>
-                <ul class="footer-links">
-                    <li><a href="{{ route('home') }}">Inicio</a></li>
-                    <li><a href="{{ route('shop.index') }}">Tienda</a></li>
-                    <li><a href="{{ route('blog.index') }}">Blog</a></li>
-                    <li><a href="{{ route('cart.index') }}">Mi carrito</a></li>
-                    <li><a href="/sitemap.xml">Sitemap</a></li>
-                </ul>
-            </div>
-            <div>
-                <p class="footer-heading">Contacto</p>
-                <p class="footer-contact-line">✉ <a href="mailto:hola@inversionesrojas2016.com">hola@inversionesrojas2016.com</a></p>
-                <p class="footer-contact-line">📞 +58 000 000 0000</p>
-                <p style="margin-top:1rem;font-size:0.78rem;color:rgba(255,255,255,0.3);line-height:1.6">
-                    Lun–Vie · 9:00am – 6:00pm
-                </p>
+            <div class="zolum-footer-grid-links">
+                <div>
+                    <p class="zolum-footer-heading">Navegar</p>
+                    <ul class="zolum-footer-links-list">
+                        <li><a href="{{ route('home') }}">Inicio</a></li>
+                        <li><a href="{{ route('shop.index') }}">Tienda</a></li>
+                        <li><a href="{{ route('blog.index') }}">Blog</a></li>
+                        <li><a href="{{ route('cart.index') }}">Mi carrito</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <p class="zolum-footer-heading">Contacto & Soporte</p>
+                    <p class="zolum-footer-info">✉ <a href="mailto:hola@zolumshop.com">hola@zolumshop.com</a></p>
+                    <p class="zolum-footer-info">Lun–Vie · 9:00am – 6:00pm</p>
+                </div>
             </div>
         </div>
-        <div class="footer-bottom">
-            © {{ date('Y') }} Inversiones Rojas 2016 · Todos los derechos reservados
+        <div class="zolum-footer-bottom">
+            © {{ date('Y') }} Zolum Shop · Todos los derechos reservados
         </div>
     </footer>
 
-    {{-- FLOTANTES --}}
-    <div class="floating-actions">
-        {{-- WhatsApp --}}
-        <a href="https://wa.me/584243101775?text=Hola%2C%20quisiera%20m%C3%A1s%20informaci%C3%B3n"
-           target="_blank" rel="noopener noreferrer"
-           class="float-btn" aria-label="Contactar por WhatsApp">
-            <span class="float-btn-label">Escríbenos por WhatsApp</span>
-            <span class="float-btn-circle" style="background:#25D366">
-                <svg width="26" height="26" viewBox="0 0 32 32" fill="white">
-                    <path d="M16 3C9.373 3 4 8.373 4 15c0 2.385.663 4.61 1.807 6.508L4 29l7.747-1.78A12.9 12.9 0 0016 28c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 2c5.523 0 10 4.477 10 10s-4.477 10-10 10a9.94 9.94 0 01-4.934-1.302L10.5 23.5l.854-.197-1.347-5.867-.146.084A9.96 9.96 0 016 15c0-5.523 4.477-10 10-10zm-3.5 5c-.3 0-.8.1-1.2.55-.4.45-1.3 1.3-1.3 3.15s1.35 3.65 1.55 3.9c.2.25 2.6 4.1 6.4 5.55 3.15 1.2 3.8.95 4.5.9.7-.1 2.25-.95 2.55-1.85.3-.9.3-1.7.2-1.85-.1-.15-.35-.25-.7-.4-.35-.2-2.25-1.1-2.6-1.25-.35-.15-.6-.2-.85.2-.25.4-.95 1.2-1.15 1.45-.2.25-.4.3-.75.1-.35-.2-1.5-.55-2.85-1.75a10.7 10.7 0 01-2-2.45c-.2-.35-.02-.55.15-.7.15-.15.35-.4.5-.6.15-.2.2-.35.3-.55.1-.2.05-.4-.03-.55-.1-.15-.85-2.1-1.2-2.85-.3-.7-.6-.6-.85-.6z"/>
-                </svg>
-            </span>
-        </a>
-
-        {{-- Carrito --}}
-        <a href="{{ route('cart.index') }}" class="float-btn" aria-label="Ver carrito">
-            <span class="float-btn-label">Ver carrito</span>
-            <span class="float-btn-circle" style="background:var(--amethyst)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 120 120" fill="none">
-                    <path d="M0 0 L8 0 L22 90 L98 90 L112 30 L18 30" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="38" cy="108" r="10" fill="white"/>
-                    <circle cx="82" cy="108" r="10" fill="white"/>
-                </svg>
-                <span id="cart-count-fab">{{ count($cartItems ?? []) }}</span>
-            </span>
-        </a>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        new Swiper(".mySwiper", {
-            loop: true,
-            autoplay: { delay: 5000, disableOnInteraction: false },
-            pagination: { el: ".swiper-pagination", clickable: true },
-            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-            effect: 'fade',
-            fadeEffect: { crossFade: true },
-        });
-
+        // Lógica limpia nativa para apertura y cierre del Drawer de Categorías
         const menuToggle = document.getElementById('menu-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
-        const iconOpen   = document.getElementById('icon-open');
-        const iconClose  = document.getElementById('icon-close');
 
-        menuToggle.addEventListener('click', () => {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
             const isOpen = !mobileMenu.classList.contains('hidden');
             mobileMenu.classList.toggle('hidden');
-            iconOpen.style.display  = isOpen ? '' : 'none';
-            iconClose.style.display = isOpen ? 'none' : '';
             menuToggle.setAttribute('aria-expanded', String(!isOpen));
         });
 
         document.addEventListener('click', (e) => {
-            if (!menuToggle.contains(e.target) && !mobileMenu.contains(e.target)) {
+            if (!mobileMenu.classList.contains('hidden') && !mobileMenu.contains(e.target) && !menuToggle.contains(e.target)) {
                 mobileMenu.classList.add('hidden');
-                iconOpen.style.display = '';
-                iconClose.style.display = 'none';
                 menuToggle.setAttribute('aria-expanded', 'false');
             }
         });
-
-        function toggleWishlist(productId, btn) {
-            fetch(`/wishlist/toggle/${productId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    btn.classList.toggle('is-wishlisted', data.status === 'added');
-                }
-            });
-        }
     </script>
 
 </body>

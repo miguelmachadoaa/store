@@ -125,14 +125,8 @@
     </div>
 </section>
 
-{{-- ╔══════════════════════╗
-     ║  Latest news         ║
-     ╚══════════════════════╝ --}}
 <x-latest-news />
 
-{{-- ╔══════════════════════╗
-     ║  Promo strip         ║
-     ╚══════════════════════╝ --}}
 <div class="promo-strip">
     <h2>Encuentra tu <em>repuesto</em> perfecto</h2>
     <p>Cada pieza lleva consigo años de calidad y durabilidad</p>
