@@ -27,6 +27,7 @@
                     <div>
                         <p><strong>Nombre:</strong> {{ $order->customer_name }}</p>
                         <p><strong>Email:</strong> {{ $order->customer_email }}</p>
+                        p><strong>Teléfono:</strong> {{ $order->user->phone }}</p>
                         @if($order->user_id)
                             <p><strong>Cliente Registrado:</strong>
                                 <a href="{{ route('admin.customers.show', $order->user_id) }}"
