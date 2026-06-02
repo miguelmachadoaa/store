@@ -12,13 +12,16 @@ class CategoryAdminController extends Controller
 {
     public function index()
     {
-        $categories = Category::latest()->paginate(10);
+        // Usamos with('parent') para evitar el problema de consultas N+1 al mostrar el nombre del padre en el listado
+        $categories = Category::with('parent')->latest()->paginate(10);
         return view('admin.categories.index', compact('categories'));
     }
 
     public function create()
     {
-        return view('admin.categories.create');
+        // Obtenemos solo las categorías raíz para poder asignarlas como padres en el formulario
+        $parentCategories = Category::onlyParents()->get();
+        return view('admin.categories.create', compact('parentCategories'));
     }
 
     public function store(Request $request)
@@ -27,15 +30,18 @@ class CategoryAdminController extends Controller
             'name' => 'required|string|max:255|unique:categories,name',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'is_active' => 'required|boolean',
+            'is_featured' => 'required|boolean', // Validación del nuevo campo
+            'parent_id' => 'nullable|exists:categories,id', // Debe existir en la tabla
         ]);
 
         $data = [
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
             'is_active' => $validated['is_active'],
+            'is_featured' => $validated['is_featured'],
+            'parent_id' => $validated['parent_id'],
         ];
 
-        // Guardar imagen si existe
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('categories', 'public');
         }
@@ -55,26 +61,35 @@ class CategoryAdminController extends Controller
         copy($from, $to);
 
         return redirect()->route('admin.categories.index')
-                        ->with('success', 'Categoría creada exitosamente!');
+                         ->with('success', '¡Categoría creada exitosamente!');
     }
 
     public function edit(Category $category)
     {
-        return view('admin.categories.edit', compact('category'));
+        // Obtenemos las categorías padre, excluyéndose a sí misma para evitar bucles infinitos de jerarquía
+        $parentCategories = Category::onlyParents()
+                                    ->where('id', '!=', $category->id)
+                                    ->get();
+
+        return view('admin.categories.edit', compact('category', 'parentCategories'));
     }
 
-   public function update(Request $request, Category $category)
+    public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'is_active' => 'required|boolean',
+            'is_featured' => 'required|boolean',
+            'parent_id' => 'nullable|exists:categories,id|not_in:' . $category->id, // Evita que sea su propio padre
         ]);
 
         $data = [
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
             'is_active' => $validated['is_active'],
+            'is_featured' => $validated['is_featured'],
+            'parent_id' => $validated['parent_id'],
         ];
 
         // Eliminar imagen si se marcó el checkbox
@@ -85,7 +100,6 @@ class CategoryAdminController extends Controller
 
         // Subir nueva imagen
         if ($request->hasFile('image')) {
-            // Eliminar imagen anterior si existe
             if ($category->image) {
                 Storage::disk('public')->delete($category->image);
             }
@@ -105,12 +119,11 @@ class CategoryAdminController extends Controller
         $category->update($data);
 
         return redirect()->route('admin.categories.index')
-                        ->with('success', 'Categoría actualizada exitosamente!');
+                         ->with('success', '¡Categoría actualizada exitosamente!');
     }
 
     public function destroy(Category $category)
     {
-        // Eliminar imagen si existe
         if ($category->image) {
             Storage::disk('public')->delete($category->image);
         }
@@ -118,6 +131,6 @@ class CategoryAdminController extends Controller
         $category->delete();
 
         return redirect()->route('admin.categories.index')
-                        ->with('success', 'Categoría eliminada exitosamente!');
+                         ->with('success', '¡Categoría eliminada exitosamente!');
     }
 }
