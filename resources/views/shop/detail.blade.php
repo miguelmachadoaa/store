@@ -145,7 +145,7 @@
             <div class="ap-reviews-list">
                 <h3>Opiniones de Compradores</h3>
                 <div style="display: flex; flex-direction: column;">
-                    @forelse($product->reviews()->where('approved', true)->latest()->get() as $review)
+                    @forelse($product->reviews()->where('is_approved', true)->latest()->get() as $review)
                         <div class="ap-review-row">
                             <div class="ap-review-row__meta">
                                 {{ $review->user->name }}
