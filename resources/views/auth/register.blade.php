@@ -1,42 +1,73 @@
 <x-front-layout>
-    <section class="min-h-screen bg-[#0d0e12] flex items-center justify-center py-16 px-4 relative overflow-hidden font-sans">
+    {{-- ============================================================
+         ZOLUM SHOP — REGISTRO DE NUEVAS CUENTAS / ALTA DE USUARIO
+         Sistema visual: Brandbook Zolum (Alineado a index.blade.php)
+         ============================================================ --}}
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
 
-        {{-- Grid decorativo técnico de fondo --}}
-        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f242e_1px,transparent_1px),linear-gradient(to_bottom,#1f242e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-25 pointer-events-none"></div>
-        
-        {{-- Resplandor asimétrico de fondo --}}
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-blue-500/10 rounded-full opacity-30 blur-3xl pointer-events-none"></div>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-        <div class="relative w-full max-w-md">
+    <style>
+        /* Sincronización de variables del Brandbook Global de Zolum */
+        :root {
+            --bg-pure-white:       #FFFFFF;
+            --midnight-blue:       #131921;
+            --midnight-light:      #1A2536;
+            --warm-orange:         #FEBD69;
+            --warm-orange-hover:   #F3A847;
+            --carbon-black:        #0F1111;
+            --border-gray:         #D5D9D9;
+            --text-muted:          #555555;
+            --text-link:           #007185;
+            --success-green:       #007600;
+            --error-red:           #B12704;
+            --font-technical:      'Chakra Petch', sans-serif;
+            --font-display:        'Orbitron', sans-serif;
+            --font-sans:           'DM Sans', sans-serif;
+            --radius:              4px;
+        }
 
-            {{-- Card de estilo Industrial / Terminal --}}
-            <div class="bg-[#14161d] border border-[#262b36] rounded-sm shadow-2xl overflow-hidden">
+        .zl-font-display { font-family: var(--font-display); }
+        .zl-font-technical { font-family: var(--font-technical); }
+        .zl-font-sans { font-family: var(--font-sans); }
+    </style>
 
-                {{-- Barra de acento tecnológico superior (Racing Blue) --}}
-                <div class="h-1 w-full bg-blue-600 shadow-[0_2px_10px_rgba(37,99,235,0.5)]"></div>
+    <section class="min-h-[80vh] bg-[#F4F6F6] flex items-center justify-center py-16 px-4 zl-font-sans">
 
-                <div class="px-8 pt-10 pb-10">
+        <div class="relative w-full max-w-lg"> {{-- Cambiado a max-w-lg para dar más holgura a las contraseñas en paralelo --}}
+
+            {{-- Card de estilo Zolum (Limpio con Bordes e Identidad Corporativa) --}}
+            <div class="bg-white border border-[#D5D9D9] rounded-[4px] shadow-[0_1px_4px_rgba(0,0,0,.08),0_2px_12px_rgba(0,0,0,.04)] overflow-hidden">
+
+                {{-- Barra de acento corporativo superior (Midnight Blue) --}}
+                <div class="h-1.5 w-full bg-[#131921]"></div>
+
+                <div class="px-8 pt-8 pb-10">
 
                     {{-- Header / Logotipo --}}
-                    <div class="text-center mb-8">
-                        <div class="inline-flex items-center justify-center w-12 h-12 bg-[#1b1e26] border border-[#262b36] rounded-sm mb-4 tracking-wider text-xl font-bold text-blue-500 shadow-inner [font-family:'Orbitron',sans-serif]">
-                            REG
+                    <div class="text-center mb-6">
+                        <div class="inline-flex items-center justify-center w-12 h-12 bg-[#131921] border border-[#D5D9D9] rounded-[4px] mb-3 tracking-wider text-lg font-bold text-[#FEBD69] shadow-sm zl-font-display">
+                            ZR
                         </div>
-                        <h1 class="text-xl font-bold text-white tracking-wider uppercase [font-family:'Orbitron',sans-serif]">
-                            Initialize Profile
+                        <h1 class="text-xl font-bold text-[#131921] tracking-wide uppercase zl-font-display">
+                            Crear Cuenta
                         </h1>
-                        <p class="text-gray-400 text-xs mt-1.5 uppercase tracking-widest font-mono">
-                            Register new terminal identity
+                        <p class="text-[#555555] text-[11px] mt-1 uppercase tracking-widest zl-font-technical font-semibold">
+                            Registrar nueva identidad de cliente
                         </p>
                     </div>
 
-                    {{-- Manejo de Errores del Sistema --}}
+                    {{-- Alertas de Error del Sistema (Sincronizado con zc-alert--error) --}}
                     @if ($errors->any())
-                        <div class="mb-6 bg-red-950/40 border border-red-800/60 text-red-400 text-xs rounded-sm p-4 font-mono">
-                            <div class="flex items-center gap-2 font-bold mb-1 uppercase tracking-wider text-red-500">
-                                <span>⚠️</span> Registration_Error:
+                        <div class="mb-5 bg-[#FEF0ED] border border-[#F5C6BB] text-[#B12704] text-[13px] rounded-[4px] p-4 zl-font-technical font-semibold">
+                            <div class="flex items-center gap-2 font-bold mb-1.5 uppercase tracking-wider">
+                                <span class="bg-[#B12704] text-white text-[10px] px-1.5 py-0.5 rounded-[2px]">Error</span> 
+                                Error de registro:
                             </div>
-                            <ul class="list-disc list-inside space-y-1 opacity-90">
+                            <ul class="list-disc list-inside space-y-0.5 opacity-95 mt-1 font-normal font-sans text-xs">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -45,99 +76,87 @@
                     @endif
 
                     {{-- Formulario --}}
-                    <form action="{{ route('register') }}" method="POST" class="space-y-5 font-mono">
+                    <form action="{{ route('register') }}" method="POST" class="space-y-4">
                         @csrf
 
                         {{-- Input: Nombre Completo --}}
                         <div>
-                            <label for="name" class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2 [font-family:'Orbitron',sans-serif]">
-                                Operator Full Name
+                            <label for="name" class="block text-[11px] font-bold text-[#555555] uppercase tracking-wider mb-1.5 zl-font-technical">
+                                Nombre Completo
                             </label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-3 flex items-center text-gray-500 text-sm pointer-events-none">
-                                    [FN]
-                                </span>
                                 <input
                                     type="text"
                                     id="name"
                                     name="name"
                                     value="{{ old('name') }}"
-                                    placeholder="John Doe"
+                                    placeholder="Juan Pérez"
                                     required
                                     autofocus
-                                    class="w-full pl-12 pr-4 py-2.5 bg-[#1b1e26] border border-[#262b36] rounded-sm text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition duration-150 @error('name') border-red-500 focus:ring-red-500 @enderror"
+                                    class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] text-sm text-[#0F1111] placeholder-[#B0B0B0] focus:outline-none focus:border-[#FEBD69] focus:ring-1 focus:ring-[#FEBD69] transition duration-150 @error('name') border-[#B12704] focus:ring-[#B12704] @enderror"
                                 >
                             </div>
                         </div>
 
                         {{-- Input: Email --}}
                         <div>
-                            <label for="email" class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2 [font-family:'Orbitron',sans-serif]">
-                                Assigned Email Address
+                            <label for="email" class="block text-[11px] font-bold text-[#555555] uppercase tracking-wider mb-1.5 zl-font-technical">
+                                Dirección de Correo Electrónico
                             </label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-3 flex items-center text-gray-500 text-sm pointer-events-none">
-                                    [ID]
-                                </span>
                                 <input
                                     type="email"
                                     id="email"
                                     name="email"
                                     value="{{ old('email') }}"
-                                    placeholder="operator@company.com"
+                                    placeholder="ejemplo@zolum.com"
                                     required
-                                    class="w-full pl-12 pr-4 py-2.5 bg-[#1b1e26] border border-[#262b36] rounded-sm text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition duration-150 @error('email') border-red-500 focus:ring-red-500 @enderror"
+                                    class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] text-sm text-[#0F1111] placeholder-[#B0B0B0] focus:outline-none focus:border-[#FEBD69] focus:ring-1 focus:ring-[#FEBD69] transition duration-150 @error('email') border-[#B12704] focus:ring-[#B12704] @enderror"
                                 >
                             </div>
                         </div>
 
-                        {{-- Contenedor de Contraseñas --}}
+                        {{-- Contenedor de Contraseñas (Dos columnas adaptables) --}}
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                             {{-- Password --}}
                             <div>
-                                <label for="password" class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2 [font-family:'Orbitron',sans-serif]">
-                                    Access Key
+                                <label for="password" class="block text-[11px] font-bold text-[#555555] uppercase tracking-wider mb-1.5 zl-font-technical">
+                                    Contraseña de Acceso
                                 </label>
                                 <div class="relative">
-                                    <span class="absolute inset-y-0 left-3 flex items-center text-gray-500 text-sm pointer-events-none">
-                                        ***
-                                    </span>
                                     <input
                                         type="password"
                                         id="password"
                                         name="password"
                                         placeholder="••••••••"
                                         required
-                                        class="w-full pl-12 pr-4 py-2.5 bg-[#1b1e26] border border-[#262b36] rounded-sm text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition duration-150 @error('password') border-red-500 focus:ring-red-500 @enderror"
+                                        class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] text-sm text-[#0F1111] placeholder-[#B0B0B0] focus:outline-none focus:border-[#FEBD69] focus:ring-1 focus:ring-[#FEBD69] transition duration-150 @error('password') border-[#B12704] focus:ring-[#B12704] @enderror"
                                     >
                                 </div>
                             </div>
 
                             {{-- Confirm Password --}}
                             <div>
-                                <label for="password_confirmation" class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2 [font-family:'Orbitron',sans-serif]">
-                                    Confirm Key
+                                <label for="password_confirmation" class="block text-[11px] font-bold text-[#555555] uppercase tracking-wider mb-1.5 zl-font-technical">
+                                    Confirmar Contraseña
                                 </label>
                                 <div class="relative">
-                                    <span class="absolute inset-y-0 left-3 flex items-center text-gray-500 text-sm pointer-events-none">
-                                        ✓✓
-                                    </span>
                                     <input
                                         type="password"
                                         id="password_confirmation"
                                         name="password_confirmation"
                                         placeholder="••••••••"
                                         required
-                                        class="w-full pl-12 pr-4 py-2.5 bg-[#1b1e26] border border-[#262b36] rounded-sm text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition duration-150"
+                                        class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] text-sm text-[#0F1111] placeholder-[#B0B0B0] focus:outline-none focus:border-[#FEBD69] focus:ring-1 focus:ring-[#FEBD69] transition duration-150"
                                     >
                                 </div>
                             </div>
                         </div>
 
                         {{-- Sugerencia de Requisitos --}}
-                        <p class="text-[11px] text-gray-500 -mt-2 uppercase tracking-wide">
-                            Requirement: Min 8 alphanumeric characters.
+                        <p class="text-[10px] text-[#555555] font-semibold tracking-wide uppercase zl-font-technical">
+                            Requisito: Mínimo 8 caracteres alfanuméricos.
                         </p>
 
                         {{-- Checkbox: Términos y Condiciones --}}
@@ -147,57 +166,57 @@
                                 id="terms"
                                 name="terms"
                                 required
-                                class="mt-0.5 w-3.5 h-3.5 bg-[#1b1e26] border-[#262b36] text-blue-600 rounded-sm focus:ring-blue-500 focus:ring-offset-0 focus:bg-[#1b1e26]"
+                                class="mt-0.5 w-3.5 h-3.5 bg-white border-[#D5D9D9] text-[#131921] rounded-[2px] focus:ring-[#FEBD69] focus:ring-offset-0"
                             >
-                            <label for="terms" class="text-xs text-gray-400 leading-snug uppercase tracking-wide select-none">
-                                I authorize the
-                                <a href="#" class="text-blue-500 font-bold hover:underline">Terms of Protocol</a>
-                                &
-                                <a href="#" class="text-blue-500 font-bold hover:underline">Data Protection</a>
+                            <label for="terms" class="text-xs text-[#131921] font-medium leading-snug select-none">
+                                Autorizo y acepto los 
+                                <a href="#" class="text-[#007185] font-bold hover:text-[#005F70] hover:underline transition">Términos del Protocolo</a>
+                                y la
+                                <a href="#" class="text-[#007185] font-bold hover:text-[#005F70] hover:underline transition">Protección de Datos</a>.
                             </label>
                         </div>
 
-                        {{-- Banner de Beneficios del Sistema --}}
-                        <div class="bg-[#1b1e26] border border-[#262b36] rounded-sm px-4 py-3 flex items-center gap-3">
-                            <span class="text-blue-500 text-lg">✦</span>
+                        {{-- Banner de Beneficios del Sistema (Estilo micro-información corporativa) --}}
+                        <div class="bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] px-4 py-3 flex items-center gap-3">
+                            <span class="text-[#FEBD69] text-base font-bold">✦</span>
                             <div>
-                                <p class="text-[11px] font-bold text-gray-300 uppercase tracking-wider [font-family:'Orbitron',sans-serif]">System Perks Enabled</p>
-                                <p class="text-[10px] text-gray-500 mt-0.5 uppercase tracking-wide leading-relaxed">Secure data link · Live environment monitoring · Full log tracking</p>
+                                <p class="text-[11px] font-bold text-[#131921] uppercase tracking-wider zl-font-display">Beneficios de Cuenta Activa</p>
+                                <p class="text-[10px] text-[#555555] mt-0.5 uppercase tracking-wide leading-relaxed font-semibold zl-font-technical">Enlace de datos cifrado · Seguimiento de pedidos · Historial completo</p>
                             </div>
                         </div>
 
-                        {{-- Botón de Registro --}}
+                        {{-- Botón de Acción Principal (Sincronizado con .zc-checkout-btn) --}}
                         <button
                             type="submit"
-                            class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-3 px-4 rounded-sm transition duration-150 text-xs tracking-widest uppercase shadow-[0_4px_12px_rgba(37,99,235,0.15)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.3)] [font-family:'Orbitron',sans-serif]"
+                            class="w-full bg-[#FEBD69] hover:bg-[#F3A847] border border-[#A88734] text-[#0F1111] font-bold py-2.5 px-4 rounded-[4px] transition duration-150 text-xs tracking-wide uppercase zl-font-display"
                         >
-                            Execute Registration
+                            Ejecutar Registro
                         </button>
                     </form>
 
                     {{-- Divisor Técnico --}}
-                    <div class="flex items-center gap-3 my-6">
-                        <div class="flex-1 h-px bg-[#262b36]"></div>
-                        <span class="text-[10px] text-gray-500 font-mono uppercase tracking-widest">OR</span>
-                        <div class="flex-1 h-px bg-[#262b36]"></div>
+                    <div class="flex items-center gap-3 my-5">
+                        <div class="flex-1 h-px bg-[#E5E7EB]"></div>
+                        <span class="text-[10px] text-[#555555] font-semibold zl-font-technical uppercase tracking-widest">O</span>
+                        <div class="flex-1 h-px bg-[#E5E7EB]"></div>
                     </div>
 
                     {{-- Enlace de Login --}}
-                    <p class="text-center text-xs text-gray-400 font-mono">
-                        Profile already active?
-                        <a href="{{ route('login') }}" class="text-blue-500 font-bold hover:text-blue-400 transition hover:underline block mt-1.5 [font-family:'Orbitron',sans-serif] uppercase tracking-wider">
-                            Return to Authentication
+                    <p class="text-center text-xs text-[#555555]">
+                        ¿Ya posees un perfil activo?
+                        <a href="{{ route('login') }}" class="text-[#007185] font-bold hover:text-[#005F70] transition hover:underline block mt-1 zl-font-technical uppercase tracking-wider text-[11px]">
+                            Volver al Inicio de Sesión
                         </a>
                     </p>
 
                 </div>
             </div>
 
-            {{-- Badges de Validación Técnicos --}}
-            <div class="mt-6 flex items-center justify-center gap-5 text-[10px] text-gray-500 font-mono uppercase tracking-wider">
-                <span class="flex items-center gap-1.5"><span class="text-blue-500">■</span> REG_SECURE</span>
-                <span class="flex items-center gap-1.5"><span class="text-blue-500">■</span> ZERO_SPAM_FILTER</span>
-                <span class="flex items-center gap-1.5"><span class="text-blue-500">■</span> PUBLIC_NODE</span>
+            {{-- Badges de Validación de Confianza (Estilo Micro-confianza del Carrito) --}}
+            <div class="mt-6 flex items-center justify-center gap-5 text-[10px] text-[#555555] font-semibold zl-font-technical uppercase tracking-wider">
+                <span class="flex items-center gap-1"><span class="text-[#007600]">🔒</span> REG_SECURE</span>
+                <span class="flex items-center gap-1"><span class="text-[#007600]">🛡️</span> PRIVACY_OK</span>
+                <span class="flex items-center gap-1"><span class="text-[#007600]">✔️</span> LIVE_NODE</span>
             </div>
 
         </div>

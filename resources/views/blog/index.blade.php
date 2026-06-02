@@ -1,76 +1,101 @@
 <x-front-layout>
 
-<div class="max-w-7xl mx-auto py-12 px-6 min-h-screen bg-[#0d0e12] text-gray-300 relative font-sans">
-    
-    {{-- Grid técnico de fondo --}}
-    <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f242e_1px,transparent_1px),linear-gradient(to_bottom,#1f242e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-10 pointer-events-none"></div>
+<div style="background-color: var(--bg-pure-white); min-height: 100vh; padding: 3rem 1.5rem; color: var(--carbon-black); box-sizing: border-box;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        
+        {{-- Encabezado del Blog (Estilo idéntico a cat-section__inner) --}}
+        <div style="margin-bottom: 3rem; text-align: left; border-bottom: 1px solid var(--border-gray); padding-bottom: 1.5rem;">
+            <p class="zl-font-technical" style="font-size: 11px; color: var(--warm-orange); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.5rem 0;">
+                Artículos & Documentación
+            </p>
+            <h1 class="zl-font-display" style="font-size: 28px; font-weight: 700; color: var(--midnight-blue); margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                Technical_Archive / <span style="font-style: italic; font-weight: 400; text-transform: lowercase; color: var(--warm-orange);">blog</span>
+            </h1>
+        </div>
 
-    {{-- Encabezado del Blog --}}
-    <div class="border-b border-[#262b36] pb-6 mb-10 relative z-10">
-        <h1 class="text-3xl font-bold uppercase tracking-wider text-white [font-family:'Orbitron',sans-serif]">
-            Technical_Archive / Blog
-        </h1>
-        <p class="text-xs text-gray-500 uppercase tracking-widest font-mono mt-1">
-            Index of published articles, teardowns and documentation
-        </p>
-    </div>
+        {{-- Grid de Artículos (Réplica limpia de cat-grid / products-grid) --}}
+        <div style="display: flex; flex-wrap: wrap; gap: 2rem;">
+            @foreach($posts as $post)
+                <a href="{{ route('blog.show', $post->slug) }}" 
+                   class="blog-clean-card"
+                   style="flex: 1 1 320px; max-width: calc(33.333% - 1.35rem); min-width: 290px; display: flex; flex-direction: column; background-color: #FFFFFF; border: 1px solid var(--border-gray); border-radius: 4px; overflow: hidden; text-decoration: none; color: inherit; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.2s;"
+                   onmouseover="this.style.borderColor='var(--warm-orange)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';" 
+                   onmouseout="this.style.borderColor='var(--border-gray)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)';"
+                >
+                   
+                    {{-- Imagen del Post --}}
+                    @if($post->image)
+                        <div style="height: 200px; width: 100%; overflow: hidden; background-color: #FAFAFA; border-bottom: 1px solid var(--border-gray);">
+                            <img src="{{ asset('storage/' . $post->image) }}" 
+                                 style="height: 100%; width: 100%; object-fit: cover; transition: transform 0.3s;"
+                                 onmouseover="this.style.transform='scale(1.02)'"
+                                 onmouseout="this.style.transform='scale(1)'">
+                        </div>
+                    @else
+                        {{-- Placeholder limpio --}}
+                        <div class="zl-font-technical" style="height: 200px; width: 100%; background-color: #F3F4F6; border-bottom: 1px solid var(--border-gray); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">
+                            ⚙️ Sin imagen de registro
+                        </div>
+                    @endif
 
-    {{-- Grid de Artículos --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-        @foreach($posts as $post)
-            <a href="{{ route('blog.show', $post->slug) }}" 
-               class="flex flex-col bg-[#14161d] border border-[#262b36] rounded-sm overflow-hidden hover:border-blue-500/50 transition duration-200 group h-full shadow-2xl">
-                
-                {{-- Contenedor de Imagen con Filtro --}}
-                @if($post->image)
-                    <div class="h-48 w-full overflow-hidden relative border-b border-[#262b36]">
-                        <div class="absolute inset-0 bg-blue-500/5 mix-blend-color z-10 pointer-events-none"></div>
-                        <img src="{{ asset('storage/' . $post->image) }}" 
-                             class="h-full w-full object-cover filter grayscale contrast-125 group-hover:scale-105 transition duration-300">
+                    {{-- Cuerpo del Post --}}
+                    <div style="padding: 1.5rem; display: flex; flex-direction: column; flex: 1;">
+                        <span class="zl-font-technical" style="text-transform: uppercase; font-size: 10px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; margin-bottom: 0.5rem; display: block;">
+                            Publicado // {{ $post->created_at->format('d.m.Y') }}
+                        </span>
+
+                        <h2 class="zl-font-display" style="font-size: 16px; font-weight: 700; color: var(--midnight-blue); text-transform: uppercase; letter-spacing: 0.3px; line-height: 1.4; margin: 0 0 0.75rem 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 44px;">
+                            {{ $post->title }}
+                        </h2>
+
+                        <p style="font-size: 13px; color: #556173; margin: 0; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; text-align: left;">
+                            {{ $post->excerpt }}
+                        </p>
+
+                        {{-- Metadata Inferior --}}
+                        <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-gray); display: flex; align-items: center; justify-content: space-between;">
+                            <span class="zl-font-technical" style="font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">
+                                Estado: <span style="color: var(--success-green);">Disponible</span>
+                            </span>
+                            <span class="zl-font-technical" style="font-size: 11px; text-transform: uppercase; color: var(--warm-orange); font-weight: 700; display: inline-flex; align-items: center; gap: 2px;">
+                                Leer artículo <span style="font-size: 12px;">→</span>
+                            </span>
+                        </div>
                     </div>
-                @else
-                    {{-- Placeholder por si el post no tiene imagen --}}
-                    <div class="h-48 w-full bg-[#1b1e26] border-b border-[#262b36] flex items-center justify-center font-mono text-[10px] text-gray-600 uppercase tracking-widest">
-                        Null_Image_Asset
-                    </div>
-                @endif
+                </a>
+            @endforeach
+        </div>
 
-                {{-- Cuerpo del Post --}}
-                <div class="p-5 flex flex-col flex-1">
-                    <span class="text-[9px] font-mono text-blue-500 uppercase tracking-widest mb-2 block">
-                        Log_File // {{ $post->created_at->format('Y.m.d') }}
-                    </span>
-
-                    <h2 class="text-lg font-bold text-white uppercase tracking-wide group-hover:text-blue-400 transition duration-150 line-clamp-2 [font-family:'Orbitron',sans-serif]">
-                        {{ $post->title }}
-                    </h2>
-
-                    <p class="text-xs text-gray-400 font-mono mt-3 line-clamp-4 leading-relaxed flex-1">
-                        {{ $post->excerpt }}
-                    </p>
-
-                    {{-- Footer metadata interna --}}
-                    <div class="mt-6 pt-3 border-t border-[#1f242e] flex items-center justify-between font-mono text-[10px] text-gray-500 uppercase tracking-wider">
-                        <span>Status: <span class="text-emerald-500">Readable</span></span>
-                        <span class="text-blue-500 font-bold group-hover:underline">[Execute]</span>
-                    </div>
-                </div>
-            </a>
-        @endforeach
-    </div>
-
-    {{-- Contenedor de Paginación --}}
-    <div class="mt-12 pt-6 border-t border-[#262b36] relative z-10 font-mono text-xs text-gray-400 pagination-dark">
-        {{ $posts->links() }}
+        {{-- Contenedor de Paginación --}}
+        <div class="pagination-clean-container" style="margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border-gray);">
+            {{ $posts->links() }}
+        </div>
     </div>
 </div>
 
-{{-- Estilos rápidos para forzar a los botones de paginación nativos de Tailwind (si usas los de Breeze) a verse oscuros --}}
+{{-- Forzar estilos limpios en la paginación estándar de Laravel --}}
 <style>
-    .pagination-dark nav svg { fill: #9ca3af; }
-    .pagination-dark nav [aria-current="page"] span { background-color: #2563eb !important; border-color: #2563eb !important; color: white !important; }
-    .pagination-dark nav a, .pagination-dark nav span { background-color: #14161d !important; border-color: #262b36 !important; color: #9ca3af !important; border-radius: 2px !important; }
-    .pagination-dark nav a:hover { border-color: #3b82f6 !important; color: white !important; }
+    .pagination-clean-container nav svg { 
+        fill: var(--carbon-black) !important; 
+    }
+    .pagination-clean-container nav [aria-current="page"] span { 
+        background-color: var(--midnight-blue) !important; 
+        border-color: var(--midnight-blue) !important; 
+        color: #FFFFFF !important; 
+        font-weight: 700 !important;
+    }
+    .pagination-clean-container nav a, 
+    .pagination-clean-container nav span { 
+        background-color: #FFFFFF !important; 
+        border-color: var(--border-gray) !important; 
+        color: var(--carbon-black) !important; 
+        border-radius: 4px !important; 
+        font-size: 12px;
+    }
+    .pagination-clean-container nav a:hover { 
+        border-color: var(--warm-orange) !important; 
+        color: var(--warm-orange) !important; 
+    }
 </style>
 
 </x-front-layout>

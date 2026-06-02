@@ -1,83 +1,152 @@
 <x-customer-layout>
-    <div class="bg-white shadow rounded-lg p-6 border border-gray-100 max-w-2xl mx-auto">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Reportar Pago</h2>
+    <div style="background-color: var(--bg-pure-white); border: 1px solid var(--border-gray); border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; color: var(--carbon-black); max-width: 720px; margin: 0 auto;">
+        
+        {{-- Barra de acento superior de la marca --}}
+        <div style="height: 6px; width: 100%; background-color: var(--midnight-blue);"></div>
 
-        <form action="{{ route('customer.payments.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-
-            <div class="mb-4">
-                <label class="block font-semibold mb-1">Seleccionar Orden</label>
-                <select name="order_id" class="w-full border rounded-lg p-2 @error('order_id') border-red-500 @enderror"
-                    required>
-                    <option value="">Seleccione una orden pendiente</option>
-                    @foreach($orders as $order)
-                        <option value="{{ $order->id }}" {{ old('order_id') == $order->id ? 'selected' : '' }}>
-                            Orden #{{ $order->id }} - Bs. {{ number_format($order->total_bs, 2) }}
-                            ({{ $order->created_at->format('d/m/Y') }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('order_id')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
+        <div style="padding: 2rem;">
+            
+            {{-- Encabezado del Módulo --}}
+            <div style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
+                <h2 class="zl-font-display" style="font-size: 22px; font-weight: 700; color: var(--midnight-blue); margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                    Reportar Pago
+                </h2>
+                <p class="zl-font-technical" style="font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0.25rem 0 0 0;">
+                    Formulario oficial de notificación y registro de transferencias comerciales
+                </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block font-semibold mb-1">Monto Pagado (BS)</label>
-                    <input type="number" step="0.01" name="amount_bs" value="{{ old('amount_bs') }}"
-                        class="w-full border rounded-lg p-2 @error('amount_bs') border-red-500 @enderror" required>
-                    @error('amount_bs')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            {{-- Formulario de Reporte --}}
+            <form action="{{ route('customer.payments.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
+                {{-- Campo: Seleccionar Orden --}}
+                <div style="margin-bottom: 1.25rem;">
+                    <label class="zl-font-technical" style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--carbon-black); margin-bottom: 0.5rem;">
+                        Seleccionar Orden Pendiente
+                    </label>
+                    <select name="order_id" 
+                            style="width: 100%; box-sizing: border-box; border: 1px solid {{ $errors->has('order_id') ? 'var(--error-red)' : 'var(--border-gray)' }}; border-radius: 4px; padding: 0.65rem 0.75rem; font-size: 14px; color: var(--carbon-black); background-color: #FFFFFF; cursor: pointer; transition: border-color 0.2s;"
+                            onfocus="this.style.borderColor='var(--midnight-blue)';" 
+                            onblur="this.style.borderColor='{{ $errors->has('order_id') ? 'var(--error-red)' : 'var(--border-gray)' }}';"
+                            required>
+                        <option value="">Seleccione una orden en espera de conciliación</option>
+                        @foreach($orders as $order)
+                            <option value="{{ $order->id }}" {{ old('order_id') == $order->id ? 'selected' : '' }}>
+                                Orden #{{ $order->id }} — Bs. {{ number_format($order->total_bs, 2) }} ({{ $order->created_at->format('d/m/Y') }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('order_id')
+                        <p class="zl-font-technical" style="color: var(--error-red); font-size: 11px; font-weight: 600; margin: 0.35rem 0 0 0; text-transform: uppercase;">
+                            ⚠ {{ $message }}
+                        </p>
                     @enderror
                 </div>
-                <div>
-                    <label class="block font-semibold mb-1">Número de Referencia</label>
-                    <input type="text" name="reference_number" value="{{ old('reference_number') }}"
-                        class="w-full border rounded-lg p-2 @error('reference_number') border-red-500 @enderror"
-                        required>
-                    @error('reference_number')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block font-semibold mb-1">Banco Emisor</label>
-                    <input type="text" name="bank_name" value="{{ old('bank_name') }}"
-                        class="w-full border rounded-lg p-2 @error('bank_name') border-red-500 @enderror" required
-                        placeholder="Ej: Banesco, Mercantil...">
-                    @error('bank_name')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
+                {{-- Bloque Fila 1: Monto y Referencia --}}
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                    {{-- Monto Pagado --}}
+                    <div style="flex: 1 1 calc(50% - 0.5rem); min-width: 250px;">
+                        <label class="zl-font-technical" style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--carbon-black); margin-bottom: 0.5rem;">
+                            Monto Pagado (BS)
+                        </label>
+                        <input type="number" step="0.01" name="amount_bs" value="{{ old('amount_bs') }}"
+                               style="width: 100%; box-sizing: border-box; border: 1px solid {{ $errors->has('amount_bs') ? 'var(--error-red)' : 'var(--border-gray)' }}; border-radius: 4px; padding: 0.65rem 0.75rem; font-size: 14px; color: var(--carbon-black); background-color: #FFFFFF; transition: border-color 0.2s;" 
+                               onfocus="this.style.borderColor='var(--midnight-blue)';" 
+                               onblur="this.style.borderColor='{{ $errors->has('amount_bs') ? 'var(--error-red)' : 'var(--border-gray)' }}';"
+                               required>
+                        @error('amount_bs')
+                            <p class="zl-font-technical" style="color: var(--error-red); font-size: 11px; font-weight: 600; margin: 0.35rem 0 0 0; text-transform: uppercase;">
+                                ⚠ {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
+                    
+                    {{-- Número de Referencia --}}
+                    <div style="flex: 1 1 calc(50% - 0.5rem); min-width: 250px;">
+                        <label class="zl-font-technical" style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--carbon-black); margin-bottom: 0.5rem;">
+                            Número de Referencia
+                        </label>
+                        <input type="text" name="reference_number" value="{{ old('reference_number') }}"
+                               style="width: 100%; box-sizing: border-box; border: 1px solid {{ $errors->has('reference_number') ? 'var(--error-red)' : 'var(--border-gray)' }}; border-radius: 4px; padding: 0.65rem 0.75rem; font-size: 14px; color: var(--carbon-black); background-color: #FFFFFF; transition: border-color 0.2s;" 
+                               onfocus="this.style.borderColor='var(--midnight-blue)';" 
+                               onblur="this.style.borderColor='{{ $errors->has('reference_number') ? 'var(--error-red)' : 'var(--border-gray)' }}';"
+                               required>
+                        @error('reference_number')
+                            <p class="zl-font-technical" style="color: var(--error-red); font-size: 11px; font-weight: 600; margin: 0.35rem 0 0 0; text-transform: uppercase;">
+                                ⚠ {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
                 </div>
-                <div>
-                    <label class="block font-semibold mb-1">Fecha del Pago</label>
-                    <input type="date" name="payment_date" value="{{ old('payment_date', date('Y-m-d')) }}"
-                        class="w-full border rounded-lg p-2 @error('payment_date') border-red-500 @enderror" required>
-                    @error('payment_date')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
+
+                {{-- Bloque Fila 2: Banco Emisor y Fecha del Pago --}}
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                    {{-- Banco Emisor --}}
+                    <div style="flex: 1 1 calc(50% - 0.5rem); min-width: 250px;">
+                        <label class="zl-font-technical" style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--carbon-black); margin-bottom: 0.5rem;">
+                            Banco Emisor
+                        </label>
+                        <input type="text" name="bank_name" value="{{ old('bank_name') }}"
+                               style="width: 100%; box-sizing: border-box; border: 1px solid {{ $errors->has('bank_name') ? 'var(--error-red)' : 'var(--border-gray)' }}; border-radius: 4px; padding: 0.65rem 0.75rem; font-size: 14px; color: var(--carbon-black); background-color: #FFFFFF; transition: border-color 0.2s;" 
+                               placeholder="Ej: Banesco, Mercantil, Provincial..."
+                               onfocus="this.style.borderColor='var(--midnight-blue)';" 
+                               onblur="this.style.borderColor='{{ $errors->has('bank_name') ? 'var(--error-red)' : 'var(--border-gray)' }}';"
+                               required>
+                        @error('bank_name')
+                            <p class="zl-font-technical" style="color: var(--error-red); font-size: 11px; font-weight: 600; margin: 0.35rem 0 0 0; text-transform: uppercase;">
+                                ⚠ {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
+                    
+                    {{-- Fecha del Pago --}}
+                    <div style="flex: 1 1 calc(50% - 0.5rem); min-width: 250px;">
+                        <label class="zl-font-technical" style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--carbon-black); margin-bottom: 0.5rem;">
+                            Fecha del Pago
+                        </label>
+                        <input type="date" name="payment_date" value="{{ old('payment_date', date('Y-m-d')) }}"
+                               style="width: 100%; box-sizing: border-box; border: 1px solid {{ $errors->has('payment_date') ? 'var(--error-red)' : 'var(--border-gray)' }}; border-radius: 4px; padding: 0.65rem 0.75rem; font-size: 14px; color: var(--carbon-black); background-color: #FFFFFF; transition: border-color 0.2s;" 
+                               onfocus="this.style.borderColor='var(--midnight-blue)';" 
+                               onblur="this.style.borderColor='{{ $errors->has('payment_date') ? 'var(--error-red)' : 'var(--border-gray)' }}';"
+                               required>
+                        @error('payment_date')
+                            <p class="zl-font-technical" style="color: var(--error-red); font-size: 11px; font-weight: 600; margin: 0.35rem 0 0 0; text-transform: uppercase;">
+                                ⚠ {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
                 </div>
-            </div>
 
-            <div class="mb-6">
-                <label class="block font-semibold mb-1">Comprobante (Imagen - Opcional)</label>
-                <input type="file" name="proof_image" accept="image/*"
-                    class="w-full border rounded-lg p-2 @error('proof_image') border-red-500 @enderror">
-                @error('proof_image')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-                <p class="text-gray-400 text-xs mt-1 italic">Formatos permitidos: JPG, PNG. Máximo 2MB.</p>
-            </div>
+                {{-- Campo: Comprobante de Pago Digital --}}
+                <div style="margin-bottom: 2rem;">
+                    <label class="zl-font-technical" style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--carbon-black); margin-bottom: 0.5rem;">
+                        Comprobante (Imagen - Opcional)
+                    </label>
+                    <input type="file" name="proof_image" accept="image/*"
+                           style="width: 100%; box-sizing: border-box; border: 1px solid {{ $errors->has('proof_image') ? 'var(--error-red)' : 'var(--border-gray)' }}; border-radius: 4px; padding: 0.5rem; font-size: 13px; color: var(--text-muted); background-color: #FAFAFA;" >
+                    @error('proof_image')
+                        <p class="zl-font-technical" style="color: var(--error-red); font-size: 11px; font-weight: 600; margin: 0.35rem 0 0 0; text-transform: uppercase;">
+                            ⚠ {{ $message }}
+                        </p>
+                    @enderror
+                    <p style="color: var(--text-muted); font-size: 12px; font-style: italic; margin: 0.35rem 0 0 0;">
+                        Formatos institucionales admitidos: JPG, PNG. Peso límite por archivo: 2MB.
+                    </p>
+                </div>
 
-            <div class="text-right">
-                <button type="submit"
-                    class="bg-indigo-600 text-white px-8 py-3 rounded-xl hover:bg-indigo-700 font-bold transition shadow-lg">
-                    Enviar Reporte de Pago
-                </button>
-            </div>
-        </form>
+                {{-- Envío del Formulario --}}
+                <div style="text-align: right;">
+                    <button type="submit"
+                            class="zl-font-technical"
+                            style="background-color: var(--warm-orange); border: 1px solid var(--warm-orange-hover); color: var(--carbon-black); padding: 0.75rem 2.25rem; border-radius: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: background-color 0.2s;"
+                            onmouseover="this.style.backgroundColor='var(--warm-orange-hover)';"
+                            onmouseout="this.style.backgroundColor='var(--warm-orange)';">
+                        Enviar Reporte de Pago
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </x-customer-layout>

@@ -1,74 +1,120 @@
 <x-customer-layout>
-    <div class="bg-white shadow rounded-lg p-6 border border-gray-100">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-            <h2 class="text-2xl font-bold text-gray-800">Mis Pagos Reportados</h2>
-            <a href="{{ route('customer.payments.report') }}"
-                class="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 font-bold transition">
-                Reportar Nuevo Pago
-            </a>
-        </div>
+    <div style="background-color: var(--bg-pure-white); border: 1px solid var(--border-gray); border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; color: var(--carbon-black);">
+        
+        {{-- Barra de acento superior de la marca --}}
+        <div style="height: 6px; width: 100%; background-color: var(--midnight-blue);"></div>
 
-        @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-                {{ session('success') }}
+        <div style="padding: 2rem;">
+            
+            {{-- Cabecera Flexible del Módulo --}}
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid #E5E7EB;">
+                <div>
+                    <h2 class="zl-font-display" style="font-size: 22px; font-weight: 700; color: var(--midnight-blue); margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                        Mis Pagos Reportados
+                    </h2>
+                    <p class="zl-font-technical" style="font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0.25rem 0 0 0;">
+                        Control y conciliación de transacciones bancarias enviadas
+                    </p>
+                </div>
+                
+                {{-- Botón de Acción Principal --}}
+                <a href="{{ route('customer.payments.report') }}"
+                   class="zl-font-technical"
+                   style="background-color: var(--warm-orange); border: 1px solid var(--warm-orange-hover); color: var(--carbon-black); px: 1.5rem; padding: 0.65rem 1.5rem; border-radius: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; display: inline-block; transition: background-color 0.2s;"
+                   onmouseover="this.style.backgroundColor='var(--warm-orange-hover)';"
+                   onmouseout="this.style.backgroundColor='var(--warm-orange)';">
+                    Reportar Nuevo Pago
+                </a>
             </div>
-        @endif
 
-        <div class="overflow-x-auto border rounded-xl">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Orden</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Referencia</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Monto (BS)</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Banco</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Fecha</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Estado</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($payments as $payment)
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-indigo-600">
-                                #{{ $payment->order_id }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $payment->reference_number }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-700">Bs.
-                                {{ number_format($payment->amount_bs, 2) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $payment->bank_name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $payment->payment_date }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @php
-                                    $statusClasses = match ($payment->status) {
-                                        'pending' => 'bg-yellow-100 text-yellow-800',
-                                        'approved' => 'bg-green-100 text-green-800',
-                                        'rejected' => 'bg-red-100 text-red-800',
-                                        default => 'bg-gray-100 text-gray-800',
-                                    };
-                                    $statusLabel = match ($payment->status) {
-                                        'pending' => 'Pendiente',
-                                        'approved' => 'Aprobado',
-                                        'rejected' => 'Rechazado',
-                                        default => $payment->status,
-                                    };
-                                @endphp
-                                <span class="px-3 py-1 inline-flex text-xs font-bold rounded-full {{ $statusClasses }}">
-                                    {{ $statusLabel }}
-                                </span>
-                            </td>
-                        </tr>
-                    @empty
+            {{-- Mensaje de Éxito de Sesión --}}
+            @if(session('success'))
+                <div class="zl-font-technical" style="background-color: #E7F4E4; border: 1px solid #B4DCA1; color: var(--success-green); padding: 1rem 1.25rem; border-radius: 4px; margin-bottom: 1.5rem; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                    ✓ {{ session('success') }}
+                </div>
+            @endif
+
+            {{-- Contenedor de Tabla con Scroll Seguro --}}
+            <div style="overflow-x: auto; border: 1px solid var(--border-gray); border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 800px;">
+                    <thead style="background-color: #FAFAFA;">
                         <tr>
-                            <td colspan="6" class="px-6 py-8 text-center text-gray-500 italic">No tienes reportes de pago
-                                registrados.</td>
+                            <th scope="col" class="zl-font-technical" style="padding: 0.85rem 1.25rem; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-gray);">Orden</th>
+                            <th scope="col" class="zl-font-technical" style="padding: 0.85rem 1.25rem; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-gray);">Referencia</th>
+                            <th scope="col" class="zl-font-technical" style="padding: 0.85rem 1.25rem; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-gray);">Monto (BS)</th>
+                            <th scope="col" class="zl-font-technical" style="padding: 0.85rem 1.25rem; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-gray);">Banco</th>
+                            <th scope="col" class="zl-font-technical" style="padding: 0.85rem 1.25rem; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-gray);">Fecha</th>
+                            <th scope="col" class="zl-font-technical" style="padding: 0.85rem 1.25rem; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-gray);">Estado</th>
                         </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody style="background-color: #FFFFFF;">
+                        @forelse($payments as $payment)
+                            <tr style="border-bottom: 1px solid #E5E7EB; transition: background-color 0.15s;" 
+                                onmouseover="this.style.backgroundColor='#F7F9F9'" 
+                                onmouseout="this.style.backgroundColor='#FFFFFF'">
+                                
+                                {{-- ID de Orden Vinculada --}}
+                                <td class="zl-font-technical" style="padding: 1rem 1.25rem; font-size: 13px; font-weight: 700; color: var(--text-link);">
+                                    #{{ $payment->order_id }}
+                                </td>
+                                
+                                {{-- Número de Referencia --}}
+                                <td class="zl-font-technical" style="padding: 1rem 1.25rem; font-size: 13px; color: var(--carbon-black); font-weight: 600;">
+                                    {{ $payment->reference_number }}
+                                </td>
+                                
+                                {{-- Monto en Bolívares --}}
+                                <td style="padding: 1rem 1.25rem; font-size: 14px; font-weight: 700; color: var(--midnight-blue);">
+                                    Bs. {{ number_format($payment->amount_bs, 2) }}
+                                </td>
+                                
+                                {{-- Banco Emisor --}}
+                                <td style="padding: 1rem 1.25rem; font-size: 13px; color: var(--text-muted);">
+                                    {{ $payment->bank_name }}
+                                </td>
+                                
+                                {{-- Fecha del Depósito / Transferencia --}}
+                                <td style="padding: 1rem 1.25rem; font-size: 13px; color: var(--text-muted);">
+                                    {{ $payment->payment_date }}
+                                </td>
+                                
+                                {{-- Celda de Estado Mapeada de Forma Inline Limpia --}}
+                                <td style="padding: 1rem 1.25rem; white-space: nowrap;">
+                                    @php
+                                        $badgeStyle = match ($payment->status) {
+                                            'pending'  => 'padding: 0.35rem 0.65rem; display: inline-flex; font-size: 10px; font-weight: 700; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #F5D599; background-color: #FFF8E7; color: #A66900;',
+                                            'approved' => 'padding: 0.35rem 0.65rem; display: inline-flex; font-size: 10px; font-weight: 700; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #B4DCA1; background-color: #E7F4E4; color: var(--success-green);',
+                                            'rejected' => 'padding: 0.35rem 0.65rem; display: inline-flex; font-size: 10px; font-weight: 700; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #F5C2B8; background-color: #FDF0ED; color: var(--error-red);',
+                                            default    => 'padding: 0.35rem 0.65rem; display: inline-flex; font-size: 10px; font-weight: 700; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid var(--border-gray); background-color: #FAFAFA; color: var(--text-muted);',
+                                        };
+                                        $statusLabel = match ($payment->status) {
+                                            'pending'  => 'Pendiente',
+                                            'approved' => 'Aprobado',
+                                            'rejected' => 'Rechazado',
+                                            default    => $payment->status,
+                                        };
+                                    @endphp
+                                    <span class="zl-font-technical" style="{{ $badgeStyle }}">
+                                        {{ $statusLabel }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" style="padding: 3rem 1.25rem; text-align: center; color: var(--text-muted); font-style: italic; font-size: 14px; background-color: #FAFAFA;">
+                                    No se registran transacciones de pago notificadas bajo este perfil de cliente.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-        <div class="mt-6">
-            {{ $payments->links() }}
+            {{-- Bloque de Paginación --}}
+            <div style="margin-top: 2rem;">
+                {{ $payments->links() }}
+            </div>
+
         </div>
     </div>
 </x-customer-layout>

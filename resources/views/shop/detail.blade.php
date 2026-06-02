@@ -116,7 +116,7 @@
             <div class="ap-review-form-card">
                 <h3>Escribe una reseña</h3>
                 @auth
-                    <form action="{{ route('reviews.store', $product->id) }}" method="POST">
+                    <form action="{{ route('products.reviews.store', $product->id) }}" method="POST">
                         @csrf
                         <div class="ap-form-group">
                             <label for="rating">Calificación</label>
