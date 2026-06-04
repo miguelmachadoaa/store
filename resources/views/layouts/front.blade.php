@@ -18,7 +18,7 @@
     @vite(['resources/css/front.css', 'resources/js/app.js'])
 
     <style>
-        /* Correciones de distribución del Footer Estilo Marketplace */
+        /* Correcciones de distribución del Footer Estilo Marketplace */
         .zolum-marketplace-footer {
             background-color: #111622; /* Ajustable a tu paleta oscura de footer corporativo */
             color: #FFFFFF;
@@ -208,7 +208,7 @@
             </div>
         </div>
 
-        {{-- Menú Drawer Lateral Desplegable --}}
+        {{-- Menú Drawer Lateral Desplegable (Categorías Globales) --}}
         <div id="mobile-menu" class="zolum-drawer hidden">
             <div class="zolum-drawer-overlay"></div>
             <div class="zolum-drawer-content">
@@ -217,8 +217,25 @@
                 </div>
                 <nav class="zolum-drawer-nav">
                     <a href="{{ route('home') }}" class="zolum-drawer-link">Inicio</a>
-                    <a href="{{ route('shop.index') }}" class="zolum-drawer-link">Ver Toda la Tienda</a>
+                    <a href="{{ route('shop.index') }}" class="zolum-drawer-link font-bold">Ver Toda la Tienda</a>
+                    
+                    <hr class="zolum-drawer-hr">
+                    
+                    {{-- Iteración dinámica de categorías desde el ViewServiceProvider --}}
+                    @if(isset($globalCategories) && $globalCategories->count() > 0)
+                        @foreach($globalCategories as $category)
+                            <a href="{{ route('shop.byCategory', $category->slug) }}" class="zolum-drawer-link">
+                                {{ $category->name }}
+                            </a>
+                        @endforeach
+                    @else
+                        <span class="zolum-drawer-link text-gray-400 italic">No hay categorías disponibles</span>
+                    @endif
+
+                    <hr class="zolum-drawer-hr">
+                    
                     <a href="{{ route('blog.index') }}" class="zolum-drawer-link">Blog & Novedades</a>
+                    
                     <hr class="zolum-drawer-hr">
                     @auth
                         <form method="POST" action="{{ route('logout') }}">

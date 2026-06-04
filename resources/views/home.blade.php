@@ -1,7 +1,47 @@
 <x-front-layout :sliders="$sliders" :brands="[]">
 
 <style>
-   
+    .categories-swiper {
+        width: 100%;
+        padding: 10px 0;
+    }
+
+    /* Estilización y reubicación de las flechas de Swiper */
+    .cat-swiper-btn-prev,
+    .cat-swiper-btn-next {
+        color: var(--warm-orange, #F26722) !important; /* Tu color de acento */
+        background-color: #FFFFFF;
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        top: 60% !important; /* Centrado vertical con respecto a las tarjetas */
+        transition: all 0.2s ease;
+    }
+
+    /* Reducir el tamaño de la flecha interna de Swiper */
+    .cat-swiper-btn-prev::after,
+    .cat-swiper-btn-next::after {
+        font-size: 16px !important;
+        font-weight: bold;
+    }
+
+    .cat-swiper-btn-prev:hover,
+    .cat-swiper-btn-next:hover {
+        background-color: var(--warm-orange, #F26722);
+        color: #FFFFFF !important;
+        transform: scale(1.05);
+    }
+
+    /* Posicionamiento exacto en los extremos del contenedor interior */
+    .cat-swiper-btn-prev { left: 0px !important; }
+    .cat-swiper-btn-next { right: 0px !important; }
+
+    /* Ocultar flechas si están deshabilitadas (ej. pocos elementos) */
+    .swiper-button-disabled {
+        opacity: 0 !important;
+        pointer-events: none;
+    }
 </style>
 
 {{-- ╔══════════════════════╗
@@ -31,35 +71,44 @@
      ╚══════════════════════╝ --}}
 @if(isset($categories) && $categories->count() > 0)
 <section class="cat-section">
-    <div class="cat-section__inner">
-        <p class="section-eyebrow">Explora nuestro catalogo</p>
-        <h2 class="section-title">Repuestos  <em>originales</em> y genericos</h2>
+    <div class="cat-section__inner" style="position: relative; padding: 0 40px;"> {{-- Padding extra para las flechas laterales --}}
+        
 
-        <div class="cat-grid">
-            @forelse($categories as $category)
-                <a href="{{ route('shop.byCategory', $category->slug) }}" class="cat-card">
-                    <div class="cat-card__img">
-                        @if($category->image)
-                            <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}">
-                        @else
-                            <div class="cat-card__placeholder">🔮</div>
-                        @endif
+        {{-- Contenedor Principal de Swiper --}}
+        <div class="swiper categories-swiper">
+            <div class="swiper-wrapper">
+                @foreach($categories as $category)
+                    <div class="swiper-slide">
+                        <a href="{{ route('shop.byCategory', $category->slug) }}" class="cat-card" style="margin: 0; width: 100%;">
+                            <div class="cat-card__img">
+                                @if($category->image)
+                                    <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}">
+                                @else
+                                    <div class="cat-card__placeholder">🔮</div>
+                                @endif
+                            </div>
+                            <div class="cat-card__label">
+                                {{ $category->name }}
+                                <span>→</span>
+                            </div>
+                        </a>
                     </div>
-                    <div class="cat-card__label">
-                        {{ $category->name }}
-                        <span>→</span>
-                    </div>
-                </a>
-            @empty
-                <p style="grid-column:1/-1;text-align:center;color:var(--ap-stone)">
-                    Sin categorías disponibles aún.
-                </p>
-            @endforelse
+                @endforeach
+            </div>
         </div>
+
+        {{-- Flechas de Navegación (Ubicadas fuera del Swiper para que no tapen las tarjetas) --}}
+        <div class="swiper-button-prev cat-swiper-btn-prev"></div>
+        <div class="swiper-button-next cat-swiper-btn-next"></div>
+
     </div>
 </section>
-@endif
 
+{{-- Estilos personalizados para integrar y posicionar las flechas --}}
+
+
+
+@endif
 {{-- ╔══════════════════════╗
      ║  Deal of the Week    ║
      ╚══════════════════════╝ --}}
@@ -101,6 +150,10 @@
     </div>
 </section>
 
+    @foreach($categoriesFeature as $category)
+        <x-category-feature :category="$category" />
+    @endforeach
+
 {{-- ╔══════════════════════╗
      ║  Newsletter          ║
      ╚══════════════════════╝ --}}
@@ -132,5 +185,42 @@
     <p>Cada pieza lleva consigo años de calidad y durabilidad</p>
     <a href="{{ route('shop.index') }}">Explorar colección</a>
 </div>
+
+
+{{-- Inicialización de Swiper para esta sección --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new Swiper('.categories-swiper', {
+            slidesPerView: 1,
+            spaceBetween: 16,
+            grabCursor: true,
+            // Configuración de flechas
+            navigation: {
+                nextEl: '.cat-swiper-btn-next',
+                prevEl: '.cat-swiper-btn-prev',
+            },
+            // Puntos de quiebre responsivos (Breakpoints)
+            breakpoints: {
+                480: {
+                    slidesPerView: 2,
+                    spaceBetween: 16
+                },
+                768: {
+                    slidesPerView: 3,
+                    spaceBetween: 20
+                },
+                1024: {
+                    slidesPerView: 4,
+                    spaceBetween: 24
+                },
+                1280: {
+                    slidesPerView: 6, 
+                    spaceBetween: 24
+                }
+            }
+        });
+    });
+</script>
+
 
 </x-front-layout>

@@ -1,5 +1,37 @@
 <x-front-layout>
 
+{{-- Estilos para forzar las 4 columnas de productos por fila y maquetar el catálogo --}}
+    <style>
+        .ap-catalog-grid {
+            display: grid;
+            /* Fuerza exactamente 4 columnas del mismo tamaño en escritorio */
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            gap: 1.5rem;
+        }
+
+        /* Adaptación responsiva para pantallas medianas (Tablets/Laptops pequeñas) */
+        @media (max-width: 1200px) {
+            .ap-catalog-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            }
+        }
+        
+        /* Adaptación responsiva para Tablets */
+        @media (max-width: 768px) {
+            .ap-catalog-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 1rem;
+            }
+        }
+        
+        /* Adaptación responsiva para Teléfonos Móviles */
+        @media (max-width: 480px) {
+            .ap-catalog-grid {
+                grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+            }
+        }
+    </style>
+
     {{-- Contenedor del Breadcrumb forzado --}}
     <div class="ap-breadcrumb-container">
         <x-breadcrumb :items="[['label' => 'Productos']]" />

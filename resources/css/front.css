@@ -316,6 +316,39 @@ a {
     gap: 20px;
 }
 
+/* ==========================================================================
+   GRILLA PREMIUM DE 6 PRODUCTOS EN FILA (FORZADO ESTRICTO)
+   ========================================================================== */
+.products-section .products-grid-6 {
+    display: grid !important;
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 14px !important;
+    width: 100% !important;
+}
+
+/* ==========================================================================
+   RESPONSIVIDAD MÓVIL
+   ========================================================================== */
+@media (max-width: 1200px) {
+    .products-section .products-grid-6 {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+}
+
+@media (max-width: 992px) {
+    .products-section .products-grid-6 {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 12px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .products-section .products-grid-6 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+}
+
 @media (max-width: 992px) {
     .products-grid-4, .products-grid-3 {
         grid-template-columns: repeat(2, 1fr);
@@ -1890,6 +1923,7 @@ body {
     padding: 1rem 0;
     display: flex;
     flex-direction: column;
+    background-color: var(--zolum-white);
 }
 
 .zolum-drawer-link {

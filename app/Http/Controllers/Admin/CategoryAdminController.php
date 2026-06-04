@@ -106,7 +106,7 @@ class CategoryAdminController extends Controller
             $data['image'] = $request->file('image')->store('categories', 'public');
         }
 
-        $path = $data['image'];
+        $path = $data['image']?? $category->image;
         $from = storage_path('app/public/' . $path);
         $to = public_path('storage/' . $path);
 
