@@ -38,6 +38,8 @@ class CategoryAdminController extends Controller
         // Guardar imagen si existe
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('categories', 'public');
+
+            Storage::disk('public')->copy($data['image'], 'categories/'.basename($data['image'])); // Copia la imagen a la carpeta public/categories
         }
 
         Category::create($data);
@@ -78,6 +80,7 @@ class CategoryAdminController extends Controller
                 Storage::disk('public')->delete($category->image);
             }
             $data['image'] = $request->file('image')->store('categories', 'public');
+            Storage::disk('public')->copy($data['image'], 'categories/'.basename($data['image'])); // Copia la imagen a la carpeta public/categories
         }
 
         $category->update($data);

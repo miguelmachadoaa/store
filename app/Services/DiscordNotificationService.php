@@ -21,18 +21,44 @@ class DiscordNotificationService
             return false;
         }
 
-        $body = array_merge([
+        $body = json_encode(array_merge([
             'username'   => config('discord.username'),
             'avatar_url' => config('discord.avatar_url'),
-        ], $payload);
+        ], $payload));
 
-        $response = Http::post($webhookUrl, $body);
+        $ch = curl_init($webhookUrl);
 
-        if ($response->failed()) {
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $body,
+            CURLOPT_SSL_VERIFYPEER => false,   // ← agrega esto
+            CURLOPT_SSL_VERIFYHOST => false,   // ← y esto
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($body),
+            ],
+        ]);
+
+        $responseBody = curl_exec($ch);
+        $httpStatus   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError    = curl_error($ch);
+
+        curl_close($ch);
+
+        if ($curlError) {
+            Log::error('Discord webhook error cURL', [
+                'channel' => $channel,
+                'error'   => $curlError,
+            ]);
+            return false;
+        }
+
+        if ($httpStatus < 200 || $httpStatus >= 300) {
             Log::error('Discord webhook falló', [
                 'channel' => $channel,
-                'status'  => $response->status(),
-                'body'    => $response->body(),
+                'status'  => $httpStatus,
+                'body'    => $responseBody,
             ]);
             return false;
         }
@@ -124,7 +150,7 @@ class DiscordNotificationService
                     ->field('Cliente',  $data['customer_name'] ?? 'Desconocido', true)
                     ->field('Email',    $data['customer_email'] ?? 'N/A', true)
                     ->field('Orden #',  $data['order_id'] ?? 'N/A', true)
-                    ->field('Monto',    '$' . number_format($data['amount'], 2), true)
+                    ->field('Monto',    '$' . number_format($data['amount_bs'], 2), true)
                     ->field('Banco',    $data['bank_name'] ?? 'N/A', true)
                     ->field('Fecha de pago', $data['payment_date'] ?? 'N/A', true)
                     ->field('Referencia', $data['reference_number'] ?? 'N/A', true)

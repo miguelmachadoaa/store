@@ -19,14 +19,13 @@ class ProductController extends Controller
     {
         $query = Product::query()->withCount('favoritedBy');
 
+
         // Búsqueda
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
+            $query->where('name', 'like', "%{$search}%")
                     ->orWhere('sku', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%");
-            });
         }
 
         // Filtro por estado
@@ -79,6 +78,9 @@ class ProductController extends Controller
         // Manejar la imagen
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
+
+            //copiar la imagen a la carpeta storage  en la carpeta public para que se pueda acceder desde la web
+            Storage::disk('public')->copy($validated['image'], 'products/'.basename($validated['image'])); // Copia la imagen a la carpeta public/products
         }
 
         $validated['is_active'] = $request->has('is_active');
@@ -94,10 +96,15 @@ class ProductController extends Controller
             foreach ($request->file('images') as $img) {
                 $path = $img->store('products', 'public');
 
+
+
                 ProductImage::create([
                     'product_id' => $product->id,
                     'image' => $path,
                 ]);
+
+                Storage::disk('public')->copy($path, 'products/'.basename($path)); // Copia la imagen a la carpeta public/products
+
             }
         }
 
@@ -156,6 +163,8 @@ class ProductController extends Controller
                 Storage::disk('public')->delete($product->image);
             }
             $validated['image'] = $request->file('image')->store('products', 'public');
+
+            Storage::disk('public')->copy($validated['image'], 'products/'.basename($validated['image'])); // Copia la imagen a la carpeta public/products
         }
 
         $validated['is_active'] = $request->has('is_active');
@@ -173,6 +182,8 @@ class ProductController extends Controller
                     'product_id' => $product->id,
                     'image' => $path,
                 ]);
+
+                Storage::disk('public')->copy($path, 'products/'.basename($path)); // Copia la imagen a la carpeta public/products
             }
         }
 
@@ -211,7 +222,7 @@ class ProductController extends Controller
 
             return response()->json([
                 'success' => true,
-                'image_url' => asset('storage/'.$path),
+                'image_url' => asset(''.$path),
             ]);
         }
 
@@ -301,9 +312,12 @@ class ProductController extends Controller
     {
         $category = Category::where('slug', $slug)->firstOrFail();
 
-        $products = Product::where('category_id', $category->id)
-            ->where('is_active', 1)
+        $products = Product::join('category_product', 'products.id', '=', 'category_product.product_id')
+            ->where('category_product.category_id', $category->id)
+            ->where('products.is_active', 1)
             ->paginate(12);
+
+        
 
         // Si la petición es AJAX, solo devolvemos las tarjetas renderizadas
         if ($request->ajax()) {
