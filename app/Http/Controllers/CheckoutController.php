@@ -13,9 +13,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
+use App\Services\DiscordNotificationService;
+
 
 class CheckoutController extends Controller
 {
+    public function __construct(private DiscordNotificationService $discord)
+    {
+    }
+
     public function index()
     {
         $cart = app()->make(\App\Http\Controllers\CartController::class)->getCartItems();
@@ -74,6 +80,13 @@ class CheckoutController extends Controller
                     'rif' => $request->rif,
                     'address' => $request->address,
                     'password' => Hash::make(Str::random(16)), // Contraseña aleatoria segura
+                ]);
+
+                // Enviar notificación de nuevo registro a Discord
+                $this->discord->register([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'source' => 'Checkout - Invitado',
                 ]);
             }
         }
@@ -158,6 +171,18 @@ class CheckoutController extends Controller
         }
         session()->forget('cart'); 
         session()->forget('coupon');
+        // Enviar notificación de nueva compra a Discord
+
+        $this->discord->purchase([
+            'customer_name' => $order->customer_name,
+            'customer_email' => $order->customer_email,
+            'customer_rif' => $order->customer_rif,
+            'customer_address' => $order->address,
+            'customer_phone' => $order->user->phone ?? 'N/A',
+            'total' => $order->total,
+            'order_id' => $order->id,
+            'items_summary' => collect($itemsToCreate)->map(fn($i) => "{$i['quantity']}x {$i['name']}")->implode(', '),
+        ]);
 
         return redirect()->route('checkout.success', $order->id);
     }
@@ -230,6 +255,8 @@ class CheckoutController extends Controller
         }
 
         PaymentReport::create($data);
+
+        $this->discord->paymentReport($data);
 
         $viewOrderUrl = URL::signedRoute('guest.order.show', ['orderId' => $order->id]);
 
