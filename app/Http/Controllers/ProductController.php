@@ -79,8 +79,18 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
 
+               $path = $validated['image'];
+
+            $from = storage_path('app/public/' . $path);
+            $to = public_path('storage/' . $path);
+
+            if (!file_exists(dirname($to))) {
+                mkdir(dirname($to), 0775, true);
+            }
+
+            copy($from, $to); 
+
             //copiar la imagen a la carpeta storage  en la carpeta public para que se pueda acceder desde la web
-            Storage::disk('public')->copy($validated['image'], 'products/'.basename($validated['image'])); // Copia la imagen a la carpeta public/products
         }
 
         $validated['is_active'] = $request->has('is_active');
@@ -96,14 +106,21 @@ class ProductController extends Controller
             foreach ($request->file('images') as $img) {
                 $path = $img->store('products', 'public');
 
-
-
                 ProductImage::create([
                     'product_id' => $product->id,
                     'image' => $path,
                 ]);
 
-                Storage::disk('public')->copy($path, 'products/'.basename($path)); // Copia la imagen a la carpeta public/products
+
+                $from = storage_path('app/public/' . $path);
+                $to = public_path('storage/' . $path);
+
+                if (!file_exists(dirname($to))) {
+                    mkdir(dirname($to), 0775, true);
+                }
+
+                copy($from, $to);  
+
 
             }
         }
@@ -164,7 +181,17 @@ class ProductController extends Controller
             }
             $validated['image'] = $request->file('image')->store('products', 'public');
 
-            Storage::disk('public')->copy($validated['image'], 'products/'.basename($validated['image'])); // Copia la imagen a la carpeta public/products
+             $path = $validated['image'] ?? $product->image;
+
+            $from = storage_path('app/public/' . $path);
+            $to = public_path('storage/' . $path);
+
+            if (!file_exists(dirname($to))) {
+                mkdir(dirname($to), 0775, true);
+            }
+
+            copy($from, $to);   
+
         }
 
         $validated['is_active'] = $request->has('is_active');
@@ -183,7 +210,18 @@ class ProductController extends Controller
                     'image' => $path,
                 ]);
 
-                Storage::disk('public')->copy($path, 'products/'.basename($path)); // Copia la imagen a la carpeta public/products
+               
+
+                $from = storage_path('app/public/' . $path);
+                $to = public_path('storage/' . $path);
+
+                if (!file_exists(dirname($to))) {
+                    mkdir(dirname($to), 0775, true);
+                }
+
+                copy($from, $to);    
+
+
             }
         }
 

@@ -85,6 +85,8 @@ Route::get('/producto/{slug}', [ProductController::class, 'detail'])->name('prod
 
 Route::post('/cart/ajax-add/{id}', [CartController::class, 'ajaxAdd'])->name('cart.ajax-add');
 
+Route::post('/cart/buy-now/{id}', [CartController::class, 'buyNow'])->name('cart.buy-now');
+
 Route::get('/shop', [ProductController::class, 'shop'])->name('shop.index');
 
 // area clienets

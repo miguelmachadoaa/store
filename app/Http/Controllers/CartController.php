@@ -260,4 +260,14 @@ class CartController extends Controller
 
         session()->forget('cart');
     }
+
+    public function buyNow(Request $request, $id)
+    {
+        // Reutilizamos tu helper interno para meter el producto al carrito (BD o Sesión)
+        $this->addItemToCart($id, $request->get('quantity', 1));
+
+        // Redireccionamos a la pantalla de pago
+        // Cambia 'checkout.index' por el nombre real de tu ruta de checkout si es diferente
+        return redirect()->route('checkout.index')->with('success', 'Producto listo para comprar.');
+    }
 }

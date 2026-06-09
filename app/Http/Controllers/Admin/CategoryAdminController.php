@@ -39,7 +39,18 @@ class CategoryAdminController extends Controller
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('categories', 'public');
 
-            Storage::disk('public')->copy($data['image'], 'categories/'.basename($data['image'])); // Copia la imagen a la carpeta public/categories
+                $path = $data['image'];
+
+            $from = storage_path('app/public/' . $path);
+            $to = public_path('storage/' . $path);
+
+            if (!file_exists(dirname($to))) {
+                mkdir(dirname($to), 0775, true);
+            }
+
+            copy($from, $to); 
+
+
         }
 
         Category::create($data);
@@ -80,7 +91,19 @@ class CategoryAdminController extends Controller
                 Storage::disk('public')->delete($category->image);
             }
             $data['image'] = $request->file('image')->store('categories', 'public');
-            Storage::disk('public')->copy($data['image'], 'categories/'.basename($data['image'])); // Copia la imagen a la carpeta public/categories
+
+              $path = $data['image'];
+
+            $from = storage_path('app/public/' . $path);
+            $to = public_path('storage/' . $path);
+
+            if (!file_exists(dirname($to))) {
+                mkdir(dirname($to), 0775, true);
+            }
+
+            copy($from, $to); 
+
+
         }
 
         $category->update($data);

@@ -139,8 +139,34 @@
                 {{ $product->stock > 0 ? 'En stock' : 'Agotado' }}
             </p>
 
-            {{-- Botón agregar al carrito --}}
-                <x-add-to-cart-button :product="$product" />
+            {{-- Contenedor Principal: Alinea Carrito, Comprar Ya y Favoritos uno al lado del otro --}}
+<div class="mt-6 flex flex-row items-center gap-3 w-full">
+    
+    {{-- 1. Botón Agregar al Carrito (Componente Original intacto) --}}
+        <div class="flex-1 min-w-0">
+            <x-add-to-cart-button :product="$product" />
+        </div>
+
+        {{-- 2. Botón Comprar Ya (Maquetado aquí para no alterar otras vistas) --}}
+        @if($product->stock > 0)
+            <div class="flex-1 min-w-0">
+                <form action="{{ route('cart.buy-now', $product->id) }}" method="POST" class="m-0 p-0">
+                    @csrf
+                    <button type="submit" 
+                        class="w-full bg-[#db2777] hover:bg-[#be185d] text-white border-none font-medium text-[0.75rem] uppercase tracking-[0.08em] cursor-pointer flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 shadow-sm"
+                        style="border-radius: 2rem; padding: 0.6rem 1rem; font-family: 'DM Sans', sans-serif; height: 42px;">
+                        
+                        {{-- Ícono de la bolsa de compras --}}
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" 
+                            stroke="currentColor" stroke-width="2" 
+                            stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+                            <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="truncate">Comprar ya</span>
+                    </button>
+                </form>
+            </div>
+        @endif
 
                 @auth
                     <button onclick="toggleWishlist({{ $product->id }}, this)"
