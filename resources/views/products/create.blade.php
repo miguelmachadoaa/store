@@ -142,6 +142,117 @@
                                     </label>
                                 </div>
                             </div>
+
+                            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+    <h3 class="text-lg font-bold text-gray-900 mb-4">Configuración de Diseño</h3>
+    <div>
+        <label for="view_type" class="block text-sm font-medium text-gray-700">Tipo de Ficha de Producto</label>
+        <select name="view_type" id="view_type" onchange="toggleHotmartFields()" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+            <option value="default" {{ old('view_type') == 'default' ? 'selected' : '' }}>Tienda Clásica (Estándar)</option>
+            <option value="hotmart" {{ old('view_type') == 'hotmart' ? 'selected' : '' }}>Landing Page de Conversión (Tipo Hotmart)</option>
+        </select>
+    </div>
+</div>
+
+<div id="hotmart_fields_container" class="hidden space-y-6 bg-gray-50 p-6 rounded-lg border border-gray-200 mb-6">
+    <h3 class="text-lg font-bold text-indigo-900 border-b pb-2">Secciones de la Landing Page (Hotmart)</h3>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Título Impactante (Headline)</label>
+            <input type="text" name="landing_headline" value="{{ old('landing_headline') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Subtítulo / Promesa (Subheadline)</label>
+            <input type="text" name="landing_subheadline" value="{{ old('landing_subheadline') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+        </div>
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700">URL del Video de Presentación (YouTube / Vimeo)</label>
+            <input type="url" name="landing_video_url" value="{{ old('landing_video_url') }}" placeholder="https://www.youtube.com/watch?v=..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+        </div>
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Beneficios / ¿Qué va a lograr el cliente?</label>
+        <div id="benefits-wrapper" class="space-y-2">
+            <div class="flex items-center space-x-2">
+                <input type="text" name="landing_benefits[]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Ej. Aprenderás a programar desde cero...">
+                <button type="button" onclick="removeRow(this)" class="bg-rose-500 text-white px-3 py-2 rounded-md text-sm">Eliminar</button>
+            </div>
+        </div>
+        <button type="button" onclick="addBenefitRow()" class="mt-2 inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+            + Añadir Beneficio
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div>
+            <label class="block text-sm font-medium text-emerald-700 mb-2">👍 ¿Para quién SÍ es este producto?</label>
+            <div id="target-si-wrapper" class="space-y-2">
+                <div class="flex items-center space-x-2">
+                    <input type="text" name="landing_target_public[si][]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Ej. Personas comprometidas...">
+                    <button type="button" onclick="removeRow(this)" class="bg-rose-500 text-white px-3 py-2 rounded-md text-sm">X</button>
+                </div>
+            </div>
+            <button type="button" onclick="addTargetSiRow()" class="mt-2 inline-flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-500">
+                + Añadir Condición SÍ
+            </button>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-rose-700 mb-2">👎 ¿Para quién NO es este producto?</label>
+            <div id="target-no-wrapper" class="space-y-2">
+                <div class="flex items-center space-x-2">
+                    <input type="text" name="landing_target_public[no][]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Ej. Personas que buscan dinero fácil...">
+                    <button type="button" onclick="removeRow(this)" class="bg-rose-500 text-white px-3 py-2 rounded-md text-sm">X</button>
+                </div>
+            </div>
+            <button type="button" onclick="addTargetNoRow()" class="mt-2 inline-flex items-center text-sm font-semibold text-rose-600 hover:text-rose-500">
+                + Añadir Condición NO
+            </button>
+        </div>
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Testimonios de Clientes</label>
+        <div id="testimonials-wrapper" class="space-y-3">
+            <div class="grid grid-cols-1 gap-2 p-4 bg-white rounded-md border border-gray-200 relative">
+                <input type="text" name="landing_testimonials[0][name]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Nombre del cliente">
+                <textarea name="landing_testimonials[0][text]" rows="2" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Opinión o testimonio..."></textarea>
+                <button type="button" onclick="removeTestimonialRow(this)" class="absolute top-2 right-2 text-rose-600 text-sm font-bold">Eliminar</button>
+            </div>
+        </div>
+        <button type="button" onclick="addTestimonialRow()" class="mt-2 inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+            + Añadir Testimonio
+        </button>
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Bonus Incluidos de Regalo</label>
+        <div id="bonuses-wrapper" class="space-y-3">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-4 bg-white rounded-md border border-gray-200 relative">
+                <div class="md:col-span-2 space-y-2">
+                    <input type="text" name="landing_bonuses[0][title]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Título del Bonus">
+                    <input type="text" name="landing_bonuses[0][description]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Breve descripción del regalo">
+                </div>
+                <div>
+                    <input type="number" step="0.01" name="landing_bonuses[0][value]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Valor comercial ($)">
+                </div>
+                <button type="button" onclick="removeBonusRow(this)" class="absolute top-2 right-2 text-rose-600 text-sm font-bold">Eliminar</button>
+            </div>
+        </div>
+        <button type="button" onclick="addBonusRow()" class="mt-2 inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+            + Añadir Bonus de Regalo
+        </button>
+    </div>
+
+    <div class="w-full md:w-1/3">
+        <label for="landing_warranty_days" class="block text-sm font-medium text-gray-700">Días de Garantía de Devolución</label>
+        <input type="number" name="landing_warranty_days" id="landing_warranty_days" value="{{ old('landing_warranty_days', 7) }}" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+    </div>
+</div>
+
+
                         </div>
 
                         <!-- Botones -->

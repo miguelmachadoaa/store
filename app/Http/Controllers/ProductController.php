@@ -73,6 +73,15 @@ class ProductController extends Controller
             'is_featured' => 'boolean',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
+            'view_type' => 'required|string|in:default,hotmart',
+            'landing_headline' => 'nullable|string|max:255',
+            'landing_subheadline' => 'nullable|string|max:255',
+            'landing_video_url' => 'nullable|url',
+            'landing_benefits' => 'nullable|array',
+            'landing_target_public' => 'nullable|array',
+            'landing_testimonials' => 'nullable|array',
+            'landing_bonuses' => 'nullable|array',
+            'landing_warranty_days' => 'nullable|integer|min:0',
         ]);
 
         // Manejar la imagen

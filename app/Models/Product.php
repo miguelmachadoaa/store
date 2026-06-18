@@ -50,6 +50,15 @@ class Product extends Model
         'tax_id',
         'meta_title',
         'meta_description',
+        'view_type',
+        'landing_headline',
+        'landing_subheadline',
+        'landing_video_url',
+        'landing_benefits',
+        'landing_target_public',
+        'landing_testimonials',
+        'landing_bonuses',
+        'landing_warranty_days',
     ];
 
     protected $casts = [
@@ -58,6 +67,12 @@ class Product extends Model
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
         'tax_id' => 'integer',
+        'view_type' => 'string',
+        'landing_benefits' => 'array',
+        'landing_target_public' => 'array',
+        'landing_testimonials' => 'array',
+        'landing_bonuses' => 'array',
+        'landing_warranty_days' => 'integer',
     ];
 
     /**
