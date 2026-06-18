@@ -5,7 +5,7 @@
     --bg-pure-white: #FFFFFF;
     --midnight-blue: #131921;
     --midnight-light: #1A2536;
-    --warm-orange: #FEBD69;
+    --warm-orange: #FFC933;
     --warm-orange-hover: #F3A847;
     --carbon-black: #0F1111;
     --border-gray: #D5D9D9;
@@ -1485,7 +1485,7 @@ a {
 }
 
 .zolum-news-link:hover {
-    color: #FEBD69;
+    color: #FFC933;
 }
 
 .zolum-arrow {
@@ -1524,7 +1524,7 @@ a {
 }
 
 .zolum-post-card:hover {
-    border-color: #FEBD69;
+    border-color: #FFC933;
     box-shadow: 0 4px 12px rgba(19, 25, 33, 0.08);
 }
 
@@ -1626,7 +1626,7 @@ a {
 }
 
 .zolum-post-card:hover .zolum-card-more {
-    color: #FEBD69;
+    color: #FFC933;
 }
 
 /* ==========================================================================
@@ -1635,7 +1635,7 @@ a {
 
 :root {
     --zolum-navy: #131921;
-    --zolum-orange: #FEBD69;
+    --zolum-orange: #FFC933;
     --zolum-white: #FFFFFF;
     --zolum-dark: #0F1111;
     --zolum-grey: #D5D9D9;

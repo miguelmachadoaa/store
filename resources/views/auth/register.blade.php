@@ -16,7 +16,7 @@
             --bg-pure-white:       #FFFFFF;
             --midnight-blue:       #131921;
             --midnight-light:      #1A2536;
-            --warm-orange:         #FEBD69;
+            --warm-orange:         #FFC933;
             --warm-orange-hover:   #F3A847;
             --carbon-black:        #0F1111;
             --border-gray:         #D5D9D9;
@@ -49,7 +49,7 @@
 
                     {{-- Header / Logotipo --}}
                     <div class="text-center mb-6">
-                        <div class="inline-flex items-center justify-center w-12 h-12 bg-[#131921] border border-[#D5D9D9] rounded-[4px] mb-3 tracking-wider text-lg font-bold text-[#FEBD69] shadow-sm zl-font-display">
+                        <div class="inline-flex items-center justify-center w-12 h-12 bg-[#131921] border border-[#D5D9D9] rounded-[4px] mb-3 tracking-wider text-lg font-bold text-[#FFC933] shadow-sm zl-font-display">
                             ZR
                         </div>
                         <h1 class="text-xl font-bold text-[#131921] tracking-wide uppercase zl-font-display">
@@ -93,7 +93,7 @@
                                     placeholder="Juan Pérez"
                                     required
                                     autofocus
-                                    class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] text-sm text-[#0F1111] placeholder-[#B0B0B0] focus:outline-none focus:border-[#FEBD69] focus:ring-1 focus:ring-[#FEBD69] transition duration-150 @error('name') border-[#B12704] focus:ring-[#B12704] @enderror"
+                                    class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] text-sm text-[#0F1111] placeholder-[#B0B0B0] focus:outline-none focus:border-[#FFC933] focus:ring-1 focus:ring-[#FFC933] transition duration-150 @error('name') border-[#B12704] focus:ring-[#B12704] @enderror"
                                 >
                             </div>
                         </div>
@@ -111,7 +111,7 @@
                                     value="{{ old('email') }}"
                                     placeholder="ejemplo@zolum.com"
                                     required
-                                    class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] text-sm text-[#0F1111] placeholder-[#B0B0B0] focus:outline-none focus:border-[#FEBD69] focus:ring-1 focus:ring-[#FEBD69] transition duration-150 @error('email') border-[#B12704] focus:ring-[#B12704] @enderror"
+                                    class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] text-sm text-[#0F1111] placeholder-[#B0B0B0] focus:outline-none focus:border-[#FFC933] focus:ring-1 focus:ring-[#FFC933] transition duration-150 @error('email') border-[#B12704] focus:ring-[#B12704] @enderror"
                                 >
                             </div>
                         </div>
@@ -131,7 +131,7 @@
                                         name="password"
                                         placeholder="••••••••"
                                         required
-                                        class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] text-sm text-[#0F1111] placeholder-[#B0B0B0] focus:outline-none focus:border-[#FEBD69] focus:ring-1 focus:ring-[#FEBD69] transition duration-150 @error('password') border-[#B12704] focus:ring-[#B12704] @enderror"
+                                        class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] text-sm text-[#0F1111] placeholder-[#B0B0B0] focus:outline-none focus:border-[#FFC933] focus:ring-1 focus:ring-[#FFC933] transition duration-150 @error('password') border-[#B12704] focus:ring-[#B12704] @enderror"
                                     >
                                 </div>
                             </div>
@@ -148,7 +148,7 @@
                                         name="password_confirmation"
                                         placeholder="••••••••"
                                         required
-                                        class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] text-sm text-[#0F1111] placeholder-[#B0B0B0] focus:outline-none focus:border-[#FEBD69] focus:ring-1 focus:ring-[#FEBD69] transition duration-150"
+                                        class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] text-sm text-[#0F1111] placeholder-[#B0B0B0] focus:outline-none focus:border-[#FFC933] focus:ring-1 focus:ring-[#FFC933] transition duration-150"
                                     >
                                 </div>
                             </div>
@@ -166,7 +166,7 @@
                                 id="terms"
                                 name="terms"
                                 required
-                                class="mt-0.5 w-3.5 h-3.5 bg-white border-[#D5D9D9] text-[#131921] rounded-[2px] focus:ring-[#FEBD69] focus:ring-offset-0"
+                                class="mt-0.5 w-3.5 h-3.5 bg-white border-[#D5D9D9] text-[#131921] rounded-[2px] focus:ring-[#FFC933] focus:ring-offset-0"
                             >
                             <label for="terms" class="text-xs text-[#131921] font-medium leading-snug select-none">
                                 Autorizo y acepto los 
@@ -178,7 +178,7 @@
 
                         {{-- Banner de Beneficios del Sistema (Estilo micro-información corporativa) --}}
                         <div class="bg-[#FAFAFA] border border-[#D5D9D9] rounded-[4px] px-4 py-3 flex items-center gap-3">
-                            <span class="text-[#FEBD69] text-base font-bold">✦</span>
+                            <span class="text-[#FFC933] text-base font-bold">✦</span>
                             <div>
                                 <p class="text-[11px] font-bold text-[#131921] uppercase tracking-wider zl-font-display">Beneficios de Cuenta Activa</p>
                                 <p class="text-[10px] text-[#555555] mt-0.5 uppercase tracking-wide leading-relaxed font-semibold zl-font-technical">Enlace de datos cifrado · Seguimiento de pedidos · Historial completo</p>
@@ -188,7 +188,7 @@
                         {{-- Botón de Acción Principal (Sincronizado con .zc-checkout-btn) --}}
                         <button
                             type="submit"
-                            class="w-full bg-[#FEBD69] hover:bg-[#F3A847] border border-[#A88734] text-[#0F1111] font-bold py-2.5 px-4 rounded-[4px] transition duration-150 text-xs tracking-wide uppercase zl-font-display"
+                            class="w-full bg-[#FFC933] hover:bg-[#F3A847] border border-[#A88734] text-[#0F1111] font-bold py-2.5 px-4 rounded-[4px] transition duration-150 text-xs tracking-wide uppercase zl-font-display"
                         >
                             Ejecutar Registro
                         </button>

@@ -9,7 +9,7 @@
     /* Estilización y reubicación de las flechas de Swiper */
     .cat-swiper-btn-prev,
     .cat-swiper-btn-next {
-        color: var(--warm-orange, #F26722) !important; /* Tu color de acento */
+        color: var(--warm-orange, #FFC933) !important; /* Tu color de acento */
         background-color: #FFFFFF;
         width: 40px !important;
         height: 40px !important;
@@ -28,7 +28,7 @@
 
     .cat-swiper-btn-prev:hover,
     .cat-swiper-btn-next:hover {
-        background-color: var(--warm-orange, #F26722);
+        background-color: var(--warm-orange, #FFC933);
         color: #FFFFFF !important;
         transform: scale(1.05);
     }

@@ -2,7 +2,7 @@
 
 {{-- ============================================================
      ZOLUM SHOP — CHECKOUT / FINALIZAR PEDIDO
-     Sistema visual: Brandbook Zolum (blanco + #131921 + #FEBD69)
+     Sistema visual: Brandbook Zolum (blanco + #131921 + #FFC933)
      ============================================================ --}}
 
 <style>
@@ -15,7 +15,7 @@
     --bg-field:        #FAFAFA;
     --navy:            #131921;
     --navy-light:      #1A2536;
-    --orange:          #FEBD69;
+    --orange:          #FFC933;
     --orange-hover:    #F3A847;
     --black:           #0F1111;
     --border:          #D5D9D9;

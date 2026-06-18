@@ -2,7 +2,7 @@
 
 {{-- ============================================================
      ZOLUM SHOP — ESTADO DEL PEDIDO (GUEST VIEW)
-     Sistema visual: Brandbook Zolum (#FFFFFF + #131921 + #FEBD69)
+     Sistema visual: Brandbook Zolum (#FFFFFF + #131921 + #FFC933)
      ============================================================ --}}
 
 <style>
@@ -14,7 +14,7 @@
     --bg-soft:       #F4F6F6;
     --navy:          #131921;
     --navy-light:    #1A2536;
-    --orange:        #FEBD69;
+    --orange:        #FFC933;
     --orange-hover:  #F3A847;
     --black:         #0F1111;
     --border:        #D5D9D9;

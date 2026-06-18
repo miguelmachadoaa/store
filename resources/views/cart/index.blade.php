@@ -18,7 +18,7 @@
     --bg-pure-white:       #FFFFFF;
     --midnight-blue:       #131921;
     --midnight-light:      #1A2536;
-    --warm-orange:         #FEBD69;
+    --warm-orange:         #FFC933;
     --warm-orange-hover:   #F3A847;
     --carbon-black:        #0F1111;
     --border-gray:         #D5D9D9;
@@ -854,9 +854,7 @@
 
             {{-- ── CARDS MOBILE ─────────────────────────────── --}}
             <div class="zc-mobile-cards">
-                @php $subtotal = $subtotal ?? 0; @endphp
                 @foreach($cart as $id => $item)
-                    @php if(!isset($subtotal)) { $subtotal = 0; } $subtotal += $item['price'] * $item['quantity']; @endphp
                     <div class="zc-mcard">
                         <div class="zc-mcard__top">
                             <div class="zc-prod-img">
@@ -1062,6 +1060,9 @@
     </div>
 
     @endif
+
+    <div data-cart="{{ json_encode($cart) }}">
+    </div>
 
 </div>{{-- /zc-container --}}
 </div>{{-- /zc-page --}}

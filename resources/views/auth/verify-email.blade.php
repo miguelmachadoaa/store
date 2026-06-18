@@ -16,7 +16,7 @@
             --bg-pure-white:       #FFFFFF;
             --midnight-blue:       #131921;
             --midnight-light:      #1A2536;
-            --warm-orange:         #FEBD69;
+            --warm-orange:         #FFC933;
             --warm-orange-hover:   #F3A847;
             --carbon-black:        #0F1111;
             --border-gray:         #D5D9D9;
@@ -48,7 +48,7 @@
 
                     {{-- Header / Logotipo --}}
                     <div class="text-center mb-6">
-                        <div class="inline-flex items-center justify-center w-12 h-12 bg-[#131921] border border-[#D5D9D9] rounded-[4px] mb-3 tracking-wider text-lg font-bold text-[#FEBD69] shadow-sm zl-font-display">
+                        <div class="inline-flex items-center justify-center w-12 h-12 bg-[#131921] border border-[#D5D9D9] rounded-[4px] mb-3 tracking-wider text-lg font-bold text-[#FFC933] shadow-sm zl-font-display">
                             ZVE
                         </div>
                         <h1 class="text-xl font-bold text-[#131921] tracking-wide uppercase zl-font-display">
@@ -97,7 +97,7 @@
                         @csrf
                         <button
                             type="submit"
-                            class="w-full bg-[#FEBD69] hover:bg-[#F3A847] border border-[#A88734] text-[#0F1111] font-bold py-2.5 px-4 rounded-[4px] transition duration-150 text-xs tracking-wide uppercase zl-font-display"
+                            class="w-full bg-[#FFC933] hover:bg-[#F3A847] border border-[#A88734] text-[#0F1111] font-bold py-2.5 px-4 rounded-[4px] transition duration-150 text-xs tracking-wide uppercase zl-font-display"
                         >
                             Reenviar Correo de Verificación
                         </button>

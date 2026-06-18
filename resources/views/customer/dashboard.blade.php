@@ -14,7 +14,7 @@
             --bg-pure-white:       #FFFFFF;
             --midnight-blue:       #131921;
             --midnight-light:      #1A2536;
-            --warm-orange:         #FEBD69;
+            --warm-orange:         #FFC933;
             --warm-orange-hover:   #F3A847;
             --carbon-black:        #0F1111;
             --border-gray:         #D5D9D9;

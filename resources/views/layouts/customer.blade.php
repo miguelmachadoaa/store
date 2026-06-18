@@ -16,7 +16,7 @@
                     {{-- Encabezado del Menú --}}
                     <div style="background-color: #131921; padding: 0.85rem 1.25rem; border-bottom: 1px solid #232f3e;">
                         <h3 style="color: #FFFFFF; margin: 0; font-size: 11px; font-weight: 700; text-transform: uppercase; tracking: 0.1em; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="width: 8px; height: 8px; background-color: #FEBD69; border-radius: 50%; display: inline-block;"></span> 
+                            <span style="width: 8px; height: 8px; background-color: #FFC933; border-radius: 50%; display: inline-block;"></span> 
                             Centro de Control
                         </h3>
                     </div>
@@ -28,7 +28,7 @@
                         @php $isActive = request()->routeIs('customer.dashboard'); @endphp
                         <a href="{{ route('customer.dashboard') }}" 
                            style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.25rem; font-size: 12px; font-weight: 700; text-transform: uppercase; text-decoration: none; border-bottom: 1px solid #E5E7EB; transition: background-color 0.2s;
-                                  {{ $isActive ? 'background-color: #F7F9F9; color: #131921; border-left: 4px solid #FEBD69; padding-left: 1rem;' : 'color: #555555; background-color: #FFFFFF;' }}"
+                                  {{ $isActive ? 'background-color: #F7F9F9; color: #131921; border-left: 4px solid #FFC933; padding-left: 1rem;' : 'color: #555555; background-color: #FFFFFF;' }}"
                            onmouseover="if(!{{ $isActive ? 'true' : 'false' }}) this.style.backgroundColor='#FAFAFA'" 
                            onmouseout="if(!{{ $isActive ? 'true' : 'false' }}) this.style.backgroundColor='#FFFFFF'">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -44,7 +44,7 @@
                         @php $isActive = request()->routeIs('customer.orders*'); @endphp
                         <a href="{{ route('customer.orders') }}" 
                            style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.25rem; font-size: 12px; font-weight: 700; text-transform: uppercase; text-decoration: none; border-bottom: 1px solid #E5E7EB; transition: background-color 0.2s;
-                                  {{ $isActive ? 'background-color: #F7F9F9; color: #131921; border-left: 4px solid #FEBD69; padding-left: 1rem;' : 'color: #555555; background-color: #FFFFFF;' }}"
+                                  {{ $isActive ? 'background-color: #F7F9F9; color: #131921; border-left: 4px solid #FFC933; padding-left: 1rem;' : 'color: #555555; background-color: #FFFFFF;' }}"
                            onmouseover="if(!{{ $isActive ? 'true' : 'false' }}) this.style.backgroundColor='#FAFAFA'" 
                            onmouseout="if(!{{ $isActive ? 'true' : 'false' }}) this.style.backgroundColor='#FFFFFF'">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -60,7 +60,7 @@
                         @php $isActive = request()->routeIs('customer.favorites'); @endphp
                         <a href="{{ route('customer.favorites') }}" 
                            style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.25rem; font-size: 12px; font-weight: 700; text-transform: uppercase; text-decoration: none; border-bottom: 1px solid #E5E7EB; transition: background-color 0.2s;
-                                  {{ $isActive ? 'background-color: #F7F9F9; color: #131921; border-left: 4px solid #FEBD69; padding-left: 1rem;' : 'color: #555555; background-color: #FFFFFF;' }}"
+                                  {{ $isActive ? 'background-color: #F7F9F9; color: #131921; border-left: 4px solid #FFC933; padding-left: 1rem;' : 'color: #555555; background-color: #FFFFFF;' }}"
                            onmouseover="if(!{{ $isActive ? 'true' : 'false' }}) this.style.backgroundColor='#FAFAFA'" 
                            onmouseout="if(!{{ $isActive ? 'true' : 'false' }}) this.style.backgroundColor='#FFFFFF'">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -76,7 +76,7 @@
                         @php $isActive = request()->routeIs('customer.payments.report'); @endphp
                         <a href="{{ route('customer.payments.report') }}" 
                            style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.25rem; font-size: 12px; font-weight: 700; text-transform: uppercase; text-decoration: none; border-bottom: 1px solid #E5E7EB; transition: background-color 0.2s;
-                                  {{ $isActive ? 'background-color: #F7F9F9; color: #131921; border-left: 4px solid #FEBD69; padding-left: 1rem;' : 'color: #555555; background-color: #FFFFFF;' }}"
+                                  {{ $isActive ? 'background-color: #F7F9F9; color: #131921; border-left: 4px solid #FFC933; padding-left: 1rem;' : 'color: #555555; background-color: #FFFFFF;' }}"
                            onmouseover="if(!{{ $isActive ? 'true' : 'false' }}) this.style.backgroundColor='#FAFAFA'" 
                            onmouseout="if(!{{ $isActive ? 'true' : 'false' }}) this.style.backgroundColor='#FFFFFF'">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -92,7 +92,7 @@
                         @php $isActive = (request()->routeIs('customer.payments') && !request()->routeIs('customer.payments.report')); @endphp
                         <a href="{{ route('customer.payments') }}" 
                            style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.25rem; font-size: 12px; font-weight: 700; text-transform: uppercase; text-decoration: none; border-bottom: 1px solid #E5E7EB; transition: background-color 0.2s;
-                                  {{ $isActive ? 'background-color: #F7F9F9; color: #131921; border-left: 4px solid #FEBD69; padding-left: 1rem;' : 'color: #555555; background-color: #FFFFFF;' }}"
+                                  {{ $isActive ? 'background-color: #F7F9F9; color: #131921; border-left: 4px solid #FFC933; padding-left: 1rem;' : 'color: #555555; background-color: #FFFFFF;' }}"
                            onmouseover="if(!{{ $isActive ? 'true' : 'false' }}) this.style.backgroundColor='#FAFAFA'" 
                            onmouseout="if(!{{ $isActive ? 'true' : 'false' }}) this.style.backgroundColor='#FFFFFF'">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -108,7 +108,7 @@
                         @php $isActive = request()->routeIs('customer.profile'); @endphp
                         <a href="{{ route('customer.profile') }}" 
                            style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.25rem; font-size: 12px; font-weight: 700; text-transform: uppercase; text-decoration: none; transition: background-color 0.2s;
-                                  {{ $isActive ? 'background-color: #F7F9F9; color: #131921; border-left: 4px solid #FEBD69; padding-left: 1rem;' : 'color: #555555; background-color: #FFFFFF;' }}"
+                                  {{ $isActive ? 'background-color: #F7F9F9; color: #131921; border-left: 4px solid #FFC933; padding-left: 1rem;' : 'color: #555555; background-color: #FFFFFF;' }}"
                            onmouseover="if(!{{ $isActive ? 'true' : 'false' }}) this.style.backgroundColor='#FAFAFA'" 
                            onmouseout="if(!{{ $isActive ? 'true' : 'false' }}) this.style.backgroundColor='#FFFFFF'">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">

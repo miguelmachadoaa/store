@@ -80,7 +80,7 @@
             transition: color 0.2s ease;
         }
         .zolum-footer-links-list a:hover {
-            color: var(--warm-orange, #F26722);
+            color: var(--warm-orange, #FFC933);
         }
         .zolum-footer-info {
             font-size: 14px;
@@ -94,7 +94,7 @@
             transition: color 0.2s ease;
         }
         .zolum-footer-info a:hover {
-            color: var(--warm-orange, #F26722);
+            color: var(--warm-orange, #FFC933);
         }
         .zolum-footer-bottom {
             max-width: 1200px;
@@ -127,7 +127,7 @@
 
     {{-- Barra superior informativa (Alta conversión) --}}
     <div class="zolum-top-banner">
-        <span>Delivery GRATIS en compras mayores a $20 en Maracay</span>
+        <span>Delivery GRATIS en compras mayores a $20 en Caracas</span>
     </div>
 
     {{-- HEADER PRINCIPAL (Estilo Madison/Amazon) --}}
@@ -144,7 +144,7 @@
                 </button>
 
                 <a href="{{ route('home') }}" class="zolum-brand-logo">
-                    <img src="{{ asset('storage/zolum_blanco.png') }}" alt="Zolum Shop" class="zolum-logo-img">
+                    <img src="{{ asset('storage/logo_head.png') }}" alt="Zolum Shop" class="zolum-logo-img">
                 </a>
             </div>
 
@@ -262,7 +262,7 @@
             
             {{-- LADO IZQUIERDO: Marca, Logo y Eslogan --}}
             <div class="zolum-footer-brand">
-                <img src="{{ asset('storage/zolum_blanco.png') }}" alt="Zolum Shop" class="zolum-footer-logo" width="180">
+                <img src="{{ asset('storage/logo_footer.png') }}" alt="Zolum Shop" class="zolum-footer-logo" width="180">
                 <p class="zolum-footer-tagline">Tu estilo de vida, evolucionado.</p>
             </div>
             
