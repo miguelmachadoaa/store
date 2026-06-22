@@ -26,9 +26,13 @@ use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\LinkController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PaymentMethodController;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+
+
+
 
 Route::get('/storage/{path}', function ($path) {
     $path = str_replace('../', '', $path); // Seguridad básica
@@ -135,6 +139,8 @@ Route::middleware('auth')->group(function () {
 // area admin
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+
+    Route::resource('payment-methods', PaymentMethodController::class);
 
     Route::get('/admin/newsletter/send', [NewsletterSendController::class, 'form'])
         ->name('admin.newsletter.form');
