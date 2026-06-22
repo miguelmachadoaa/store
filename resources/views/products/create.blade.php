@@ -10,6 +10,23 @@
         </div>
     </x-slot>
 
+    <p>
+        @if ($errors->any())
+            <div class="mb-4">
+                <div class="font-medium text-red-600">¡Ups! Algo salió mal.</div>
+                <ul class="mt-3 list-disc list-inside text-sm text-red-600">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @else
+            <div class="mb-4 text-sm text-gray-600">
+                Completa el formulario para crear un nuevo producto. Los campos marcados con * son obligatorios.
+            </div>
+        @endif
+    </p>
+
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">

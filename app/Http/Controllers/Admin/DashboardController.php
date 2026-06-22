@@ -28,6 +28,16 @@ class DashboardController extends Controller
             ->take(6)
             ->get();
 
+        // NUEVO: Ventas por día (Últimos 30 días)
+        $salesByDay = Order::select(
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as day"),
+            DB::raw("SUM(total) as total")
+        )
+            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->groupBy('day')
+            ->orderBy('day', 'ASC')
+            ->get();
+
         // Órdenes recientes
         $recentOrders = Order::latest()->take(5)->get();
 
@@ -38,7 +48,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Productos más favoritedos
+        // Productos más favoritos
         $topWishlist = Product::withCount('favoritedBy')
             ->orderBy('favorited_by_count', 'DESC')
             ->take(5)
@@ -49,6 +59,7 @@ class DashboardController extends Controller
             'totalSales',
             'totalProducts',
             'salesByMonth',
+            'salesByDay', // <-- Pasamos la nueva variable a la vista
             'recentOrders',
             'topProducts',
             'topWishlist'
