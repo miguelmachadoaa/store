@@ -588,6 +588,23 @@
     color: var(--muted);
 }
 .zco-trust-item span:first-child { font-size: 14px; }
+
+/* Asegura que la imagen del logo se centre y mantenga proporciones */
+.zco-pay-img {
+    height: 26px;
+    max-height: 26px;
+    object-fit: contain;
+    margin: 0 auto 6px;
+    display: block;
+    transition: filter .18s ease;
+}
+
+/* Si el radio está seleccionado, aplicamos un filtro blanco al logo para que no se pierda en el fondo oscuro de Zolum */
+.zco-pay-label input[type="radio"]:checked + .zco-pay-card .zco-pay-img {
+    filter: brightness(0) invert(1);
+}
+
+
 </style>
 
 <div class="zco-page">
@@ -864,35 +881,40 @@
 
                     <div class="zco-payment-grid">
 
-                        <label class="zco-pay-label">
-                            <input type="radio" name="payment" value="card"
-                                   {{ old('payment', 'card') === 'card' ? 'checked' : '' }}>
-                            <div class="zco-pay-card">
-                                <span class="zco-pay-icon">💳</span>
-                                <span class="zco-pay-name">Tarjeta</span>
-                                <span class="zco-pay-desc">Débito / Crédito</span>
-                            </div>
-                        </label>
+                        @forelse($paymentMethods as $index => $method)
+                            <label class="zco-pay-label">
+                                <input type="radio" 
+                                    name="payment_method_id" 
+                                    value="{{ $method->id }}"
+                                    {{ old('payment_method_id', $index === 0 ? $method->id : '') == $method->id ? 'checked' : '' }}
+                                    required>
+                                <div class="zco-pay-card">
+                                    
+                                    @if($method->logo)
+                                        {{-- Si hay logo en el CRUD, lo renderizamos con la clase optimizada --}}
+                                        <img src="{{ asset('storage/' . $method->logo) }}" 
+                                            class="zco-pay-img" 
+                                            alt="{{ $method->name }}">
+                                    @else
+                                        {{-- Fallback inteligente basado en tu columna 'type' --}}
+                                        <span class="zco-pay-icon">
+                                            @if($method->type === 'paypal') 🅿️ 
+                                            @elseif($method->type === 'card' || $method->type === 'stripe') 💳 
+                                            @else 🏦 @endif
+                                        </span>
+                                    @endif
 
-                        <label class="zco-pay-label">
-                            <input type="radio" name="payment" value="transfer"
-                                   {{ old('payment') === 'transfer' ? 'checked' : '' }}>
-                            <div class="zco-pay-card">
-                                <span class="zco-pay-icon">🏦</span>
-                                <span class="zco-pay-name">Transferencia</span>
-                                <span class="zco-pay-desc">Banco / Zelle</span>
+                                    <span class="zco-pay-name">{{ $method->name }}</span>
+                                    <span class="zco-pay-desc" title="{{ $method->description }}">
+                                        {{ Str::limit($method->description ?? 'Pago directo', 30, '...') }}
+                                    </span>
+                                </div>
+                            </label>
+                        @empty
+                            <div style="grid-column: span 3; text-align: center; padding: 16px; background: #FEF0ED; border: 1px solid #F5C6BB; color: var(--red); font-family: var(--font-technical); font-size: 12px; border-radius: var(--radius);">
+                                ⚠ No hay métodos de pago habilitados temporalmente. Por favor, contáctanos.
                             </div>
-                        </label>
-
-                        <label class="zco-pay-label">
-                            <input type="radio" name="payment" value="paypal"
-                                   {{ old('payment') === 'paypal' ? 'checked' : '' }}>
-                            <div class="zco-pay-card">
-                                <span class="zco-pay-icon">🅿️</span>
-                                <span class="zco-pay-name">PayPal</span>
-                                <span class="zco-pay-desc">Pago digital</span>
-                            </div>
-                        </label>
+                        @endforelse
 
                     </div>
 

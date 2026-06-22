@@ -25,20 +25,35 @@
 
                 <div class="grid md:grid-cols-2 gap-4 mb-6">
                     <div>
-                        <p><strong>Nombre:</strong> {{ $order->customer_name }}</p>
-                        <p><strong>Email:</strong> {{ $order->customer_email }}</p>
+                        <p class="mb-1"><strong>Nombre:</strong> {{ $order->customer_name }}</p>
+                        <p class="mb-1"><strong>Email:</strong> {{ $order->customer_email }}</p>
+                        @if($order->customer_rif)
+                            <p class="mb-1"><strong>RIF / Documento:</strong> {{ $order->customer_rif }}</p>
+                        @endif
                         @if($order->user_id)
-                            <p><strong>Cliente Registrado:</strong>
+                            <p class="mt-2"><strong>Cliente Registrado:</strong>
                                 <a href="{{ route('admin.customers.show', $order->user_id) }}"
-                                    class="text-indigo-600 hover:underline">
+                                    class="text-indigo-600 hover:underline font-medium">
                                     Ver Perfil de Usuario
                                 </a>
                             </p>
                         @endif
                     </div>
                     <div>
-                        <p><strong>Dirección:</strong> {{ $order->address }}</p>
-                        <p><strong>Método de Pago:</strong> {{ ucfirst($order->payment_method) }}</p>
+                        <p class="mb-2"><strong>Dirección:</strong> {{ $order->address }}</p>
+                        
+                        {{-- Bloque de pago optimizado con logo --}}
+                        <div class="flex items-start gap-2 mt-1">
+                            <strong>Método de Pago:</strong>
+                            <div class="flex flex-col gap-1">
+                                <span class="font-medium text-gray-900">{{ $order->payment_method ?? 'No especificado' }}</span>
+                                @if($order->paymentMethod && $order->paymentMethod->logo)
+                                    <img src="{{ asset('storage/' . $order->paymentMethod->logo) }}" 
+                                         class="h-7 w-auto object-contain max-w-[120px] mt-1 p-1 bg-gray-50 border rounded" 
+                                         alt="{{ $order->payment_method }}">
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -49,20 +64,12 @@
                     <table class="min-w-full divide-y divide-gray-200 mb-6">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto
-                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subtotal
-                                </th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase bg-indigo-50">
-                                    Subtotal BS
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase bg-gray-50">
-                                    Tasa
-                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subtotal</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase bg-indigo-50">Subtotal BS</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase bg-gray-50">Tasa</th>
                             </tr>
                         </thead>
 
@@ -75,8 +82,7 @@
                                     <td class="px-6 py-4 font-semibold">
                                         ${{ number_format($item->price * $item->quantity, 2) }}
                                         @if($item->tax_rate > 0)
-                                            <div class="text-[10px] text-gray-400">Incluye IVA
-                                                ({{ number_format($item->tax_rate, 0) }}%)</div>
+                                            <div class="text-[10px] text-gray-400">Incluye IVA ({{ number_format($item->tax_rate, 0) }}%)</div>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 font-semibold text-indigo-700 bg-indigo-50">
@@ -96,18 +102,17 @@
                 <form action="{{ route('admin.orders.status', $order) }}" method="POST" class="flex items-center gap-4">
                     @csrf
 
-                    <select name="status" class="border rounded p-2">
+                    <select name="status" class="border rounded p-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
                         <option value="pendiente" {{ $order->status == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
                         <option value="pagada" {{ $order->status == 'pagada' ? 'selected' : '' }}>Pagada</option>
                         <option value="enviada" {{ $order->status == 'enviada' ? 'selected' : '' }}>Enviada</option>
                         <option value="cancelada" {{ $order->status == 'cancelada' ? 'selected' : '' }}>Cancelada</option>
                     </select>
 
-                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">
+                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm font-semibold transition">
                         Actualizar Estado
                     </button>
                 </form>
-
 
                 {{-- Totales --}}
                 <div class="mt-8 border-t pt-4">
@@ -130,21 +135,20 @@
                             @endif
 
                             @if($order->total_bs)
-                                <div class="flex justify-between py-2 border-b bg-gray-50">
+                                <div class="flex justify-between py-2 border-b bg-gray-50 px-2">
                                     <span class="font-semibold text-gray-600">Tasa de Cambio:</span>
                                     <span>Bs. {{ number_format($order->exchange_rate, 2) }}</span>
                                 </div>
-                                <div class="flex justify-between py-2 border-b bg-indigo-50">
+                                <div class="flex justify-between py-2 border-b bg-indigo-50 px-2">
                                     <span class="font-bold text-indigo-800">Total Bolívares:</span>
-                                    <span class="font-bold text-xl text-indigo-800">Bs.
-                                        {{ number_format($order->total_bs, 2) }}</span>
+                                    <span class="font-bold text-xl text-indigo-800">Bs. {{ number_format($order->total_bs, 2) }}</span>
                                 </div>
                                 @if($order->taxable_base)
-                                    <div class="flex justify-between py-2 border-b bg-indigo-50 text-xs text-indigo-600">
+                                    <div class="flex justify-between py-2 border-b bg-indigo-50 text-xs text-indigo-600 px-2">
                                         <span>Base Imponible (BS):</span>
                                         <span>Bs. {{ number_format($order->taxable_base * $order->exchange_rate, 2) }}</span>
                                     </div>
-                                    <div class="flex justify-between py-2 border-b bg-indigo-50 text-xs text-indigo-600">
+                                    <div class="flex justify-between py-2 border-b bg-indigo-50 text-xs text-indigo-600 px-2">
                                         <span>Impuesto (BS):</span>
                                         <span>Bs. {{ number_format($order->tax_amount * $order->exchange_rate, 2) }}</span>
                                     </div>

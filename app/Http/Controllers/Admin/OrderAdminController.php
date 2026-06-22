@@ -10,14 +10,16 @@ class OrderAdminController extends Controller
 {
     public function index()
     {
-        $orders = Order::latest()->paginate(10);
+        // Añadimos eager loading para el método de pago
+        $orders = Order::with('paymentMethod')->latest()->paginate(10);
 
         return view('admin.orders.index', compact('orders'));
     }
 
     public function show(Order $order)
     {
-        $order->load('items');
+        // Cargamos los ítems y el método de pago dinámico
+        $order->load(['items', 'paymentMethod']);
 
         return view('admin.orders.show', compact('order'));
     }

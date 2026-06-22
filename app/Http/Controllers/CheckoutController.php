@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
 use App\Models\PaymentReport;
+use App\Models\PaymentMethod;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -27,7 +28,9 @@ class CheckoutController extends Controller
         // Si el usuario es invitado, pasamos una instancia vacía de User para no romper la vista
         $user = auth()->user() ?? new User();
 
-        return view('checkout.index', compact('cart', 'user'));
+        $paymentMethods = PaymentMethod::get();
+
+        return view('checkout.index', compact('cart', 'user', 'paymentMethods'));
     }
 
     public function process(Request $request)
@@ -37,7 +40,8 @@ class CheckoutController extends Controller
             'phone' => 'required|string|max:20',
             'rif' => 'required|string|max:20',
             'address' => 'required|string',
-            'payment' => 'required|string',
+          #  'payment' => 'required|string',
+            'payment_method_id' => 'required|exists:payment_methods,id',
         ];
 
         // Si es invitado, exigimos nombre y correo electrónico
@@ -47,6 +51,8 @@ class CheckoutController extends Controller
         }
 
         $request->validate($rules);
+
+        $method = PaymentMethod::find($request->payment_method_id);
 
         $cart = app()->make(\App\Http\Controllers\CartController::class)->getCartItems();
 
@@ -136,7 +142,8 @@ class CheckoutController extends Controller
             'customer_email' => $user->email,
             'customer_rif' => $request->rif,
             'address' => $request->address,
-            'payment_method' => $request->payment,
+            'payment_method_id' => $method->id, 
+            'payment_method'    => $method->name,
             'total' => $total,
             'total_bs' => $total * $exchangeRate,
             'taxable_base' => $totalTaxableBase * $exchangeRate,

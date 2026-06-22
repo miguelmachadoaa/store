@@ -18,13 +18,12 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total (USD)
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total (Bs)
-                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pago</th> {{-- ◄ Nueva columna --}}
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total (USD)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total (Bs)</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones
-                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
                                 </tr>
                             </thead>
 
@@ -34,6 +33,23 @@
                                         <td class="px-6 py-4">{{ $order->id }}</td>
                                         <td class="px-6 py-4">{{ $order->customer_name }}</td>
                                         <td class="px-6 py-4">{{ $order->customer_email }}</td>
+                                        
+                                        {{-- Celda del Método de Pago --}}
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-2">
+                                                @if($order->paymentMethod && $order->paymentMethod->logo)
+                                                    <img src="{{ asset('storage/' . $order->paymentMethod->logo) }}" 
+                                                         class="h-5 w-auto object-contain max-w-[50px]" 
+                                                         alt="{{ $order->payment_method }}"
+                                                         title="{{ $order->payment_method }}">
+                                                @else
+                                                    <span class="text-xs font-medium text-gray-700 bg-gray-100 px-2 py-1 rounded">
+                                                        {{ $order->payment_method ?? 'No especificado' }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </td>
+
                                         <td class="px-6 py-4 font-semibold">${{ number_format($order->total, 2) }}</td>
                                         <td class="px-6 py-4">
                                             @if($order->total_bs)
@@ -44,8 +60,7 @@
                                         </td>
                                         <td class="px-6 py-4">{{ $order->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="px-6 py-4">
-                                            <span
-                                                class="px-3 py-1 inline-flex text-xs font-semibold rounded-full {{ $order->status_badge }}">
+                                            <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full {{ $order->status_badge }}">
                                                 {{ ucfirst($order->status) }}
                                             </span>
                                         </td>
