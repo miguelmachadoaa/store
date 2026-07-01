@@ -61,9 +61,10 @@ class SliderController extends Controller
             'text_color' => 'required|in:light,dark',
         ]);
 
-        // Manejar la imagen
+        // Manejar la imagen en Cloudflare R2
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('sliders', 'public');
+            // Se cambia 'public' por 'r2'
+            $validated['image'] = $request->file('image')->store('sliders', 'r2');
         }
 
         $validated['is_active'] = $request->has('is_active');
@@ -71,7 +72,7 @@ class SliderController extends Controller
         Slider::create($validated);
 
         return redirect()->route('sliders.index')
-            ->with('success', 'Slider creado exitosamente.');
+            ->with('success', 'Slider creado exitosamente en Cloudflare R2.');
     }
 
     /**
@@ -108,13 +109,14 @@ class SliderController extends Controller
             'text_color' => 'required|in:light,dark',
         ]);
 
-        // Manejar la imagen
+        // Manejar la imagen en Cloudflare R2
         if ($request->hasFile('image')) {
-            // Eliminar imagen anterior
+            // Eliminar imagen anterior del disco 'r2'
             if ($slider->image) {
-                Storage::disk('public')->delete($slider->image);
+                Storage::disk('r2')->delete($slider->image);
             }
-            $validated['image'] = $request->file('image')->store('sliders', 'public');
+            // Guardar la nueva en 'r2'
+            $validated['image'] = $request->file('image')->store('sliders', 'r2');
         }
 
         $validated['is_active'] = $request->has('is_active');
@@ -130,9 +132,9 @@ class SliderController extends Controller
      */
     public function destroy(Slider $slider)
     {
-        // Eliminar imagen si existe
+        // Eliminar imagen de Cloudflare R2 si existe
         if ($slider->image) {
-            Storage::disk('public')->delete($slider->image);
+            Storage::disk('r2')->delete($slider->image);
         }
 
         $slider->delete();

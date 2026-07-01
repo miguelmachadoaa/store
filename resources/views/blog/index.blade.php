@@ -6,7 +6,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         @foreach($posts as $post)
             <a href="{{ route('blog.show', $post->slug) }}" class="block bg-white shadow rounded overflow-hidden">
-                <img src="{{ asset('storage/' . $post->image) }}" class="h-48 w-full object-cover">
+                <img src="{{ Storage::disk('r2')->url($post->image) }}" class="h-48 w-full object-cover">
                 <div class="p-4">
                     <h2 class="text-xl font-semibold">{{ $post->title }}</h2>
                     <p class="text-gray-600 mt-2">{{ $post->excerpt }}</p>

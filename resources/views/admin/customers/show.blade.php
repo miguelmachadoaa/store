@@ -74,7 +74,7 @@
                     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         @foreach($user->favorites as $favorite)
                             <div class="border rounded-lg p-2 bg-gray-50 text-center">
-                                <img src="{{ $favorite->image ? asset('storage/' . $favorite->image) : asset('images/no-image.png') }}"
+                                <img src="{{ $favorite->image ? Storage::disk('r2')->url($favorite->image) : asset('images/no-image.png') }}"
                                     class="w-full h-24 object-cover rounded mb-2">
                                 <p class="text-xs font-semibold truncate">{{ $favorite->name }}</p>
                                 <p class="text-indigo-600 text-xs">${{ number_format($favorite->price, 2) }}</p>

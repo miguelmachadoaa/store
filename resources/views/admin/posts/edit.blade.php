@@ -22,7 +22,7 @@
                 @if($post->image)
                     <div class="mb-4">
                         <p class="font-semibold">Imagen actual:</p>
-                        <img src="{{ asset('storage/' . $post->image) }}" class="h-32 rounded shadow">
+                        <img src="{{ Storage::disk('r2')->url($post->image) }}" class="h-32 rounded shadow">
                     </div>
                 @endif
 

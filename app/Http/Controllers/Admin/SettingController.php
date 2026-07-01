@@ -53,30 +53,30 @@ class SettingController extends Controller
         // Asegurar que use_brevo sea 0 si no viene en el request (al ser un checkbox/select estructurado)
         $data['use_brevo'] = $request->has('use_brevo') ? $request->input('use_brevo') : 0;
 
-        // 2. Manejo del Logo de la Tienda (Tu lógica original manteniendo 'public/')
+        // 2. Manejo del Logo de la Tienda en Cloudflare R2
         if ($request->hasFile('logo')) {
             if ($setting->logo) {
-                Storage::delete('public/' . $setting->logo);
+                Storage::disk('r2')->delete($setting->logo);
             }
-            $path = $request->file('logo')->store('settings', 'public');
+            $path = $request->file('logo')->store('settings', 'r2');
             $data['logo'] = $path;
         }
 
-        // 3. Manejo del Logo Exclusivo de Linktree
+        // 3. Manejo del Logo Exclusivo de Linktree en Cloudflare R2
         if ($request->hasFile('linktree_logo')) {
             if ($setting->linktree_logo) {
-                Storage::delete('public/' . $setting->linktree_logo);
+                Storage::disk('r2')->delete($setting->linktree_logo);
             }
-            $path = $request->file('linktree_logo')->store('linktree', 'public');
+            $path = $request->file('linktree_logo')->store('linktree', 'r2');
             $data['linktree_logo'] = $path;
         }
 
-        // 4. Manejo de la Imagen de Fondo de Linktree
+        // 4. Manejo de la Imagen de Fondo de Linktree en Cloudflare R2
         if ($request->hasFile('linktree_bg_image')) {
             if ($setting->linktree_bg_image) {
-                Storage::delete('public/' . $setting->linktree_bg_image);
+                Storage::disk('r2')->delete($setting->linktree_bg_image);
             }
-            $path = $request->file('linktree_bg_image')->store('linktree/backgrounds', 'public');
+            $path = $request->file('linktree_bg_image')->store('linktree/backgrounds', 'r2');
             $data['linktree_bg_image'] = $path;
         }
 

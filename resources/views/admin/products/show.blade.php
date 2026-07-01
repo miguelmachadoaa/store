@@ -23,7 +23,7 @@
                         <!-- Imagen del producto -->
                         <div>
                             @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-auto rounded-lg shadow-md border border-gray-200">
+                                <img src="{{ Storage::disk('r2')->url($product->image) }}" alt="{{ $product->name }}" class="w-full h-auto rounded-lg shadow-md border border-gray-200">
                             @else
                                 <div class="w-full h-96 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center border border-gray-200">
                                     <svg class="h-32 w-32 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

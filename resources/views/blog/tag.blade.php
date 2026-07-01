@@ -13,7 +13,7 @@
                        class="block bg-white shadow rounded overflow-hidden hover:shadow-lg transition">
 
                         @if($post->image)
-                            <img src="{{ asset('storage/' . $post->image) }}"
+                            <img src="{{ Storage::disk('r2')->url($post->image) }}"
                                  class="h-48 w-full object-cover">
                         @endif
 

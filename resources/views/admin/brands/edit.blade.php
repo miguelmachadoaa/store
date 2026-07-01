@@ -25,7 +25,7 @@
                         <input type="file" name="logo" class="w-full border-gray-300 rounded-md shadow-sm">
 
                         @if($brand->logo)
-                            <img src="{{ asset('storage/' . $brand->logo) }}" class="h-16 mt-2 rounded border shadow">
+                            <img src="{{ Storage::disk('r2')->url($brand->logo) }}" class="h-16 mt-2 rounded border shadow">
                         @endif
                     </div>
 

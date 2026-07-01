@@ -6,7 +6,7 @@
     <div class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white py-24 overflow-hidden">
         @if($service->hero_image)
             <div class="absolute inset-0">
-                <img src="{{ asset('storage/' . $service->hero_image) }}" 
+                <img src="{{ Storage::disk('r2')->url($service->hero_image) }}" 
                     alt="{{ $service->name }}"
                     class="w-full h-full object-cover opacity-20">
                 <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/80 to-purple-900/80"></div>
@@ -99,7 +99,7 @@
                             {{-- Client Info --}}
                             <div class="flex items-center gap-4 border-t pt-4">
                                 @if($testimonial->client_avatar)
-                                    <img src="{{ asset('storage/' . $testimonial->client_avatar) }}" 
+                                    <img src="{{ Storage::disk('r2')->url($testimonial->client_avatar) }}" 
                                         alt="{{ $testimonial->client_name }}"
                                         class="w-12 h-12 rounded-full object-cover">
                                 @else

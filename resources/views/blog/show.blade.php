@@ -2,7 +2,7 @@
 
 <div class="max-w-4xl mx-auto py-12 px-6">
 
-    <img src="{{ asset('storage/' . $post->image) }}" class="w-full rounded-lg shadow mb-6">
+    <img src="{{ Storage::disk('r2')->url($post->image) }}" class="w-full rounded-lg shadow mb-6">
 
     <h1 class="text-4xl font-bold mb-4">{{ $post->title }}</h1>
 

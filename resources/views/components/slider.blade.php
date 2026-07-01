@@ -8,7 +8,7 @@
                     <div class="relative">
 
                         {{-- Imagen --}}
-                        <img src="{{ asset('storage/' . $slider->image) }}"
+                        <img src="{{ Storage::disk('r2')->url($slider->image) }}"
                              class="w-full h-[450px] object-cover rounded-lg shadow">
 
                         {{-- Texto --}}

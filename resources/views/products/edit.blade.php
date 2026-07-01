@@ -94,7 +94,7 @@
                             @if($product->image)
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Imagen Actual</label>
-                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="h-32 w-32 object-cover rounded-lg border border-gray-200 shadow-sm">
+                                    <img src="{{ Storage::disk('r2')->url($product->image) }}" alt="{{ $product->name }}" class="h-32 w-32 object-cover rounded-lg border border-gray-200 shadow-sm">
                                 </div>
                             @endif
 

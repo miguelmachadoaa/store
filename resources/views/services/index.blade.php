@@ -22,7 +22,7 @@
                         class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-indigo-200">
                         @if($service->hero_image)
                             <div class="h-48 overflow-hidden">
-                                <img src="{{ asset('storage/' . $service->hero_image) }}" alt="{{ $service->name }}"
+                                <img src="{{ Storage::disk('r2')->url($service->hero_image) }}" alt="{{ $service->name }}"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
                             </div>
                         @endif

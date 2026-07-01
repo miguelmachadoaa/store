@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="max-w-4xl mx-auto py-10 px-6">
         <div class="grid md:grid-cols-2 gap-6">
-            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full rounded">
+            <img src="{{ Storage::disk('r2')->url($product->image) }}" alt="{{ $product->name }}" class="w-full rounded">
 
             <div>
                 <h1 class="text-3xl font-bold mb-2">{{ $product->name }}</h1>

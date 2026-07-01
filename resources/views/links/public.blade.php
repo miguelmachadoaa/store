@@ -13,7 +13,7 @@
             @if($settings->linktree_bg_type === 'solid')
                 background-color: {{ $settings->linktree_bg_color }};
             @elif($settings->linktree_bg_type === 'image' && $settings->linktree_bg_image)
-                background-image: url('{{ asset('storage/' . $settings->linktree_bg_image) }}');
+                background-image: url('{{ Storage::disk('r2')->url($settings->linktree_bg_image) }}');
                 background-size: cover;
                 background-position: center;
                 background-attachment: fixed;
@@ -35,9 +35,9 @@
     <div class="text-center mb-8 w-full">
         <div class="w-24 h-24 bg-white rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden shadow-xl border-2 border-white/20">
             @if($settings->linktree_logo)
-                <img src="{{ asset('storage/' . $settings->linktree_logo) }}" class="w-full h-full object-cover">
+                <img src="{{ Storage::disk('r2')->url($settings->linktree_logo) }}" class="w-full h-full object-cover">
             @elseif($settings->store_logo)
-                <img src="{{ asset('storage/' . $settings->store_logo) }}" class="w-full h-full object-cover">
+                <img src="{{ Storage::disk('r2')->url($settings->store_logo) }}" class="w-full h-full object-cover">
             @else
                 <span class="text-gray-800 font-black text-xl">{{ substr($settings->store_name ?? 'M', 0, 5) }}</span>
             @endif

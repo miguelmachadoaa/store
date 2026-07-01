@@ -83,7 +83,7 @@
                                             {{-- Logo --}}
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if($brand->logo)
-                                                    <img src="{{ asset('storage/' . $brand->logo) }}" class="h-12 w-12 object-contain rounded border shadow-sm">
+                                                    <img src="{{ Storage::disk('r2')->url($brand->logo) }}" class="h-12 w-12 object-contain rounded border shadow-sm">
                                                 @else
                                                     <div class="h-12 w-12 bg-gray-100 rounded flex items-center justify-center border shadow-sm">
                                                         <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -41,7 +41,7 @@
                         @if(isset($category) && $category->image)
                             <div class="relative inline-block">
                                 <img id="image-preview" 
-                                     src="{{ asset('storage/' . $category->image) }}" 
+                                     src="{{ Storage::disk('r2')->url($category->image) }}" 
                                      alt="Category image"
                                      class="h-32 w-32 object-cover rounded-lg border-2 border-gray-200">
                                 <label class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 cursor-pointer hover:bg-red-600">

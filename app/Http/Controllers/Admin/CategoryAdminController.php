@@ -35,28 +35,15 @@ class CategoryAdminController extends Controller
             'is_active' => $validated['is_active'],
         ];
 
-        // Guardar imagen si existe
+        // Guardar imagen en Cloudflare R2 si existe
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('categories', 'public');
-
-                $path = $data['image'];
-
-            $from = storage_path('app/public/' . $path);
-            $to = public_path('storage/' . $path);
-
-            if (!file_exists(dirname($to))) {
-                mkdir(dirname($to), 0775, true);
-            }
-
-            copy($from, $to); 
-
-
+            $data['image'] = $request->file('image')->store('categories', 'r2');
         }
 
         Category::create($data);
 
         return redirect()->route('admin.categories.index')
-                        ->with('success', 'Categoría creada exitosamente!');
+                        ->with('success', 'Categoría creada exitosamente en Cloudflare R2!');
     }
 
     public function edit(Category $category)
@@ -64,7 +51,7 @@ class CategoryAdminController extends Controller
         return view('admin.categories.edit', compact('category'));
     }
 
-   public function update(Request $request, Category $category)
+    public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
@@ -78,32 +65,20 @@ class CategoryAdminController extends Controller
             'is_active' => $validated['is_active'],
         ];
 
-        // Eliminar imagen si se marcó el checkbox
+        // Eliminar imagen de R2 si se marcó el checkbox
         if ($request->has('remove_image') && $category->image) {
-            Storage::disk('public')->delete($category->image);
+            Storage::disk('r2')->delete($category->image);
             $data['image'] = null;
         }
 
-        // Subir nueva imagen
+        // Subir nueva imagen a Cloudflare R2
         if ($request->hasFile('image')) {
-            // Eliminar imagen anterior si existe
+            // Eliminar imagen anterior de R2 si existe
             if ($category->image) {
-                Storage::disk('public')->delete($category->image);
+                Storage::disk('r2')->delete($category->image);
             }
-            $data['image'] = $request->file('image')->store('categories', 'public');
-
-              $path = $data['image'];
-
-            $from = storage_path('app/public/' . $path);
-            $to = public_path('storage/' . $path);
-
-            if (!file_exists(dirname($to))) {
-                mkdir(dirname($to), 0775, true);
-            }
-
-            copy($from, $to); 
-
-
+            
+            $data['image'] = $request->file('image')->store('categories', 'r2');
         }
 
         $category->update($data);
@@ -114,14 +89,14 @@ class CategoryAdminController extends Controller
 
     public function destroy(Category $category)
     {
-        // Eliminar imagen si existe
+        // Eliminar imagen de Cloudflare R2 si existe antes de borrar el registro
         if ($category->image) {
-            Storage::disk('public')->delete($category->image);
+            Storage::disk('r2')->delete($category->image);
         }
 
         $category->delete();
 
         return redirect()->route('admin.categories.index')
-                        ->with('success', 'Categoría eliminada exitosamente!');
+                        ->with('success', 'Categoría eliminada exitosamente por completo!');
     }
 }

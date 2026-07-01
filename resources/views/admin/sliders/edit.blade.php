@@ -53,7 +53,7 @@
                             @if($slider->image)
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Imagen Actual</label>
-                                    <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="h-48 w-auto object-cover rounded-lg border border-gray-200 shadow-sm">
+                                    <img src="{{ Storage::disk('r2')->url($slider->image) }}" alt="{{ $slider->title }}" class="h-48 w-auto object-cover rounded-lg border border-gray-200 shadow-sm">
                                 </div>
                             @endif
 

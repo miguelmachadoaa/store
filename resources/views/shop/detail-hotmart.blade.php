@@ -30,7 +30,7 @@
                     @endphp
                     <iframe class="w-full h-full" src="{{ $embedUrl }}" title="Presentación del producto" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 @else
-                    <img src="{{ asset('storage/' . $product->image) }}" class="w-full h-full object-cover" alt="{{ $product->name }}">
+                    <img src="{{ Storage::disk('r2')->url($product->image) }}" class="w-full h-full object-cover" alt="{{ $product->name }}">
                 @endif
             </div>
 

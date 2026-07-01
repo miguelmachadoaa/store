@@ -82,7 +82,7 @@
                                         <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if($product->image)
-                                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="h-16 w-16 object-cover rounded-lg shadow-sm border border-gray-200">
+                                                    <img src="{{ Storage::disk('r2')->url($product->image) }}" alt="{{ $product->name }}" class="h-16 w-16 object-cover rounded-lg shadow-sm border border-gray-200">
                                                 @else
                                                     <div class="h-16 w-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center shadow-sm border border-gray-200">
                                                         <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

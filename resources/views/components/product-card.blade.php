@@ -166,7 +166,7 @@
 
     {{-- Imagen --}}
     <a href="{{ route('product.detail', $product->slug) }}" class="ap-card__img-wrap">
-        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+        <img src="{{ Storage::disk('r2')->url($product->image) }}" alt="{{ $product->name }}">
 
         @if($product->hasDiscount())
             <span class="ap-card__badge">−{{ $product->discount_percentage }}%</span>

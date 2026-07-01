@@ -15,7 +15,7 @@
                         </button>
 
                         <a href="{{ route('product.detail', $product->slug) }}" class="flex-grow">
-                            <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('images/no-image.png') }}" 
+                            <img src="{{ $product->image ? Storage::disk('r2')->url($product->image) : asset('images/no-image.png') }}" 
                                  class="w-full h-48 object-cover rounded-lg mb-4">
                             <h3 class="font-bold text-gray-800 line-clamp-2 mb-2">{{ $product->name }}</h3>
                             <div class="text-indigo-600 font-bold text-lg">${{ number_format($product->price, 2) }}</div>

@@ -22,7 +22,7 @@
                 @mousemove="x = ($event.offsetX / $event.target.offsetWidth) * 100; y = ($event.offsetY / $event.target.offsetHeight) * 100"
                 @mouseenter="zoom = true" @mouseleave="zoom = false">
 
-                <img id="main-image" src="{{ asset('storage/' . $product->image) }}"
+                <img id="main-image" src="{{ Storage::disk('r2')->url($product->image) }}"
                     class="w-full h-[500px] object-contain bg-white transition-transform duration-300"
                     :style="zoom ? `transform: scale(2); transform-origin: ${x}% ${y}%` : ''">
             </div>
@@ -32,17 +32,17 @@
                 <div class="swiper-wrapper">
                     {{-- Imagen principal --}}
                     <div class="swiper-slide cursor-pointer">
-                        <img src="{{ asset('storage/' . $product->image) }}"
+                        <img src="{{ Storage::disk('r2')->url($product->image) }}"
                             class="h-24 w-full object-cover rounded border thumb-item active"
-                            onclick="changeMainImage('{{ asset('storage/' . $product->image) }}', this)">
+                            onclick="changeMainImage('{{ Storage::disk('r2')->url($product->image) }}', this)">
                     </div>
 
                     {{-- Imágenes adicionales --}}
                     @foreach($product->images as $img)
                         <div class="swiper-slide cursor-pointer">
-                            <img src="{{ asset('storage/' . $img->image) }}"
+                            <img src="{{ Storage::disk('r2')->url($img->image) }}"
                                 class="h-24 w-full object-cover rounded border thumb-item"
-                                onclick="changeMainImage('{{ asset('storage/' . $img->image) }}', this)">
+                                onclick="changeMainImage('{{ Storage::disk('r2')->url($img->image) }}', this)">
                         </div>
                     @endforeach
                 </div>

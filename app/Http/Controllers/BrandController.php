@@ -28,13 +28,14 @@ class BrandController extends Controller
 
         $data = $request->only('name', 'is_active');
 
+        // Guardar el logo en Cloudflare R2
         if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('brands', 'public');
+            $data['logo'] = $request->file('logo')->store('brands', 'r2');
         }
 
         Brand::create($data);
 
-        return redirect()->route('brands.index')->with('success', 'Marca creada');
+        return redirect()->route('brands.index')->with('success', 'Marca creada exitosamente en Cloudflare R2.');
     }
 
     public function edit(Brand $brand)
@@ -51,26 +52,29 @@ class BrandController extends Controller
 
         $data = $request->only('name', 'is_active');
 
+        // Actualizar el logo en Cloudflare R2
         if ($request->hasFile('logo')) {
+            // Eliminar logo anterior de R2 si existe
             if ($brand->logo) {
-                Storage::disk('public')->delete($brand->logo);
+                Storage::disk('r2')->delete($brand->logo);
             }
-            $data['logo'] = $request->file('logo')->store('brands', 'public');
+            $data['logo'] = $request->file('logo')->store('brands', 'r2');
         }
 
         $brand->update($data);
 
-        return redirect()->route('brands.index')->with('success', 'Marca actualizada');
+        return redirect()->route('brands.index')->with('success', 'Marca actualizada exitosamente.');
     }
 
     public function destroy(Brand $brand)
     {
+        // Eliminar logo de Cloudflare R2 antes de borrar la marca
         if ($brand->logo) {
-            Storage::disk('public')->delete($brand->logo);
+            Storage::disk('r2')->delete($brand->logo);
         }
 
         $brand->delete();
 
-        return redirect()->route('brands.index')->with('success', 'Marca eliminada');
+        return redirect()->route('brands.index')->with('success', 'Marca eliminada por completo.');
     }
 }

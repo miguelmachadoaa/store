@@ -108,7 +108,7 @@
             <div class="brands-scroll">
                 @foreach($brands as $brand)
                     <div class="brand-item">
-                        <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}">
+                        <img src="{{ Storage::disk('r2')->url($brand->logo) }}" alt="{{ $brand->name }}">
                         <p>{{ $brand->name }}</p>
                     </div>
                 @endforeach
