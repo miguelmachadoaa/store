@@ -25,6 +25,8 @@ use App\Http\Controllers\SliderController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\LinkController;
+use App\Http\Controllers\Admin\PaymentReportAdminController;
+use App\Http\Controllers\Admin\OrderCommentController;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Storage;
@@ -210,7 +212,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics.index');
 
     Route::resource('/links', LinkController::class)->except(['show'])->names('admin.links');
+
+    Route::get('/abandoned-carts', [App\Http\Controllers\Admin\AbandonedCartController::class, 'index'])->name('admin.carts.index');
+    Route::get('/abandoned-carts/{cart}', [App\Http\Controllers\Admin\AbandonedCartController::class, 'show'])->name('admin.carts.show');
     
+    // ESTA ES LA RUTA QUE TE FALTA AÑADIR:
+    Route::put('orders/{order}/status', [OrderAdminController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+    Route::post('orders/{order}/comments', [OrderCommentController::class, 'store'])->name('admin.orders.comments.store');
+
+
+    Route::get('payments', [PaymentReportAdminController::class, 'index'])->name('admin.payments.index');
+    Route::patch('payments/{report}/status', [PaymentReportAdminController::class, 'updateStatus'])->name('admin.payments.updateStatus');
 });
 
 // Rutas de Reseñas (Públicas)

@@ -50,4 +50,14 @@ class Order extends Model
         };
     }
 
+    public function paymentReports()
+    {
+        return $this->hasMany(PaymentReport::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(OrderComment::class)->latest(); // El más reciente primero
+    }
+
 }

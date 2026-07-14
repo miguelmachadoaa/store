@@ -65,8 +65,7 @@
             </li>
 
             {{-- Ventas --}}
-            <li
-                x-data="{ open: {{ request()->routeIs('admin.orders.*', 'admin.customers.*', 'admin.pos.*', 'admin.appointments.*') ? 'true' : 'false' }} }">
+            <li x-data="{ open: {{ request()->routeIs('admin.orders.*', 'admin.customers.*', 'admin.pos.*', 'admin.appointments.*', 'admin.payments.*') ? 'true' : 'false' }} }">
                 <button @click="open = !open"
                     class="flex items-center justify-between w-full px-4 py-3 hover:bg-gray-100 rounded-lg text-gray-700 font-medium transition">
                     <div class="flex items-center">
@@ -88,6 +87,8 @@
                         Punto de Venta</a>
                     <a href="{{ route('admin.orders.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.orders.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Órdenes</a>
+                    <a href="{{ route('admin.payments.index') }}"
+                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.payments.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">💳 Pagos</a>
                     <a href="{{ route('admin.appointments.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.appointments.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Citas</a>
                     <a href="{{ route('admin.customers.index') }}"
@@ -96,7 +97,6 @@
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.reviews.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Reseñas</a>
                 </div>
             </li>
-
             {{-- Contenido --}}
             <li
                 x-data="{ open: {{ request()->routeIs('sliders.*', 'admin.posts.*', 'admin.services.*') ? 'true' : 'false' }} }">
@@ -153,6 +153,9 @@
                     
                     <a href="{{ route('admin.links.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.links.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Linktree (Bio)</a>
+
+                    <a href="{{ route('admin.carts.index') }}"
+                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.links.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Carritos Abandonados</a>
                 </div>
             </li>
 

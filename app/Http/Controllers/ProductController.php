@@ -279,7 +279,7 @@ class ProductController extends Controller
         $query->latest('products.id');
     }
 
-    $products = $query->paginate(12)->withQueryString();
+    $products = $query->paginate(100)->withQueryString();
 
     if ($request->ajax()) {
         $view = '';
@@ -304,7 +304,7 @@ class ProductController extends Controller
 
         $products = Product::where('brand_id', $brand->id)
             ->where('is_active', 1)
-            ->paginate(12);
+            ->paginate(100);
 
         if ($request->ajax()) {
             $view = '';
@@ -332,7 +332,7 @@ class ProductController extends Controller
     ->where('category_product.category_id', $category->id)
     ->where('products.is_active', 1)
     ->distinct() // CORRECCIÓN: Evita que se dupliquen productos si están repetidos en la tabla pivote
-    ->paginate(20);// Aquí conservas tu paginación de 20 en 20
+    ->paginate(100);// Aquí conservas tu paginación de 20 en 20
 
     if ($request->ajax()) {
         $view = '';
