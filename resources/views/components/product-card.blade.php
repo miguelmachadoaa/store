@@ -64,21 +64,34 @@
         height: 36px;
         background: rgba(255,255,255,0.92);
         backdrop-filter: blur(4px);
-        border: none;
+        border: 1px solid rgba(74,44,110,0.1);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: transform 0.2s, background 0.2s;
+        transition: transform 0.2s, background 0.2s, color 0.2s;
         color: #C4B49A;
-        text-decoration: none;
     }
-    .ap-card__wishlist:hover,
-    .ap-card__wishlist.is-wishlisted {
+    .ap-card__wishlist:hover {
         color: #4A2C6E;
         background: #fff;
         transform: scale(1.12);
+    }
+    /* Clase que aplica el estado de favorito activo (Corazón relleno y color místico) */
+    .ap-card__wishlist.is-wishlisted {
+        color: #e83e8c; /* Color rosa de favorito */
+        background: #fff;
+        transform: scale(1.12);
+    }
+    .ap-card__wishlist svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+        transition: transform 0.2s;
+    }
+    .ap-card__wishlist:active svg {
+        transform: scale(0.8);
     }
 
     /* Content */
@@ -164,32 +177,25 @@
 
 <article class="ap-card">
 
-    {{-- Imagen --}}
-    <a href="{{ route('product.detail', $product->slug) }}" class="ap-card__img-wrap">
-        <img src="{{ Storage::disk('r2')->url($product->image) }}" alt="{{ $product->name }}">
+    {{-- Imagen y Elementos Flotantes --}}
+    <div class="ap-card__img-wrap">
+        <a href="{{ route('product.detail', $product->slug) }}" style="display: block; width: 100%; height: 100%;">
+            <img src="{{ Storage::disk('r2')->url($product->image) }}" alt="{{ $product->name }}">
+        </a>
 
         @if($product->hasDiscount())
             <span class="ap-card__badge">−{{ $product->discount_percentage }}%</span>
         @endif
-    </a>
 
-    {{-- Wishlist --}}
-    @auth
-        <button onclick="toggleWishlist({{ $product->id }}, this)"
-            class="ap-card__wishlist {{ $product->isFavoritedBy(auth()->user()) ? 'is-wishlisted' : '' }}"
-            data-id="{{ $product->id }}"
-            aria-label="Agregar a favoritos">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        {{-- Botón de Favoritos (Flotante arriba a la derecha sobre la imagen) --}}
+        <button onclick="toggleWishlist({{ $product->id }}, this)" 
+                class="ap-card__wishlist" 
+                aria-label="Guardar en favoritos">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
         </button>
-    @else
-        <a href="{{ route('login') }}" class="ap-card__wishlist" title="Inicia sesión para guardar" aria-label="Guardar en favoritos">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-        </a>
-    @endauth
+    </div>
 
     {{-- Contenido --}}
     <div class="ap-card__body">
@@ -202,7 +208,7 @@
             {{ $product->name }}
         </a>
 
-        {{-- Precio --}}
+        {{-- Precios --}}
         @php
             $showUsd = $storeSettings->showUsd();
             $showBs  = $storeSettings->showBs();
@@ -233,9 +239,25 @@
 
         <div class="ap-card__sep"></div>
 
-        <div class="ap-card__actions">
+        <div class="ap-card__actions" onclick="trackAddToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }})">
             <x-add-to-cart-button :product="$product" />
         </div>
 
     </div>
 </article>
+
+<script>
+    if (typeof trackAddToCart !== 'function') {
+        function trackAddToCart(id, name, price) {
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'AddToCart', {
+                    content_ids: [id],
+                    content_name: name,
+                    content_type: 'product',
+                    value: price,
+                    currency: 'USD'
+                });
+            }
+        }
+    }
+</script>

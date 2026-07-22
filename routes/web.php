@@ -29,6 +29,9 @@ use App\Http\Controllers\Admin\PaymentReportAdminController;
 use App\Http\Controllers\Admin\OrderCommentController;
 use Illuminate\Support\Facades\Route;
 
+use App\Models\Product;
+
+
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
 
@@ -129,7 +132,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/mi-area/perfil', [CustomerDashboardController::class, 'updateProfile'])->name('customer.profile.update');
     Route::get('/mi-area/favoritos', [CustomerDashboardController::class, 'favorites'])->name('customer.favorites');
 
-    Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     Route::get('/orders/{orderId}/invoice', [CheckoutController::class, 'downloadInvoice'])->name('orders.invoice');
 });
@@ -229,5 +231,26 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 Route::post('/productos/{product}/reviews', [ReviewController::class, 'store'])
     ->middleware(['auth'])
     ->name('products.reviews.store');
+
+
+Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
+
+Route::post('/api/products/by-ids', function (Illuminate\Http\Request $request) {
+    $ids = $request->input('ids', []);
+    
+    $products = Product::whereIn('id', $ids)->get()->map(function($product) {
+        return [
+            'id' => $product->id,
+            'name' => $product->name,
+            'slug' => $product->slug,
+            'price' => $product->price,
+            'price_bs' => $product->price_bs ?? null, // Ajusta según tu lógica de conversión a Bs.
+            'image_url' => $product->image ? Storage::disk('r2')->url($product->image) : asset('images/no-image.png')
+        ];
+    });
+
+    return response()->json($products);
+});
 
 require __DIR__ . '/auth.php';

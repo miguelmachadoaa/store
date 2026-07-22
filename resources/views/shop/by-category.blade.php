@@ -7,7 +7,7 @@
         </h1>
 
         @if($products->count())
-            <!-- Añadimos un ID al contenedor para poder insertar los productos nuevos ahí -->
+            <!-- Contenedor con ID para poder insertar los productos nuevos -->
             <div id="products-wrapper" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($products as $product)
                     <x-product-card :product="$product" />
@@ -37,13 +37,34 @@
             let nextPageUrl = trigger.getAttribute('data-next-page');
             let isLoading = false;
 
+            // Función para sincronizar los corazones con el localStorage (solo para usuarios no autenticados)
+            function syncLocalWishlistIcons() {
+                // Comprobamos si el objeto global "LocalWishlist" y la variable "isUserAuthenticated" existen en el layout
+                if (typeof isUserAuthenticated !== 'undefined' && !isUserAuthenticated) {
+                    wrapper.querySelectorAll('[onclick^="toggleWishlist"]').forEach(btn => {
+                        const match = btn.getAttribute('onclick').match(/\d+/);
+                        if (match) {
+                            const productId = match[0];
+                            if (typeof LocalWishlist !== 'undefined' && LocalWishlist.has(productId)) {
+                                btn.classList.add('is-wishlisted');
+                            } else {
+                                btn.classList.remove('is-wishlisted');
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Primera sincronización al cargar la página
+            syncLocalWishlistIcons();
+
             // El IntersectionObserver vigila cuándo aparece el trigger en la pantalla
             const observer = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting && nextPageUrl && !isLoading) {
                     loadMoreProducts();
                 }
             }, {
-                rootMargin: '100px' // Se activa 100px antes de llegar al fondo absoluto para mejorar la experiencia
+                rootMargin: '100px' // Se activa 100px antes de llegar al fondo absoluto
             });
 
             observer.observe(trigger);
@@ -54,13 +75,16 @@
 
                 fetch(nextPageUrl, {
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest' // Esto le dice a Laravel que es una petición AJAX
+                        'X-Requested-With': 'XMLHttpRequest' // Avisa a Laravel que es AJAX
                     }
                 })
                 .then(response => response.json())
                 .then(data => {
                     // Insertamos las nuevas tarjetas al final del contenedor existente
                     wrapper.insertAdjacentHTML('beforeend', data.html);
+                    
+                    // Sincronizamos inmediatamente el estado de los favoritos en el nuevo HTML inyectado
+                    syncLocalWishlistIcons();
                     
                     // Actualizamos la URL de la siguiente página
                     nextPageUrl = data.nextPageUrl;

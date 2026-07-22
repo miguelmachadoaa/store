@@ -64,7 +64,7 @@
                                     @foreach($order->items as $item)
                                         <tr class="hover:bg-gray-50">
                                             <td class="px-4 py-4 font-medium text-gray-900">
-                                                {{ $item->product_name ?? 'Producto #' . $item->product_id }}
+                                                {{ $item->name ?? 'Producto #' . $item->product_id }}
                                                 @if($item->variant_name)
                                                     <span class="block text-xs text-gray-400 font-normal">Variante: {{ $item->variant_name }}</span>
                                                 @endif
@@ -83,7 +83,6 @@
                 <!-- Columna Derecha: Cliente, Totales y Gestión de Estado (Ocupa 1/3) -->
                 <div class="space-y-6">
                     
-                    <!-- Bloque: Datos de Cliente -->
                     <!-- Bloque: Datos de Cliente -->
                     <div class="bg-white shadow-lg sm:rounded-xl border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">👤 Datos del Cliente</h3>
@@ -192,58 +191,6 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN NUEVA: Historial de Pagos Reportados por el Usuario -->
-            <div class="bg-white shadow-lg sm:rounded-xl border border-gray-200 p-6">
-                <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    💳 Pagos Reportados para esta Orden
-                </h3>
-
-                @if($order->paymentReports && $order->paymentReports->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 text-sm">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Banco de Origen</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Nro. Referencia</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Monto en Bs.</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Fecha Ejecución</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Soporte Digital</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Validación</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                @foreach($order->paymentReports as $payment)
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-4 py-3 font-medium text-gray-900">{{ $payment->bank_name }}</td>
-                                        <td class="px-4 py-3 text-gray-600 font-mono text-xs">{{ $payment->reference_number }}</td>
-                                        <td class="px-4 py-3 font-semibold text-gray-900">Bs. {{ number_format($payment->amount_bs, 2) }}</td>
-                                        <td class="px-4 py-3 text-gray-600">{{ \Carbon\Carbon::parse($payment->payment_date)->format('d/m/Y') }}</td>
-                                        <td class="px-4 py-3">
-                                            @if($payment->proof_image)
-                                                <a href="{{ asset('storage/' . $payment->proof_image) }}" target="_blank" class="text-indigo-600 hover:text-indigo-900 font-semibold flex items-center gap-0.5">
-                                                    Ver Captura ↗
-                                                </a>
-                                            @else
-                                                <span class="text-gray-400 text-xs">Sin adjunto</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-4 py-3">
-                                            <span class="px-2.5 py-0.5 inline-flex text-xs font-semibold rounded-full 
-                                                {{ $payment->status === 'approved' ? 'bg-green-100 text-green-800' : ($payment->status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
-                                                @if($payment->status === 'approved') Aprobado @elseif($payment->status === 'rejected') Rechazado @else Pendiente @endif
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <div class="bg-gray-50 rounded-xl p-6 text-center text-gray-500 text-sm border border-dashed border-gray-200">
-                        Esta orden aún no cuenta con ningún reporte de pago asociado en la plataforma.
-                    </div>
-                @endif
-            </div>
 
           <!-- SECCIÓN NUEVA: Historial de Pagos Reportados por el Usuario -->
             <div class="bg-white shadow-lg sm:rounded-xl border border-gray-200 p-6">

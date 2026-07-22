@@ -11,7 +11,6 @@
 
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
@@ -19,6 +18,24 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    {{-- META PIXEL BASE SCRIPT --}}
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      
+      fbq('init', '{{ config('services.facebook.pixel_id') }}');
+      fbq('track', 'PageView');
+    </script>
+    <noscript>
+      <img height="1" width="1" style="display:none" 
+           src="https://www.facebook.com/tr?id={{ config('services.facebook.pixel_id') }}&ev=PageView&noscript=1"/>
+    </noscript>
 </head>
 
 <body>
@@ -126,7 +143,7 @@
     <footer class="site-footer">
         <div class="footer-inner">
             <div>
-                <p class="footer-logo">Alma de Piedra</p>
+                <p class="footer-logo">Mary Mystic Stones</p>
                 <p class="footer-tagline">Pulseras con piedras naturales cargadas de energía. Cada pieza es única, como tú.</p>
             </div>
             <div>
@@ -141,24 +158,25 @@
             </div>
             <div>
                 <p class="footer-heading">Contacto</p>
-                <p class="footer-contact-line">✉ <a href="mailto:hola@almadepiedra.com">hola@almadepiedra.com</a></p>
-                <p class="footer-contact-line">📞 +58 000 000 0000</p>
+                <p class="footer-contact-line">✉ <a href="mailto:info@marymysticstones.com.ve">info@marymysticstones.com.ve</a></p>
+                <p class="footer-contact-line">📞 +58 424 8478154</p>
                 <p style="margin-top:1rem;font-size:0.78rem;color:rgba(255,255,255,0.3);line-height:1.6">
                     Lun–Vie · 9:00am – 6:00pm
                 </p>
             </div>
         </div>
         <div class="footer-bottom">
-            © {{ date('Y') }} Alma de Piedra · Todos los derechos reservados
+            © {{ date('Y') }} Mary Mystic Stones · Todos los derechos reservados
         </div>
     </footer>
 
     {{-- FLOTANTES --}}
     <div class="floating-actions">
-        {{-- WhatsApp --}}
-        <a href="https://wa.me/584243101775?text=Hola%2C%20quisiera%20m%C3%A1s%20informaci%C3%B3n"
+        {{-- WhatsApp con evento Contact --}}
+        <a href="https://wa.me/584245478154?text=Hola%2C%20quisiera%20m%C3%A1s%20informaci%C3%B3n"
            target="_blank" rel="noopener noreferrer"
-           class="float-btn" aria-label="Contactar por WhatsApp">
+           class="float-btn" aria-label="Contactar por WhatsApp"
+           onclick="fbq('track', 'Contact', { channel: 'WhatsApp' });">
             <span class="float-btn-label">Escríbenos por WhatsApp</span>
             <span class="float-btn-circle" style="background:#25D366">
                 <svg width="26" height="26" viewBox="0 0 32 32" fill="white">
@@ -214,7 +232,47 @@
             }
         });
 
+        // --- SISTEMA UNIFICADO DE FAVORITOS (GUEST / AUTH) ---
+        const LocalWishlist = {
+            get() {
+                return JSON.parse(localStorage.getItem('wishlist_products')) || [];
+            },
+            has(id) {
+                return this.get().includes(Number(id));
+            },
+            toggle(id) {
+                let list = this.get();
+                id = Number(id);
+                const index = list.indexOf(id);
+                let status = '';
+                if (index > -1) {
+                    list.splice(index, 1);
+                    status = 'removed';
+                } else {
+                    list.push(id);
+                    status = 'added';
+                }
+                localStorage.setItem('wishlist_products', JSON.stringify(list));
+                return status;
+            }
+        };
+
+        const isUserAuthenticated = @json(auth()->check());
+
         function toggleWishlist(productId, btn) {
+            if (!isUserAuthenticated) {
+                const status = LocalWishlist.toggle(productId);
+                btn.classList.toggle('is-wishlisted', status === 'added');
+                
+                // Track AddToWishlist para visitantes
+                if (status === 'added') {
+                    fbq('track', 'AddToWishlist', { content_ids: [productId], content_type: 'product' });
+                }
+
+                window.dispatchEvent(new CustomEvent('wishlist-updated'));
+                return;
+            }
+
             fetch(`/wishlist/toggle/${productId}`, {
                 method: 'POST',
                 headers: {
@@ -226,9 +284,28 @@
             .then(data => {
                 if (data.success) {
                     btn.classList.toggle('is-wishlisted', data.status === 'added');
+
+                    // Track AddToWishlist para usuarios autenticados
+                    if (data.status === 'added') {
+                        fbq('track', 'AddToWishlist', { content_ids: [productId], content_type: 'product' });
+                    }
                 }
             });
         }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (!isUserAuthenticated) {
+                document.querySelectorAll('[onclick^="toggleWishlist"]').forEach(btn => {
+                    const match = btn.getAttribute('onclick').match(/\d+/);
+                    if (match) {
+                        const productId = match[0];
+                        if (LocalWishlist.has(productId)) {
+                            btn.classList.add('is-wishlisted');
+                        }
+                    }
+                });
+            }
+        });
     </script>
 
 </body>

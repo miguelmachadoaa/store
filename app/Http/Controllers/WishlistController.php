@@ -12,6 +12,18 @@ class WishlistController extends Controller
     {
         $user = auth()->user();
 
+        // Si no ha iniciado sesión, el JS se encargará del localStorage.
+        // Solo respondemos éxito y notificamos que es un "guest" (invitado).
+        if (!$user) {
+            return response()->json([
+                'success' => true,
+                'status' => 'local', 
+                'message' => 'Acción procesada localmente',
+                'count' => 0
+            ]);
+        }
+
+        // Flujo normal para usuarios autenticados
         $exists = Wishlist::where('user_id', $user->id)
             ->where('product_id', $product->id)
             ->first();

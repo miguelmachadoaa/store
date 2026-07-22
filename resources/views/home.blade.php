@@ -7,22 +7,67 @@
 {{-- ╔══════════════════════╗
      ║  Trust bar           ║
      ╚══════════════════════╝ --}}
-<div class="trust-bar">
+{{-- Inicializamos el estado del modal en el contenedor principal usando Alpine.js --}}
+<div class="trust-bar" x-data="{ openEnergyModal: false }">
     <div class="trust-bar__inner">
         @foreach([
-            ['icon' => '💬', 'title' => 'Soporte 24/7',        'sub' => 'Siempre disponibles para ti'],
-            ['icon' => '🚚', 'title' => 'Envío gratuito',       'sub' => 'En pedidos desde $30'],
-            ['icon' => '🔒', 'title' => 'Pago seguro',          'sub' => 'Cifrado SSL garantizado'],
-            ['icon' => '✨', 'title' => 'Garantía de energía',  'sub' => 'Piedras certificadas'],
+            ['icon' => '💬', 'title' => 'Soporte 24/7',        'sub' => 'Siempre disponibles para ti', 'modal' => false],
+            ['icon' => '🚚', 'title' => 'Envío gratuito',       'sub' => 'En pedidos desde $20',        'modal' => false],
+            ['icon' => '🔒', 'title' => 'Pago seguro',          'sub' => 'Pago Móvil y Tarjeta',        'modal' => false],
+            ['icon' => '✨', 'title' => 'Garantía de energía',  'sub' => 'Piedras certificadas',        'modal' => true],
         ] as $trust)
-            <div class="trust-item">
-                <div class="trust-item__icon">{{ $trust['icon'] }}</div>
-                <div class="trust-item__text">
-                    <strong>{{ $trust['title'] }}</strong>
-                    {{ $trust['sub'] }}
+            
+            {{-- Si el elemento tiene 'modal' => true, le agregamos interactividad --}}
+            @if($trust['modal'])
+                <div class="trust-item cursor-pointer hover:opacity-80 transition-opacity" @click="openEnergyModal = true">
+                    <div class="trust-item__icon">{{ $trust['icon'] }}</div>
+                    <div class="trust-item__text">
+                        <strong>{{ $trust['title'] }} <span class="text-pink-600 text-xs font-normal underline ml-1">(Saber más)</span></strong>
+                        {{ $trust['sub'] }}
+                    </div>
                 </div>
-            </div>
+            @else
+                {{-- Elementos normales sin modal --}}
+                <div class="trust-item">
+                    <div class="trust-item__icon">{{ $trust['icon'] }}</div>
+                    <div class="trust-item__text">
+                        <strong>{{ $trust['title'] }}</strong>
+                        {{ $trust['sub'] }}
+                    </div>
+                </div>
+            @endif
+
         @endforeach
+    </div>
+
+    {{-- Ventana Emergente (Modal de Confianza) --}}
+    <div x-show="openEnergyModal" 
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" 
+         x-transition
+         @keydown.escape.window="openEnergyModal = false"
+         style="display: none;">
+        
+        {{-- Fondo del modal --}}
+        <div class="absolute inset-0" @click="openEnergyModal = false"></div>
+
+        {{-- Contenedor del contenido --}}
+        <div class="bg-white p-6 rounded-2xl max-w-sm w-full shadow-2xl relative z-10 border border-gray-100 text-center">
+            {{-- Icono destacado --}}
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-pink-100 text-pink-600 mb-4">
+                ✨
+            </div>
+            
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Nuestra Garantía de Autenticidad</h3>
+            
+            <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                Cada una de nuestras piezas es seleccionada y analizada minuciosamente para asegurar que recibes <strong>gemas 100% naturales</strong> y genuinas. Garantizamos su origen mineral para que aproveches al máximo sus propiedades y vibración energética original, libres de imitaciones plásticas o sintéticas.
+            </p>
+
+            <button @click="openEnergyModal = false" 
+                    class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm active:scale-95">
+                Entendido
+            </button>
+        </div>
     </div>
 </div>
 
@@ -112,7 +157,8 @@
             Recibe rituales de uso, guías de piedras y ofertas exclusivas directamente en tu correo.
         </p>
 
-        <form action="{{ route('newsletter.store') }}" method="POST" class="newsletter-form">
+        <form action="{{ route('newsletter.store') }}" method="POST" class="newsletter-form"
+              onsubmit="if(typeof fbq !== 'undefined') { fbq('track', 'Lead', { content_name: 'Newsletter Subscription' }); }">
             @csrf
             <input type="email" name="email" class="newsletter-input"
                    placeholder="tucorreo@ejemplo.com" required>
