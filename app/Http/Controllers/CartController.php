@@ -104,35 +104,43 @@ class CartController extends Controller
         ]);
     }
 
+    public function getCart()
+    {
+        $sessionId = session()->getId();
+
+        $userId = Auth::check() ? Auth::id() : null;
+
+        $cart = Cart::firstOrCreate(
+            ['user_id' => $userId, 'session_id' => $sessionId],
+            ['user_id' => $userId, 'session_id' => $sessionId]
+        );
+
+        return $cart;
+    }
+
     /**
      * Helper to get cart items from session or database.
      */
     public function getCartItems(): array
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            /** @var \App\Models\User $user */
-            $cart = $user->cart()->with('items.product')->first();
 
-            if ($cart) {
-                $items = [];
-                foreach ($cart->items as $item) {
-                    $items[$item->product_id] = [
-                        'product_id' => $item->product_id,
-                        'name' => $item->product->name,
-                        'price' => $item->product->price,
-                        'image' => $item->product->image,
-                        'quantity' => $item->quantity,
-                        'category_id' => $item->product->category_id,
-                        'brand_id' => $item->product->brand_id,
-                    ];
-                }
+        $cart = $this->getCart();
 
-                return $items;
-            }
+        $items = [];
+
+        foreach ($cart->items as $item) {
+            $items[$item->product_id] = [
+                'product_id' => $item->product_id,
+                'name' => $item->product->name,
+                'price' => $item->product->price,
+                'image' => $item->product->image,
+                'quantity' => $item->quantity,
+                'category_id' => $item->product->category_id,
+                'brand_id' => $item->product->brand_id,
+            ];
         }
 
-        return session()->get('cart', []);
+        return $items;
     }
 
     /**
@@ -140,45 +148,22 @@ class CartController extends Controller
      */
     private function addItemToCart(int $productId, int $quantityToAdd = 1): void
     {
+        $cart = $this->getCart();
+    
         $product = Product::findOrFail($productId);
 
-        if (Auth::check()) {
-            $user = Auth::user();
-            /** @var \App\Models\User $user */
-            $cart = $user->cart()->firstOrCreate([
-                'user_id' => $user->id,
-            ]);
+        /** @var \App\Models\CartItem $item */
+        $item = $cart->items()->where('product_id', $productId)->first();
 
-            /** @var \App\Models\CartItem $item */
-            $item = $cart->items()->where('product_id', $productId)->first();
-
-            if ($item) {
-                $item->increment('quantity', $quantityToAdd);
-            } else {
-                $cart->items()->create([
-                    'product_id' => $productId,
-                    'quantity' => $quantityToAdd,
-                ]);
-            }
+        if ($item) {
+            $item->increment('quantity', $quantityToAdd);
         } else {
-            $cart = session()->get('cart', []);
-
-            if (isset($cart[$productId])) {
-                $cart[$productId]['quantity'] += $quantityToAdd;
-            } else {
-                $cart[$productId] = [
-                    'product_id' => $productId,
-                    'name' => $product->name,
-                    'price' => $product->price,
-                    'image' => $product->image,
-                    'quantity' => $quantityToAdd,
-                    'category_id' => $product->category_id,
-                    'brand_id' => $product->brand_id,
-                ];
-            }
-
-            session()->put('cart', $cart);
+            $cart->items()->create([
+                'product_id' => $productId,
+                'quantity' => $quantityToAdd,
+            ]);
         }
+       
     }
 
     /**
@@ -186,34 +171,19 @@ class CartController extends Controller
      */
     private function updateItemQuantity(int $productId, int $quantity): void
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            /** @var \App\Models\User $user */
-            $cart = $user->cart()->first();
+        $cart = $this->getCart();
 
-            if ($cart) {
-                /** @var \App\Models\CartItem $item */
-                $item = $cart->items()->where('product_id', $productId)->first();
-                if ($item) {
-                    if ($quantity <= 0) {
-                        $item->delete();
-                    } else {
-                        $item->update(['quantity' => $quantity]);
-                    }
-                }
-            }
-        } else {
-            $cart = session()->get('cart', []);
 
-            if (isset($cart[$productId])) {
-                if ($quantity <= 0) {
-                    unset($cart[$productId]);
-                } else {
-                    $cart[$productId]['quantity'] = $quantity;
-                }
-                session()->put('cart', $cart);
+        /** @var \App\Models\CartItem $item */
+        $item = $cart->items()->where('product_id', $productId)->first();
+        if ($item) {
+            if ($quantity <= 0) {
+                $item->delete();
+            } else {
+                $item->update(['quantity' => $quantity]);
             }
         }
+      
     }
 
     /**
@@ -221,22 +191,10 @@ class CartController extends Controller
      */
     private function removeItemFromCart(int $productId): void
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            /** @var \App\Models\User $user */
-            $cart = $user->cart()->first();
+        $cart = $this->getCart();
 
-            if ($cart) {
-                $cart->items()->where('product_id', $productId)->delete();
-            }
-        } else {
-            $cart = session()->get('cart', []);
+        $cart->items()->where('product_id', $productId)->delete();
 
-            if (isset($cart[$productId])) {
-                unset($cart[$productId]);
-                session()->put('cart', $cart);
-            }
-        }
     }
 
     /**

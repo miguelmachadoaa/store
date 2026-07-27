@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
 use App\Models\PaymentReport;
+use App\Models\Cart;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -53,6 +54,8 @@ class CheckoutController extends Controller
         }
 
         $request->validate($rules);
+
+        $sessionId = session()->getId();
 
         $cart = app()->make(\App\Http\Controllers\CartController::class)->getCartItems();
 
@@ -169,6 +172,9 @@ class CheckoutController extends Controller
         if (auth()->check()) {
             auth()->user()->cart()->delete(); 
         }
+
+        Cart::where('session_id', $sessionId)->delete();
+
         session()->forget('cart'); 
         session()->forget('coupon');
         // Enviar notificación de nueva compra a Discord
