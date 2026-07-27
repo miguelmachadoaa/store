@@ -18,9 +18,127 @@
     @vite(['resources/css/front.css', 'resources/js/app.js'])
 
     <style>
-        /* Correcciones de distribución del Footer Estilo Marketplace */
+        /* --- ESTILOS RESPONSIVOS PARA EL HEADER --- */
+        .zolum-header-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .zolum-header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .zolum-menu-trigger {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0;
+        }
+
+        .zolum-header-center {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .zolum-search-form {
+            display: flex;
+            width: 100%;
+        }
+
+        .zolum-search-input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+        }
+
+        .zolum-search-submit {
+            background: #111622;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zolum-header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .zolum-header-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .hide-on-mobile {
+            display: inline-block;
+        }
+
+        .zolum-cart-icon-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .zolum-cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        /* --- ADAPTACIONES EXCLUSIVAS PARA MÓVIL (<= 768px) --- */
+        @media (max-width: 768px) {
+            .zolum-header-container {
+                gap: 0.75rem;
+                padding: 0.75rem 1rem;
+            }
+            
+            /* El buscador salta automáticamente a la segunda fila */
+            .zolum-header-center {
+                order: 3; 
+                flex: 1 1 100%;
+                margin-top: 0.25rem;
+            }
+            
+            .zolum-header-right {
+                gap: 1rem;
+            }
+
+            /* Ocultamos los textos para dar espacio total a los iconos */
+            .hide-on-mobile {
+                display: none !important;
+            }
+        }
+
+        /* --- ESTILOS DEL FOOTER MARKETPLACE --- */
         .zolum-marketplace-footer {
-            background-color: #111622; /* Ajustable a tu paleta oscura de footer corporativo */
+            background-color: #111622;
             color: #FFFFFF;
             padding: 4rem 1.5rem 2rem 1.5rem;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -125,30 +243,30 @@
 
 <body>
 
-    {{-- Barra superior informativa (Alta conversión) --}}
+    {{-- Barra superior informativa --}}
     <div class="zolum-top-banner">
-        <span>Delivery GRATIS en compras mayores a $20 en Caracas</span>
+        <span>Delivery GRATIS en compras mayores a $30 en Caracas</span>
     </div>
 
-    {{-- HEADER PRINCIPAL (Estilo Madison/Amazon) --}}
+    {{-- HEADER PRINCIPAL (OPTIMIZADO RESPONSIVO) --}}
     <header class="zolum-marketplace-header">
         <div class="zolum-header-container">
             
-            {{-- Bloque Izquierdo: Botón de Categorías + Logo --}}
+            {{-- Bloque Izquierdo: Botón Menú + Logo --}}
             <div class="zolum-header-left">
                 <button id="menu-toggle" class="zolum-menu-trigger" aria-label="Abrir menú" aria-expanded="false">
-                    <svg class="zolum-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg class="zolum-header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
-                    <span class="zolum-menu-text">Menú</span>
+                    <span class="zolum-menu-text hide-on-mobile">Menú</span>
                 </button>
 
                 <a href="{{ route('home') }}" class="zolum-brand-logo">
-                    <img src="{{ asset('storage/logo_head.png') }}" alt="Zolum Shop" class="zolum-logo-img">
+                    <img src="{{ asset('storage/logo_head.png') }}" alt="Zolum Shop" class="zolum-logo-img" style="max-height: 38px;">
                 </a>
             </div>
 
-            {{-- Bloque Central: Barra de búsqueda masiva --}}
+            {{-- Bloque Central: Búsqueda (Baja a segunda línea en móvil con order: 3) --}}
             <div class="zolum-header-center">
                 <form action="{{ route('shop.index') }}" method="GET" class="zolum-search-form">
                     <input type="text" name="search" placeholder="¿Qué desearías buscar hoy?" class="zolum-search-input" value="{{ request('search') }}">
@@ -160,55 +278,51 @@
                 </form>
             </div>
 
-            {{-- Bloque Derecho: Gestión de Cuenta, Rutas y Carrito --}}
+            {{-- Bloque Derecho: Cuenta, Blog y Carrito --}}
             <div class="zolum-header-right">
                 
-                {{-- Bloque de Autenticación --}}
+                {{-- Cuenta de Usuario --}}
                 <div class="zolum-account-block">
                     @auth
-                        <span class="zolum-account-greet">Hola, {{ auth()->user()->name }}</span>
-                        <div class="zolum-account-links">
-                            @if(auth()->user()->role === 'customer')
-                                <a href="{{ route('customer.dashboard') }}" class="zolum-account-action">Mi Cuenta</a>
-                            @elseif(auth()->user()->role === 'admin')
-                                <a href="{{ route('admin.dashboard') }}" class="zolum-account-action-admin">Panel Admin</a>
-                            @endif
-                            <span class="zolum-divider">|</span>
-                            <form method="POST" action="{{ route('logout') }}" class="zolum-inline-form">
-                                @csrf
-                                <button type="submit" class="zolum-logout-link">Salir</button>
-                            </form>
-                        </div>
+                        <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('customer.dashboard') }}" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.4rem;">
+                            <svg class="zolum-header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span class="hide-on-mobile" style="font-size: 14px;">Mi Cuenta</span>
+                        </a>
                     @else
-                        <span class="zolum-account-greet">Inicia sesión / Regístrate</span>
-                        <div class="zolum-account-links">
-                            <a href="{{ route('login') }}" class="zolum-account-action">Mi cuenta</a>
-                            <span class="zolum-divider">|</span>
-                            <a href="{{ route('register') }}" class="zolum-account-action">Crear cuenta</a>
-                        </div>
+                        <a href="{{ route('login') }}" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.4rem;">
+                            <svg class="zolum-header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span class="hide-on-mobile" style="font-size: 14px;">Ingresar</span>
+                        </a>
                     @endauth
                 </div>
 
-                {{-- Enlace Directo al Blog --}}
-                <a href="{{ route('blog.index') }}" class="zolum-header-blog-link">
-                    <span>Blog</span>
+                {{-- Blog --}}
+                <a href="{{ route('blog.index') }}" class="zolum-header-blog-link" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.4rem;">
+                    <svg class="zolum-header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-.586-1.414l-4.5-4.5A2 2 0 0012.586 3H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    <span class="hide-on-mobile" style="font-size: 14px;">Blog</span>
                 </a>
 
-                {{-- Carrito de Compras Dinámico --}}
-                <a href="{{ route('cart.index') }}" class="zolum-header-cart">
+                {{-- Carrito de Compras --}}
+                <a href="{{ route('cart.index') }}" class="zolum-header-cart" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.4rem;">
                     <div class="zolum-cart-icon-wrapper">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg class="zolum-header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 100 4 2 2 0 000-4z" />
                         </svg>
                         <span id="header-cart-count" class="zolum-cart-badge">{{ count($cartItems ?? []) }}</span>
                     </div>
-                    <span class="zolum-cart-text">Carrito</span>
+                    <span class="zolum-cart-text hide-on-mobile" style="font-size: 14px;">Carrito</span>
                 </a>
 
             </div>
         </div>
 
-        {{-- Menú Drawer Lateral Desplegable (Categorías Globales) --}}
+        {{-- Menú Drawer Lateral Desplegable --}}
         <div id="mobile-menu" class="zolum-drawer hidden">
             <div class="zolum-drawer-overlay"></div>
             <div class="zolum-drawer-content">
@@ -221,7 +335,6 @@
                     
                     <hr class="zolum-drawer-hr">
                     
-                    {{-- Iteración dinámica de categorías desde el ViewServiceProvider --}}
                     @if(isset($globalCategories) && $globalCategories->count() > 0)
                         @foreach($globalCategories as $category)
                             <a href="{{ route('shop.byCategory', $category->slug) }}" class="zolum-drawer-link">
@@ -256,7 +369,7 @@
         {{ $slot }}
     </main>
 
-    {{-- FOOTER UNIFICADO CORREGIDO --}}
+    {{-- FOOTER UNIFICADO --}}
     <footer class="zolum-marketplace-footer">
         <div class="zolum-footer-container">
             
