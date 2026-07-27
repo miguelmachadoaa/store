@@ -112,6 +112,75 @@
             line-height: 1;
         }
 
+        /* --- DRAWER / MENÚ LATERAL MEJORADO (CON SCROLL) --- */
+        .zolum-drawer {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+        }
+
+        .zolum-drawer.hidden {
+            display: none;
+        }
+
+        .zolum-drawer-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .zolum-drawer-content {
+            position: relative;
+            width: 280px;
+            max-width: 80vw;
+            height: 100vh;
+            height: 70dvh;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .zolum-drawer-header {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .zolum-drawer-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #111622;
+        }
+
+        .zolum-drawer-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .zolum-drawer-link {
+            color: #333;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            transition: color 0.2s ease;
+        }
+
+        .zolum-drawer-link:hover {
+            color: #FFC933;
+        }
+
+        .zolum-drawer-hr {
+            border: 0;
+            border-top: 1px solid #eee;
+            margin: 0.25rem 0;
+        }
+
         /* --- ADAPTACIONES EXCLUSIVAS PARA MÓVIL (<= 768px) --- */
         @media (max-width: 768px) {
             .zolum-header-container {
@@ -248,7 +317,7 @@
         <span>Delivery GRATIS en compras mayores a $30 en Caracas</span>
     </div>
 
-    {{-- HEADER PRINCIPAL (OPTIMIZADO RESPONSIVO) --}}
+    {{-- HEADER PRINCIPAL --}}
     <header class="zolum-marketplace-header">
         <div class="zolum-header-container">
             
@@ -322,7 +391,7 @@
             </div>
         </div>
 
-        {{-- Menú Drawer Lateral Desplegable --}}
+        {{-- Menú Drawer Lateral Desplegable (Con Scroll Independiente) --}}
         <div id="mobile-menu" class="zolum-drawer hidden">
             <div class="zolum-drawer-overlay"></div>
             <div class="zolum-drawer-content">
@@ -353,7 +422,7 @@
                     @auth
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="zolum-drawer-link zolum-text-danger">Cerrar sesión</button>
+                            <button type="submit" class="zolum-drawer-link zolum-text-danger" style="background: none; border: none; padding: 0; color: #e53e3e; cursor: pointer;">Cerrar sesión</button>
                         </form>
                     @else
                         <a href="{{ route('login') }}" class="zolum-drawer-link">Ingresar</a>
