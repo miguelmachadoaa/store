@@ -31,7 +31,7 @@
             </div>
 
             {{-- Tarjetas de estadísticas --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div class="bg-white p-6 rounded-lg shadow border">
                     <h3 class="text-gray-500 text-sm">Total Ventas</h3>
                     <p class="text-3xl font-bold text-green-600">${{ number_format($totalSales, 2) }}</p>
@@ -45,6 +45,11 @@
                 <div class="bg-white p-6 rounded-lg shadow border">
                     <h3 class="text-gray-500 text-sm">Productos</h3>
                     <p class="text-3xl font-bold text-pink-600">{{ $totalProducts }}</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow border">
+                    <h3 class="text-gray-500 text-sm">Ticket Promedio</h3>
+                    <p class="text-3xl font-bold text-pink-600">${{ number_format($totalSales / ($totalOrders ?: 1), 2) }}</p>
                 </div>
             </div>
 

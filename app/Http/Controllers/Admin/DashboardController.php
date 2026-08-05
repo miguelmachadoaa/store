@@ -26,7 +26,9 @@ class DashboardController extends Controller
         // Totales filtrados por el rango de fechas
         $totalOrders = Order::whereBetween('created_at', [$startDate, $endDate])->count();
         $totalSales = Order::whereBetween('created_at', [$startDate, $endDate])->sum('total');
-        $totalProducts = Product::count(); // El total general de productos usualmente no cambia por fecha
+        $totalProducts = OrderItem::whereHas('order', function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        })->count(); // El total general de productos usualmente no cambia por fecha
 
         // Ventas por mes (Dinámico según el rango seleccionado)
         $salesByMonth = Order::select(
