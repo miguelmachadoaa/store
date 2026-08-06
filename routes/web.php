@@ -136,6 +136,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{orderId}/invoice', [CheckoutController::class, 'downloadInvoice'])->name('orders.invoice');
 });
 
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/reviews', [ReviewAdminController::class, 'index'])->name('reviews.index');
+    Route::get('/reviews/create', [ReviewAdminController::class, 'create'])->name('reviews.create');
+    Route::post('/reviews', [ReviewAdminController::class, 'store'])->name('reviews.store');
+    Route::put('/reviews/{review}/approve', [ReviewAdminController::class, 'approve'])->name('reviews.approve');
+    Route::delete('/reviews/{review}', [ReviewAdminController::class, 'destroy'])->name('reviews.destroy');
+});
+
 
 
 // area admin

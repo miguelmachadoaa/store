@@ -1,8 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Moderación de Reseñas') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Moderación de Reseñas') }}
+            </h2>
+            <a href="{{ route('admin.reviews.create') }}" class="px-4 py-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700">
+                + Crear Reseña
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -23,7 +28,7 @@
                                     <th class="px-6 py-3">Usuario</th>
                                     <th class="px-6 py-3">Producto</th>
                                     <th class="px-6 py-3">Valoración</th>
-                                    <th class="px-6 py-3">Comentario</th>
+                                    <th class="px-6 py-3">Comentario e Imágenes</th>
                                     <th class="px-6 py-3">Estado</th>
                                     <th class="px-6 py-3">Acciones</th>
                                 </tr>
@@ -36,7 +41,7 @@
                                             <div class="text-xs">{{ $review->user->email }}</div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <a href="{{ route('shop.detail', $review->product->slug) }}" target="_blank"
+                                            <a href="{{ route('product.detail', $review->product->slug) }}" target="_blank"
                                                 class="text-indigo-600 hover:underline">
                                                 {{ $review->product->name }}
                                             </a>
@@ -56,21 +61,29 @@
                                             <p class="max-w-xs truncate" title="{{ $review->comment }}">
                                                 {{ $review->comment }}
                                             </p>
+                                            
+                                            <!-- Galería de imágenes adjuntas -->
+                                            @if($review->images->count() > 0)
+                                                <div class="flex gap-1 mt-2">
+                                                    @foreach($review->images as $img)
+                                                        <a href="{{ asset('storage/' . $img->image_path) }}" target="_blank">
+                                                            <img src="{{ asset('storage/' . $img->image_path) }}" class="w-10 h-10 object-cover rounded border">
+                                                        </a>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4">
                                             @if($review->is_approved)
-                                                <span
-                                                    class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Aprobada</span>
+                                                <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Aprobada</span>
                                             @else
-                                                <span
-                                                    class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">Pendiente</span>
+                                                <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">Pendiente</span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center gap-2">
                                                 @if(!$review->is_approved)
-                                                    <form action="{{ route('admin.reviews.approve', $review->id) }}"
-                                                        method="POST">
+                                                    <form action="{{ route('admin.reviews.approve', $review->id) }}" method="POST">
                                                         @csrf
                                                         @method('PUT')
                                                         <button type="submit"

@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Tax;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -356,12 +357,17 @@ class ProductController extends Controller
 
         $related = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
-            ->take(6)
+            ->take(3)
             ->get();
 
         $relatedProducts = Product::where('brand_id', $product->brand_id)
             ->where('id', '!=', $product->id)
-            ->take(6)
+            ->take(3)
+            ->get();
+
+            $reviews = Review::where('product_id', $product->id)
+            ->where('is_approved', true)
+            ->with(['user', 'images']) // <--- Carga eager loading
             ->get();
 
         return view('shop.detail', compact('product', 'related', 'relatedProducts'));
