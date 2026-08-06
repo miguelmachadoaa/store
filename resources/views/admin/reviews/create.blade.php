@@ -36,16 +36,11 @@
                             </select>
                         </div>
 
-                        <!-- Producto -->
+                        <!-- Producto (Dinámico) -->
                         <div>
-                            <label for="product_id" class="block text-sm font-medium text-gray-700">Producto</label>
-                            <select name="product_id" id="product_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
-                                <option value="">Seleccione un producto</option>
-                                @foreach($products as $product)
-                                    <option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>
-                                        {{ $product->name }}
-                                    </option>
-                                @endforeach
+                            <label for="product_id" class="block text-sm font-medium text-gray-700">Producto Comprado</label>
+                            <select name="product_id" id="product_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50" required disabled>
+                                <option value="">Primero seleccione un usuario</option>
                             </select>
                         </div>
                     </div>
@@ -88,4 +83,48 @@
             </div>
         </div>
     </div>
+
+    <!-- JavaScript para carga dinámica -->
+    <script>
+        document.getElementById('user_id').addEventListener('change', async function() {
+            const userId = this.value;
+            const productSelect = document.getElementById('product_id');
+
+            // Limpiar select
+            productSelect.innerHTML = '<option value="">Cargando productos...</option>';
+            productSelect.disabled = true;
+            productSelect.classList.add('bg-gray-50');
+
+            if (!userId) {
+                productSelect.innerHTML = '<option value="">Primero seleccione un usuario</option>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/users/${userId}/products`);
+                const products = await response.json();
+
+                productSelect.innerHTML = '<option value="">Seleccione un producto</option>';
+
+                if (products.length === 0) {
+                    productSelect.innerHTML = '<option value="">El usuario no tiene compras registradas</option>';
+                    return;
+                }
+
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id;
+                    option.textContent = product.name;
+                    productSelect.appendChild(option);
+                });
+
+                productSelect.disabled = false;
+                productSelect.classList.remove('bg-gray-50');
+
+            } catch (error) {
+                console.error('Error al cargar productos:', error);
+                productSelect.innerHTML = '<option value="">Error al cargar productos</option>';
+            }
+        });
+    </script>
 </x-app-layout>

@@ -142,9 +142,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/reviews', [ReviewAdminController::class, 'store'])->name('reviews.store');
     Route::put('/reviews/{review}/approve', [ReviewAdminController::class, 'approve'])->name('reviews.approve');
     Route::delete('/reviews/{review}', [ReviewAdminController::class, 'destroy'])->name('reviews.destroy');
+
 });
 
 
+    Route::get('/admin/users/{user}/products', [ReviewAdminController::class, 'getUserProducts'])->name('admin.users.products');
 
 // area admin
 

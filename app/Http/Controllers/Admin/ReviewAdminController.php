@@ -63,4 +63,18 @@ class ReviewAdminController extends Controller
         $review->delete();
         return back()->with('success', 'Reseña eliminada.');
     }
+
+    public function getUserProducts(User $user)
+    {
+        // Obtiene productos de las órdenes del usuario (sin duplicados)
+        // Ajusta las relaciones según la estructura de tu BD (ej. $user->orders()->with('products'))
+        $products = Product::join('order_items', 'products.id', '=', 'order_items.product_id')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.user_id', $user->id)
+            ->select('products.*')
+            ->distinct()
+            ->get();
+
+        return response()->json($products);
+    }
 }

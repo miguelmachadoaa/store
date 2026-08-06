@@ -208,4 +208,12 @@ class Product extends Model
                 $query->where('product_id', $this->id);
             })->exists();
     }
+
+    // En App/Models/Product.php
+    public function orders()
+    {
+        return $this->hasManyThrough(Order::class, OrderItem::class);
+    }
+
+    
 }

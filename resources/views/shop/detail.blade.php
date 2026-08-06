@@ -353,11 +353,15 @@
                             <p class="text-gray-600 leading-relaxed text-sm">{{ $review->comment }}</p>
 
                             {{-- Foto adjunta de la reseña --}}
-                            @if($review->images()->exists())
+                            @php
+                                $firstImagePath = $review->images->first()?->image_path;
+                            @endphp
+
+                            @if($firstImagePath)
                                 <div class="mt-4">
-                                    <img src="{{ Storage::disk('r2')->url($review->images()->first()->image) }}" 
+                                    <img src="{{ Storage::disk('r2')->url($firstImagePath) }}" 
                                         alt="Foto de {{ $review->user->name }}"
-                                        @click="activeModalImage = '{{ Storage::disk('r2')->url($review->images()->first()->image) }}'"
+                                        @click="activeModalImage = '{{ Storage::disk('r2')->url($firstImagePath) }}'"
                                         class="h-24 w-24 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition shadow-sm">
                                 </div>
                             @endif

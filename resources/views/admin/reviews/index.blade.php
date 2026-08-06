@@ -66,8 +66,8 @@
                                             @if($review->images->count() > 0)
                                                 <div class="flex gap-1 mt-2">
                                                     @foreach($review->images as $img)
-                                                        <a href="{{ asset('storage/' . $img->image_path) }}" target="_blank">
-                                                            <img src="{{ asset('storage/' . $img->image_path) }}" class="w-10 h-10 object-cover rounded border">
+                                                        <a href="{{ Storage::disk('r2')->url($img->image_path) }}" target="_blank">
+                                                            <img src="{{ Storage::disk('r2')->url($img->image_path) }}" class="w-10 h-10 object-cover rounded border">
                                                         </a>
                                                     @endforeach
                                                 </div>
