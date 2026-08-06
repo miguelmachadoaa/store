@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Formas de Pago') }}
             </h2>
-            <a href="{{ route('payment-methods.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+            <a href="{{ route('admin.payment-methods.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
                 Nueva Forma de Pago
             </a>
         </div>
@@ -22,7 +22,7 @@
             {{-- Filtros --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('payment-methods.index') }}" class="flex flex-wrap gap-4">
+                    <form method="GET" action="{{ route('admin.payment-methods.index') }}" class="flex flex-wrap gap-4">
                         <div class="flex-1 min-w-[200px]">
                             <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
@@ -35,7 +35,7 @@
                         </div>
                         <div class="flex gap-2">
                             <button type="submit" class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Buscar</button>
-                            <a href="{{ route('payment-methods.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Limpiar</a>
+                            <a href="{{ route('admin.payment-methods.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Limpiar</a>
                         </div>
                     </form>
                 </div>
@@ -79,8 +79,8 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end gap-3">
-                                                <a href="{{ route('payment-methods.edit', $method) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold">Editar</a>
-                                                <form action="{{ route('payment-methods.destroy', $method) }}" method="POST" onsubmit="return confirm('¿Eliminar esta forma de pago?')">
+                                                <a href="{{ route('admin.payment-methods.edit', $method) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold">Editar</a>
+                                                <form action="{{ route('admin.payment-methods.destroy', $method) }}" method="POST" onsubmit="return confirm('¿Eliminar esta forma de pago?')">
                                                     @csrf @method('DELETE')
                                                     <button class="text-red-600 hover:text-red-900 font-semibold">Eliminar</button>
                                                 </form>

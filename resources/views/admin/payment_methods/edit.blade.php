@@ -6,7 +6,7 @@
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow sm:rounded-lg p-6">
-                <form action="{{ route('payment-methods.update', $paymentMethod) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.payment-methods.update', $paymentMethod) }}" method="POST" enctype="multipart/form-data">
                     @csrf @method('PUT')
 
                     <div class="mb-4">
@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="flex justify-between items-center mt-6">
-                        <a href="{{ route('payment-methods.index') }}" class="text-gray-600 hover:underline">Cancelar</a>
+                        <a href="{{ route('admin.payment-methods.index') }}" class="text-gray-600 hover:underline">Cancelar</a>
                         <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Actualizar</button>
                     </div>
                 </form>

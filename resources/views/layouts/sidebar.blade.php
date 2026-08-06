@@ -1,9 +1,9 @@
-<aside class="w-64 bg-white shadow-md border-r border-gray-200 min-h-screen hidden md:block">
+<aside class="w-64 bg-white shadow-md border-r border-gray-200 min-h-screen hidden md:block flex flex-col justify-between">
     <div class="p-6 border-b">
         <h2 class="text-xl font-bold text-gray-800">Admin Panel</h2>
     </div>
 
-    <nav class="mt-4 px-2">
+    <nav class="mt-4 px-2 flex-1">
         <ul class="space-y-1">
 
             {{-- Dashboard --}}
@@ -16,6 +16,19 @@
                         </path>
                     </svg>
                     Dashboard
+                </a>
+            </li>
+
+            {{-- Métricas / Analytics (Añadido) --}}
+            <li>
+                <a href="{{ route('admin.analytics.index') }}" class="flex items-center px-4 py-3 hover:bg-gray-100 rounded-lg text-gray-700 font-medium transition
+                   {{ request()->routeIs('admin.analytics.index') ? 'bg-indigo-50 text-indigo-700' : '' }}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2zm0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                        </path>
+                    </svg>
+                    Métricas e Impacto
                 </a>
             </li>
 
@@ -37,23 +50,29 @@
                     </svg>
                 </button>
                 <div x-show="open" x-transition class="pl-11 pr-2 space-y-1 mt-1">
+                    
                     <a href="{{ route('products.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('products.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Productos</a>
                     <a href="{{ route('admin.categories.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.categories.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Categorías</a>
+
                     <a href="{{ route('brands.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('brands.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Marcas</a>
+
                     <a href="{{ route('admin.dollar-values.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.dollar-values.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Valor
                         Dólar</a>
+
                     <a href="{{ route('admin.taxes.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.taxes.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Impuestos</a>
+
+                    <a href="{{ route('admin.payment-methods.index') }}"
+                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.payment-methods.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Métodos de Pago</a>
                 </div>
             </li>
 
             {{-- Ventas --}}
-            <li
-                x-data="{ open: {{ request()->routeIs('admin.orders.*', 'admin.customers.*', 'admin.pos.*', 'admin.appointments.*') ? 'true' : 'false' }} }">
+            <li x-data="{ open: {{ request()->routeIs('admin.orders.*', 'admin.customers.*', 'admin.pos.*', 'admin.appointments.*', 'admin.payments.*') ? 'true' : 'false' }} }">
                 <button @click="open = !open"
                     class="flex items-center justify-between w-full px-4 py-3 hover:bg-gray-100 rounded-lg text-gray-700 font-medium transition">
                     <div class="flex items-center">
@@ -75,6 +94,8 @@
                         Punto de Venta</a>
                     <a href="{{ route('admin.orders.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.orders.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Órdenes</a>
+                    <a href="{{ route('admin.payments.index') }}"
+                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.payments.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">💳 Pagos</a>
                     <a href="{{ route('admin.appointments.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.appointments.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Citas</a>
                     <a href="{{ route('admin.customers.index') }}"
@@ -83,7 +104,6 @@
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.reviews.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Reseñas</a>
                 </div>
             </li>
-
             {{-- Contenido --}}
             <li
                 x-data="{ open: {{ request()->routeIs('sliders.*', 'admin.posts.*', 'admin.services.*') ? 'true' : 'false' }} }">
@@ -138,9 +158,11 @@
                     <a href="{{ route('admin.newsletter.form') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.newsletter.form') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Enviar Email</a>
                     
-                    {{-- Nueva opción del Linktree configurable --}}
                     <a href="{{ route('admin.links.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.links.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Linktree (Bio)</a>
+
+                    <a href="{{ route('admin.carts.index') }}"
+                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.links.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Carritos Abandonados</a>
                 </div>
             </li>
 
@@ -161,4 +183,15 @@
 
         </ul>
     </nav>
+
+    {{-- Enlace Externo para Ir al Sitio Web (Añadido) --}}
+    <div class="p-4 border-t border-gray-200 bg-gray-50">
+        <a href="{{ url('/') }}" target="_blank" 
+           class="flex items-center justify-center w-full px-4 py-2.5 text-sm font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 rounded-xl transition duration-150 group">
+            Ver Sitio Web
+            <svg class="w-4 h-4 ml-2 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+            </svg>
+        </a>
+    </div>
 </aside>
