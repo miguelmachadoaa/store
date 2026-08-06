@@ -64,7 +64,7 @@
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Imagen Hero</label>
                             @if($service->hero_image)
-                                <img src="{{ asset('storage/' . $service->hero_image) }}"
+                                <img src="{{ Storage::disk('r2')->url($service->hero_image) }}"
                                     class="w-32 h-32 object-cover rounded mb-2">
                             @endif
                             <input type="file" name="hero_image" accept="image/*"

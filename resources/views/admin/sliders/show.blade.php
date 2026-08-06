@@ -26,7 +26,7 @@
                 
                 <!-- Simulación del slider -->
                 <div class="relative h-96 overflow-hidden">
-                    <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-full object-cover">
+                    <img src="{{ Storage::disk('r2')->url($slider->image) }}" alt="{{ $slider->title }}" class="w-full h-full object-cover">
                     
                     <!-- Overlay con gradiente -->
                     <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent"></div>

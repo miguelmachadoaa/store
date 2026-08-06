@@ -128,7 +128,7 @@
                                     <div class="flex flex-col md:flex-row">
                                         <!-- Imagen del slider -->
                                         <div class="md:w-1/3 relative">
-                                            <img src="{{ asset('storage/' . $slider->image) }}" 
+                                            <img src="{{ Storage::disk('r2')->url($slider->image) }}" 
                                                  alt="{{ $slider->title }}" 
                                                  class="w-full h-48 md:h-full object-cover">
                                             <div class="absolute top-2 left-2 flex gap-2">

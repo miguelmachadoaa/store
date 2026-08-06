@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -78,5 +79,21 @@ class User extends Authenticatable
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Relación de lista de deseos con productos
+     */
+    public function wishlists(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'wishlists');
+    }
+
+    /**
+     * Comprueba si el producto está en la lista de deseos
+     */
+    public function hasInWishlist($productId): bool
+    {
+        return $this->wishlists()->where('product_id', $productId)->exists();
     }
 }

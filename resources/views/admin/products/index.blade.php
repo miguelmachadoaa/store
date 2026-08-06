@@ -97,7 +97,7 @@
                                         <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
                                             <td class="px-6 py-4">
                                                 <label class="cursor-pointer">
-                                                    <img src="{{ asset('storage/' . $product->image) }}"
+                                                    <img src="{{ Storage::disk('r2')->url($product->image) }}"
                                                         class="h-16 w-16 object-cover rounded border shadow-sm">
 
                                                     <input type="file" class="hidden inline-image-upload"

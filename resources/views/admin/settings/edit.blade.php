@@ -29,7 +29,7 @@
 
                             @if($setting->logo)
                                 <div class="my-2">
-                                    <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo Actual"
+                                    <img src="{{ Storage::disk('r2')->url($setting->logo) }}" alt="Logo Actual"
                                         class="h-20 w-auto rounded border p-1">
                                 </div>
                             @endif
@@ -113,7 +113,7 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Logo del Linktree</label>
                                     @if($setting->linktree_logo)
                                         <div class="my-2">
-                                            <img src="{{ asset('storage/' . $setting->linktree_logo) }}" class="w-16 h-16 object-cover rounded-full border shadow-sm">
+                                            <img src="{{ Storage::disk('r2')->url($setting->linktree_logo) }}" class="w-16 h-16 object-cover rounded-full border shadow-sm">
                                         </div>
                                     @endif
                                     <input type="file" name="linktree_logo" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
@@ -157,7 +157,7 @@
                             <div id="div_bg_image" class="hidden">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Imagen de Fondo Personalizada</label>
                                 @if($setting->linktree_bg_image)
-                                    <div class="w-32 h-20 bg-cover bg-center rounded mb-2 border shadow-sm" style="background-image: url('{{ asset('storage/' . $setting->linktree_bg_image) }}')"></div>
+                                    <div class="w-32 h-20 bg-cover bg-center rounded mb-2 border shadow-sm" style="background-image: url('{{ Storage::disk('r2')->url($setting->linktree_bg_image) }}')"></div>
                                 @endif
                                 <input type="file" name="linktree_bg_image" accept="image/*" class="w-full text-sm text-gray-500 file:bg-indigo-50 file:text-indigo-700 file:rounded-full file:border-0 file:px-4 file:py-2">
                             </div>

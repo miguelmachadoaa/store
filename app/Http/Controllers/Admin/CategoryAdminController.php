@@ -12,16 +12,13 @@ class CategoryAdminController extends Controller
 {
     public function index()
     {
-        // Usamos with('parent') para evitar el problema de consultas N+1 al mostrar el nombre del padre en el listado
-        $categories = Category::with('parent')->latest()->paginate(10);
+        $categories = Category::latest()->paginate(10);
         return view('admin.categories.index', compact('categories'));
     }
 
     public function create()
     {
-        // Obtenemos solo las categorías raíz para poder asignarlas como padres en el formulario
-        $parentCategories = Category::onlyParents()->get();
-        return view('admin.categories.create', compact('parentCategories'));
+        return view('admin.categories.create');
     }
 
     public function store(Request $request)
@@ -30,48 +27,28 @@ class CategoryAdminController extends Controller
             'name' => 'required|string|max:255|unique:categories,name',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'is_active' => 'required|boolean',
-            'is_featured' => 'required|boolean', // Validación del nuevo campo
-            'parent_id' => 'nullable|exists:categories,id', // Debe existir en la tabla
         ]);
 
         $data = [
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
             'is_active' => $validated['is_active'],
-            'is_featured' => $validated['is_featured'],
-            'parent_id' => $validated['parent_id'],
         ];
 
+        // Guardar imagen en Cloudflare R2 si existe
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('categories', 'public');
+            $data['image'] = $request->file('image')->store('categories', 'r2');
         }
-
-        
 
         Category::create($data);
 
-        $path = $data['image'];
-        $from = storage_path('app/public/' . $path);
-        $to = public_path('storage/' . $path);
-
-        if (!file_exists(dirname($to))) {
-            mkdir(dirname($to), 0775, true);
-        }
-
-        copy($from, $to);
-
         return redirect()->route('admin.categories.index')
-                         ->with('success', '¡Categoría creada exitosamente!');
+                        ->with('success', 'Categoría creada exitosamente en Cloudflare R2!');
     }
 
     public function edit(Category $category)
     {
-        // Obtenemos las categorías padre, excluyéndose a sí misma para evitar bucles infinitos de jerarquía
-        $parentCategories = Category::onlyParents()
-                                    ->where('id', '!=', $category->id)
-                                    ->get();
-
-        return view('admin.categories.edit', compact('category', 'parentCategories'));
+        return view('admin.categories.edit', compact('category'));
     }
 
     public function update(Request $request, Category $category)
@@ -80,57 +57,46 @@ class CategoryAdminController extends Controller
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'is_active' => 'required|boolean',
-            'is_featured' => 'required|boolean',
-            'parent_id' => 'nullable|exists:categories,id|not_in:' . $category->id, // Evita que sea su propio padre
         ]);
 
         $data = [
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
             'is_active' => $validated['is_active'],
-            'is_featured' => $validated['is_featured'],
-            'parent_id' => $validated['parent_id'],
         ];
 
-        // Eliminar imagen si se marcó el checkbox
+        // Eliminar imagen de R2 si se marcó el checkbox
         if ($request->has('remove_image') && $category->image) {
-            Storage::disk('public')->delete($category->image);
+            Storage::disk('r2')->delete($category->image);
             $data['image'] = null;
         }
 
-        // Subir nueva imagen
+        // Subir nueva imagen a Cloudflare R2
         if ($request->hasFile('image')) {
+            // Eliminar imagen anterior de R2 si existe
             if ($category->image) {
-                Storage::disk('public')->delete($category->image);
+                Storage::disk('r2')->delete($category->image);
             }
-            $data['image'] = $request->file('image')->store('categories', 'public');
+            
+            $data['image'] = $request->file('image')->store('categories', 'r2');
         }
-
-        $path = $data['image']?? $category->image;
-        $from = storage_path('app/public/' . $path);
-        $to = public_path('storage/' . $path);
-
-        if (!file_exists(dirname($to))) {
-            mkdir(dirname($to), 0775, true);
-        }
-
-        copy($from, $to);
 
         $category->update($data);
 
         return redirect()->route('admin.categories.index')
-                         ->with('success', '¡Categoría actualizada exitosamente!');
+                        ->with('success', 'Categoría actualizada exitosamente!');
     }
 
     public function destroy(Category $category)
     {
+        // Eliminar imagen de Cloudflare R2 si existe antes de borrar el registro
         if ($category->image) {
-            Storage::disk('public')->delete($category->image);
+            Storage::disk('r2')->delete($category->image);
         }
 
         $category->delete();
 
         return redirect()->route('admin.categories.index')
-                         ->with('success', '¡Categoría eliminada exitosamente!');
+                        ->with('success', 'Categoría eliminada exitosamente por completo!');
     }
 }

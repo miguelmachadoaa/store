@@ -1,104 +1,102 @@
 <x-app-layout>
-
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800">Nuevo Artículo</h2>
     </x-slot>
 
     <div class="py-10 max-w-4xl mx-auto sm:px-6 lg:px-8">
 
-        <div class="bg-white shadow rounded-lg p-6 border text-gray-900">
+        {{-- Alertas de error globales por si falta algo --}}
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <ul class="list-disc pl-5 text-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-            <form method="POST" action="{{ route('admin.posts.store') }}" enctype="multipart/form-data" id="postForm">
+        <div class="bg-white shadow rounded-lg p-6 border">
+            <form method="POST" action="{{ route('admin.posts.store') }}" enctype="multipart/form-data">
                 @csrf
 
                 {{-- Título --}}
                 <div class="mb-4">
-                    <label class="font-semibold text-gray-700 block mb-1">Título</label>
-                    <input type="text" name="title" class="w-full border border-gray-300 rounded p-2 text-gray-900 focus:ring-1 focus:ring-indigo-500 focus:outline-none" required>
+                    <label class="font-semibold block mb-1">Título</label>
+                    <input type="text" name="title" value="{{ old('title') }}" class="w-full border rounded p-2 focus:ring focus:ring-indigo-200" required>
                 </div>
 
                 {{-- Imagen --}}
                 <div class="mb-4">
-                    <label class="font-semibold text-gray-700 block mb-1">Imagen destacada</label>
-                    <input type="file" name="image" class="w-full border border-gray-300 rounded p-2 text-gray-900">
+                    <label class="font-semibold block mb-1">Imagen destacada</label>
+                    <input type="file" name="image" class="w-full border rounded p-2">
                 </div>
 
                 {{-- Extracto --}}
                 <div class="mb-4">
-                    <label class="font-semibold text-gray-700 block mb-1">Extracto</label>
-                    <textarea name="excerpt" class="w-full border border-gray-300 rounded p-2 text-gray-900 focus:ring-1 focus:ring-indigo-500 focus:outline-none" rows="3"></textarea>
+                    <label class="font-semibold block mb-1">Extracto</label>
+                    <textarea name="excerpt" class="w-full border rounded p-2" rows="3">{{ old('excerpt') }}</textarea>
                 </div>
 
-                {{-- Contenido (TinyMCE) --}}
+                {{-- Contenido (Quitamos 'required' para evitar el bug visual de TinyMCE) --}}
                 <div class="mb-4">
-                    <label class="font-semibold text-gray-700 block mb-1">Contenido</label>
-                    {{-- Eliminamos 'required' nativo de HTML para evitar el bloqueo silencioso --}}
-                    <textarea name="content" id="content_editor" class="w-full border border-gray-300 rounded p-2 text-gray-900" rows="8"></textarea>
+                    <label class="font-semibold block mb-1">Contenido</label>
+                    <textarea id="post-content" name="content" class="w-full border rounded p-2" rows="8">{{ old('content') }}</textarea>
                 </div>
 
                 {{-- Etiquetas --}}
                 <div class="mb-4">
-                    <label class="font-semibold text-gray-700 block mb-1">Etiquetas</label>
-                    <div class="grid grid-cols-2 gap-2 mt-2 text-gray-800">
-                        @foreach($tags as $tag)
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" name="tags[]" value="{{ $tag->id }}" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                                {{ $tag->name }}
-                            </label>
-                        @endforeach
-                    </div>
+                    <label class="font-semibold block mb-1">Etiquetas</label>
+                    @if(isset($tags) && $tags->count() > 0)
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2 p-3 bg-gray-50 rounded border">
+                            @foreach($tags as $tag)
+                                <label class="flex items-center gap-2 cursor-pointer p-1 hover:bg-gray-100 rounded text-sm">
+                                    <input type="checkbox" name="tags[]" value="{{ $tag->id }}" 
+                                        {{ is_array(old('tags')) && in_array($tag->id, old('tags')) ? 'checked' : '' }}
+                                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                    <span>{{ $tag->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-xs text-gray-500 italic mt-1">No hay etiquetas creadas en el sistema.</p>
+                    @endif
                 </div>
 
                 {{-- Estado --}}
                 <div class="mb-4">
-                    <label class="font-semibold text-gray-700 block mb-1">Estado</label>
-                    <select name="is_published" class="w-full border border-gray-300 rounded p-2 text-gray-900 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
-                        <option value="0">Borrador</option>
-                        <option value="1">Publicado</option>
+                    <label class="font-semibold block mb-1">Estado</label>
+                    <select name="is_published" class="w-full border rounded p-2">
+                        <option value="0" {{ old('is_published') == '0' ? 'selected' : '' }}>Borrador</option>
+                        <option value="1" {{ old('is_published') == '1' ? 'selected' : '' }}>Publicado</option>
                     </select>
                 </div>
 
-                {{-- Aseguramos el type="submit" explícito --}}
-                <button type="submit" class="bg-indigo-600 text-white px-5 py-2.5 rounded font-medium hover:bg-indigo-700 transition duration-150">
-                    Guardar Artículo
-                </button>
-
+                <div class="flex justify-end mt-6">
+                    <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded font-medium hover:bg-indigo-700 transition">
+                        Guardar Artículo
+                    </button>
+                </div>
             </form>
-
         </div>
-
     </div>
 
-<script>
-    tinymce.init({
-        selector: '#content_editor',
-        height: 450,
-        plugins: 'link image media table lists code fullscreen',
-        toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | table | code fullscreen',
-        menubar: false,
-        branding: false,
-        // Forzamos al iframe a pintar el fondo blanco y el texto oscuro explícitamente, aislando estilos externos
-        content_style: "body { font-family: Inter, sans-serif; font-size: 16px; color: #111827 !important; background-color: #ffffff !important; }",
-        
-        // Sincronización forzada antes del submit para que no falle ninguna validación backend
-        setup: function (editor) {
-            editor.on('change', function () {
-                tinymce.triggerSave();
-            });
-        }
-    });
-
-    // Validación manual frontend antes de enviar para suplir el 'required' nativo
-    document.getElementById('postForm').addEventListener('submit', function(e) {
-        // Obliga a TinyMCE a volcar el contenido al textarea original antes de validar
-        tinymce.triggerSave(); 
-        
-        const contentValue = document.getElementById('content_editor').value.trim();
-        if (!contentValue) {
-            e.preventDefault();
-            alert('Por favor, ingresa el contenido del artículo.');
-        }
-    });
-</script>
-
+    {{-- Script optimizado (usando ID en vez de selector name para evitar conflictos) --}}
+    <script>
+        tinymce.init({
+            selector: '#post-content',
+            height: 450,
+            plugins: 'link image media table lists code fullscreen',
+            toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | table | code fullscreen',
+            menubar: false,
+            branding: false,
+            content_style: "body { font-family:Inter, sans-serif; font-size:16px; }",
+            setup: function (editor) {
+                // Esto fuerza a TinyMCE a guardar el contenido en el textarea real antes de enviar el formulario
+                editor.on('change', function () {
+                    editor.save();
+                });
+            }
+        });
+    </script>
 </x-app-layout>

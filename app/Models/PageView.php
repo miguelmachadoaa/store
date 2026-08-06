@@ -15,7 +15,24 @@ class PageView extends Model
         'user_agent', 
         'viewable_type', 
         'viewable_id', 
-        'user_id'
+        'user_id',
+        
+        // Nuevos campos de analítica y UTMs
+        'utm_source',
+        'utm_medium',
+        'utm_campaign',
+        'utm_content',
+        'utm_term',
+        'meta_data'
+    ];
+
+    /**
+     * Los atributos que deben ser casteados a tipos nativos.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'meta_data' => 'array', // Esto automatiza el json_encode y json_decode
     ];
 
     // Relación polimórfica hacia Producto/Categoría

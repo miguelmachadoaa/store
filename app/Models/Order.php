@@ -12,8 +12,7 @@ class Order extends Model
         'customer_email',
         'customer_rif',
         'address',
-        'payment_method_id', // ◄ Agregamos el ID de la relación dinámica
-        'payment_method',    // Guardamos el string opcional como respaldo histórico
+        'payment_method',
         'total',
         'total_bs',
         'taxable_base',
@@ -24,16 +23,11 @@ class Order extends Model
         'discount_amount',
     ];
 
-    // Nueva relación con el CRUD de métodos de pago
-    public function paymentMethod()
-    {
-        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
-    }
-
     public function coupon()
     {
         return $this->belongsTo(Coupon::class);
     }
+
 
     public function user()
     {
@@ -49,10 +43,21 @@ class Order extends Model
     {
         return match ($this->status) {
             'pendiente' => 'bg-yellow-100 text-yellow-800',
-            'pagada'    => 'bg-green-100 text-green-800',
-            'enviada'   => 'bg-blue-100 text-blue-800',
+            'pagada' => 'bg-green-100 text-green-800',
+            'enviada' => 'bg-blue-100 text-blue-800',
             'cancelada' => 'bg-red-100 text-red-800',
-            default     => 'bg-gray-100 text-gray-800',
+            default => 'bg-gray-100 text-gray-800',
         };
     }
+
+    public function paymentReports()
+    {
+        return $this->hasMany(PaymentReport::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(OrderComment::class)->latest(); // El más reciente primero
+    }
+
 }

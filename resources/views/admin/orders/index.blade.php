@@ -8,6 +8,36 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            <!-- Formulario de Búsqueda -->
+            <div class="bg-white shadow-sm sm:rounded-xl border border-gray-200 p-6 mb-6">
+                <form action="{{ route('admin.orders.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                    <div>
+                        <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Buscar cliente, tlf, cédula o monto</label>
+                        <input type="text" name="search" id="search" value="{{ request('search') }}" 
+                            placeholder="Ej: Juan Pérez, 0414..., 123456"
+                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                    </div>
+
+                    <div>
+                        <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Fecha</label>
+                        <input type="date" name="date" id="date" value="{{ request('date') }}"
+                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md text-sm transition">
+                            Buscar
+                        </button>
+                        @if(request('search') || request('date'))
+                            <a href="{{ route('admin.orders.index') }}" class="w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-md text-sm transition">
+                                Limpiar
+                            </a>
+                        @endif
+                    </div>
+                </form>
+            </div>
+
+            <!-- Contenedor de la Tabla -->
             <div class="bg-white shadow-lg sm:rounded-xl border border-gray-200 p-6">
 
                 @if($orders->count() > 0)
@@ -18,11 +48,10 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pago</th> {{-- ◄ Nueva columna --}}
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total (USD)</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total (Bs)</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th> <!-- Corregido: Cabecera añadida -->
                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
                                 </tr>
                             </thead>
@@ -33,23 +62,6 @@
                                         <td class="px-6 py-4">{{ $order->id }}</td>
                                         <td class="px-6 py-4">{{ $order->customer_name }}</td>
                                         <td class="px-6 py-4">{{ $order->customer_email }}</td>
-                                        
-                                        {{-- Celda del Método de Pago --}}
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-2">
-                                                @if($order->paymentMethod && $order->paymentMethod->logo)
-                                                    <img src="{{ asset('storage/' . $order->paymentMethod->logo) }}" 
-                                                         class="h-5 w-auto object-contain max-w-[50px]" 
-                                                         alt="{{ $order->payment_method }}"
-                                                         title="{{ $order->payment_method }}">
-                                                @else
-                                                    <span class="text-xs font-medium text-gray-700 bg-gray-100 px-2 py-1 rounded">
-                                                        {{ $order->payment_method ?? 'No especificado' }}
-                                                    </span>
-                                                @endif
-                                            </div>
-                                        </td>
-
                                         <td class="px-6 py-4 font-semibold">${{ number_format($order->total, 2) }}</td>
                                         <td class="px-6 py-4">
                                             @if($order->total_bs)
@@ -64,7 +76,6 @@
                                                 {{ ucfirst($order->status) }}
                                             </span>
                                         </td>
-
                                         <td class="px-6 py-4 text-right">
                                             <a href="{{ route('admin.orders.show', $order) }}"
                                                 class="text-indigo-600 hover:text-indigo-900 font-semibold">
@@ -82,7 +93,7 @@
                     </div>
 
                 @else
-                    <p class="text-gray-600">No hay órdenes registradas.</p>
+                    <p class="text-gray-600">No se encontraron órdenes con los criterios especificados.</p>
                 @endif
 
             </div>

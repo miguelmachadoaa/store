@@ -143,7 +143,7 @@
                             @if($product->image)
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Imagen Actual</label>
-                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
+                                    <img src="{{ Storage::disk('r2')->url($product->image) }}" alt="{{ $product->name }}"
                                         class="h-32 w-32 object-cover rounded-lg border border-gray-200 shadow-sm">
                                 </div>
                             @endif
@@ -166,7 +166,7 @@
                                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-4">
                                     @foreach($product->images as $img)
                                         <div class="relative group" id="image-{{ $img->id }}">
-                                            <img src="{{ asset('storage/' . $img->image) }}"
+                                            <img src="{{ Storage::disk('r2')->url($img->image) }}"
                                                 class="h-24 w-full object-cover rounded-lg border border-gray-200">
                                             <button type="button" onclick="deleteProductImage({{ $img->id }})"
                                                 class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition opacity-0 group-hover:opacity-100">
