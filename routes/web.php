@@ -25,14 +25,15 @@ use App\Http\Controllers\SliderController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\LinkController;
+use App\Http\Controllers\Admin\PaymentReportAdminController;
+use App\Http\Controllers\Admin\OrderCommentController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PaymentMethodController;
+
+use App\Models\Product;
+
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
-
-
-
 
 Route::get('/storage/{path}', function ($path) {
     $path = str_replace('../', '', $path); // Seguridad básica
@@ -89,6 +90,8 @@ Route::get('/producto/{slug}', [ProductController::class, 'detail'])->name('prod
 
 Route::post('/cart/ajax-add/{id}', [CartController::class, 'ajaxAdd'])->name('cart.ajax-add');
 
+Route::post('/cart/buy-now/{id}', [CartController::class, 'buyNow'])->name('cart.buy-now');
+
 Route::get('/shop', [ProductController::class, 'shop'])->name('shop.index');
 
 // area clienets
@@ -129,18 +132,25 @@ Route::middleware('auth')->group(function () {
     Route::patch('/mi-area/perfil', [CustomerDashboardController::class, 'updateProfile'])->name('customer.profile.update');
     Route::get('/mi-area/favoritos', [CustomerDashboardController::class, 'favorites'])->name('customer.favorites');
 
-    Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     Route::get('/orders/{orderId}/invoice', [CheckoutController::class, 'downloadInvoice'])->name('orders.invoice');
 });
 
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/reviews', [ReviewAdminController::class, 'index'])->name('reviews.index');
+    Route::get('/reviews/create', [ReviewAdminController::class, 'create'])->name('reviews.create');
+    Route::post('/reviews', [ReviewAdminController::class, 'store'])->name('reviews.store');
+    Route::put('/reviews/{review}/approve', [ReviewAdminController::class, 'approve'])->name('reviews.approve');
+    Route::delete('/reviews/{review}', [ReviewAdminController::class, 'destroy'])->name('reviews.destroy');
 
+});
+
+
+    Route::get('/admin/users/{user}/products', [ReviewAdminController::class, 'getUserProducts'])->name('admin.users.products');
 
 // area admin
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-
-    Route::resource('payment-methods', PaymentMethodController::class);
 
     Route::get('/admin/newsletter/send', [NewsletterSendController::class, 'form'])
         ->name('admin.newsletter.form');
@@ -214,12 +224,43 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics.index');
 
     Route::resource('/links', LinkController::class)->except(['show'])->names('admin.links');
+
+    Route::get('/abandoned-carts', [App\Http\Controllers\Admin\AbandonedCartController::class, 'index'])->name('admin.carts.index');
+    Route::get('/abandoned-carts/{cart}', [App\Http\Controllers\Admin\AbandonedCartController::class, 'show'])->name('admin.carts.show');
     
+    // ESTA ES LA RUTA QUE TE FALTA AÑADIR:
+    Route::put('orders/{order}/status', [OrderAdminController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+    Route::post('orders/{order}/comments', [OrderCommentController::class, 'store'])->name('admin.orders.comments.store');
+
+
+    Route::get('payments', [PaymentReportAdminController::class, 'index'])->name('admin.payments.index');
+    Route::patch('payments/{report}/status', [PaymentReportAdminController::class, 'updateStatus'])->name('admin.payments.updateStatus');
 });
 
 // Rutas de Reseñas (Públicas)
 Route::post('/productos/{product}/reviews', [ReviewController::class, 'store'])
     ->middleware(['auth'])
     ->name('products.reviews.store');
+
+
+Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
+
+Route::post('/api/products/by-ids', function (Illuminate\Http\Request $request) {
+    $ids = $request->input('ids', []);
+    
+    $products = Product::whereIn('id', $ids)->get()->map(function($product) {
+        return [
+            'id' => $product->id,
+            'name' => $product->name,
+            'slug' => $product->slug,
+            'price' => $product->price,
+            'price_bs' => $product->price_bs ?? null, // Ajusta según tu lógica de conversión a Bs.
+            'image_url' => $product->image ? Storage::disk('r2')->url($product->image) : asset('images/no-image.png')
+        ];
+    });
+
+    return response()->json($products);
+});
 
 require __DIR__ . '/auth.php';
