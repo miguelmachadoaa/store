@@ -102,6 +102,11 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
 Route::get('/checkout/success/{orderId}', [CheckoutController::class, 'success'])->name('checkout.success');
 
+
+Route::get('/checkout/stripe/success/{order}', [CheckoutController::class, 'stripeSuccess'])->name('stripe.success');
+Route::get('/checkout/stripe/cancel/{order}', [CheckoutController::class, 'stripeCancel'])->name('stripe.cancel');
+
+
 // Endpoints firmados de autogestión para compras sin credenciales obligatorias
 Route::get('/pedido/{orderId}/ver', [CheckoutController::class, 'guestViewOrder'])
     ->name('guest.order.show')

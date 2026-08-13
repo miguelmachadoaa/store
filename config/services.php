@@ -38,5 +38,9 @@ return [
     'brevo' => [
         'key' => env('BREVO_API_KEY'),
     ],
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+    ],
 
 ];
