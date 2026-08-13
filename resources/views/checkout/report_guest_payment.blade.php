@@ -5,28 +5,34 @@
      Sistema visual: Brandbook Zolum (#FFFFFF + #131921 + #FFC933)
      ============================================================ --}}
 
+@php
+    // Evaluamos si el método de pago seleccionado es en Divisas/USD
+    $methodCurrency = strtoupper($order->paymentMethod->currency ?? 'BS');
+    $isUsd = in_array($methodCurrency, ['USD', 'DOLLAR', '$']);
+@endphp
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Orbitron:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-    --bg:            #FFFFFF;
-    --bg-soft:       #F4F6F6;
-    --bg-field:      #FAFAFA;
-    --navy:          #131921;
-    --navy-light:    #1A2536;
-    --orange:        #FFC933;
-    --orange-hover:  #F3A847;
-    --black:         #0F1111;
-    --border:        #D5D9D9;
-    --border-focus:  #E77600;
-    --muted:         #555555;
-    --link:          #007185;
-    --red:           #B12704;
-    --radius:        4px;
-    --shadow:        0 1px 4px rgba(0,0,0,.07), 0 2px 14px rgba(0,0,0,.05);
-    --font-display:  'Orbitron', sans-serif;
-    --font-tech:     'Chakra Petch', sans-serif;
-    --font-body:     'DM Sans', sans-serif;
+    --bg:             #FFFFFF;
+    --bg-soft:        #F4F6F6;
+    --bg-field:       #FAFAFA;
+    --navy:           #131921;
+    --navy-light:     #1A2536;
+    --orange:         #FFC933;
+    --orange-hover:   #F3A847;
+    --black:          #0F1111;
+    --border:         #D5D9D9;
+    --border-focus:   #E77600;
+    --muted:          #555555;
+    --link:           #007185;
+    --red:            #B12704;
+    --radius:         4px;
+    --shadow:         0 1px 4px rgba(0,0,0,.07), 0 2px 14px rgba(0,0,0,.05);
+    --font-display:   'Orbitron', sans-serif;
+    --font-tech:      'Chakra Petch', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
 }
 
 .zrp-page {
@@ -118,11 +124,38 @@
     margin-top: 2px;
 }
 
+/* ── DATOS PARA TRANSFERIR ─────────────────────────────────── */
+.zrp-bank-info {
+    background: #F0F4F8;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+}
+.zrp-bank-info__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.zrp-bank-info__title {
+    font-family: var(--font-tech);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    text-transform: uppercase;
+    margin: 0;
+}
+.zrp-bank-info__body {
+    font-size: 13px;
+    color: var(--black);
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
 /* ── CUERPO DEL FORMULARIO Y CAMPOS ─────────────────────────── */
 .zrp-form { padding: 28px 24px; }
 .zrp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
 
-.zrp-group { display: flex; flex-col; flex-direction: column; }
+.zrp-group { display: flex; flex-direction: column; }
 .zrp-label {
     font-size: 12px;
     font-weight: 700;
@@ -172,7 +205,7 @@
     border-color: var(--border-focus);
     box-shadow: 0 0 3px rgba(228,121,17,0.5);
 }
-.zrp-control--prefixed { padding-left: 46px; }
+.zrp-control--prefixed { padding-left: 52px; }
 .zrp-control--error { border-color: var(--red) !important; background: #FFF9F9; }
 
 .zrp-error-msg {
@@ -257,38 +290,60 @@
                 </div>
                 <div class="zrp-billboard__right">
                     <div class="zrp-billboard__label">Monto Total a Pagar</div>
-                    @if($order->payment_method_id)
-                        <div class="zrp-billboard__sub">Método: {{ $order->paymentMethod->name }}</div>
+                    @if($order->paymentMethod)
+                        <div class="zrp-billboard__sub">Método: {{ $order->paymentMethod->name }} ({{ $order->paymentMethod->currency }})</div>
                     @endif
-                    <div class="zrp-billboard__amount">Bs. {{ number_format($order->total_bs, 2) }}</div>
-                    @if(isset($order->total_usd) || isset($order->total))
-                        <div class="zrp-billboard__ref">Ref: ${{ number_format($order->total_usd ?? $order->total, 2) }}</div>
+
+                    {{-- Mostrar Monto Principal según Moneda del Método --}}
+                    @if($isUsd)
+                        <div class="zrp-billboard__amount">${{ number_format($order->total_usd ?? $order->total, 2) }} USD</div>
+                        <div class="zrp-billboard__ref">Ref: Bs. {{ number_format($order->total_bs, 2) }}</div>
+                    @else
+                        <div class="zrp-billboard__amount">Bs. {{ number_format($order->total_bs, 2) }}</div>
+                        @if(isset($order->total_usd) || isset($order->total))
+                            <div class="zrp-billboard__ref">Ref: ${{ number_format($order->total_usd ?? $order->total, 2) }} USD</div>
+                        @endif
                     @endif
                 </div>
-                //datos apra el pago 
-                
             </div>
+
+            {{-- Datos de Cuenta / Instrucciones del Método de Pago --}}
+            @if($order->paymentMethod && $order->paymentMethod->description)
+                <div class="zrp-bank-info">
+                    <div class="zrp-bank-info__header">
+                        <span>💳</span>
+                        <h4 class="zrp-bank-info__title">Datos para realizar el pago ({{ $order->paymentMethod->name }})</h4>
+                    </div>
+                    <div class="zrp-bank-info__body">{{ $order->paymentMethod->description }}</div>
+                </div>
+            @endif
 
             {{-- Formulario Laravel Autenticado mediante Enlace Firmado --}}
             <form action="{{ route('guest.payments.store', $order->id) }}" method="POST" enctype="multipart/form-data" class="zrp-form">
                 @csrf
 
+                {{-- Campo oculto para llevar registro del ID del método de pago --}}
+                <input type="hidden" name="payment_method_id" value="{{ $order->payment_method_id }}">
+
                 {{-- FILA 1: Monto y Referencia --}}
                 <div class="zrp-grid">
                     <div class="zrp-group">
-                        <label for="amount_bs" class="zrp-label">
-                            Monto Pagado (Bs.) <span class="zrp-req">*</span>
+                        <label for="amount" class="zrp-label">
+                            Monto Pagado ({{ $isUsd ? 'USD' : 'Bs.' }}) <span class="zrp-req">*</span>
                         </label>
                         <div class="zrp-input-wrapper">
-                            <span class="zrp-input-prefix">Bs.</span>
-                            <input type="number" step="0.01" name="amount_bs" id="amount_bs" 
-                                value="{{ old('amount_bs', $order->total_bs) }}"
-                                class="zrp-control zrp-control--prefixed @error('amount_bs') zrp-control--error @enderror" 
+                            <span class="zrp-input-prefix">{{ $isUsd ? '$' : 'Bs.' }}</span>
+                            
+                            {{-- Ajustamos el name e id dinámicamente o mantenemos una clave uniforme --}}
+                            <input type="number" step="0.01" name="{{ $isUsd ? 'amount' : 'amount' }}" id="amount" 
+                                value="{{ old($isUsd ? 'amount' : 'amount', $isUsd ? ($order->total_usd ?? $order->total) : $order->total_bs) }}"
+                                class="zrp-control zrp-control--prefixed @error('amount') zrp-control--error @enderror " 
                                 required>
                         </div>
-                        @error('amount_bs')
+                        @error('amount')
                             <span class="zrp-error-msg">{{ $message }}</span>
                         @enderror
+                       
                     </div>
 
                     <div class="zrp-group">
@@ -310,11 +365,11 @@
                 <div class="zrp-grid">
                     <div class="zrp-group">
                         <label for="bank_name" class="zrp-label">
-                            Banco Emisor / Plataforma <span class="zrp-req">*</span>
+                            Banco / Plataforma Emisora <span class="zrp-req">*</span>
                         </label>
                         <input type="text" name="bank_name" id="bank_name" 
-                            value="{{ old('bank_name') }}"
-                            placeholder="Ej: Banesco, Pago Móvil Mercantil..."
+                            value="{{ old('bank_name', $order->paymentMethod->name ?? '') }}"
+                            placeholder="{{ $isUsd ? 'Ej: Zelle, Binance, Banesco Panamá...' : 'Ej: Banesco, Pago Móvil Mercantil...' }}"
                             class="zrp-control @error('bank_name') zrp-control--error @enderror" 
                             required>
                         @error('bank_name')

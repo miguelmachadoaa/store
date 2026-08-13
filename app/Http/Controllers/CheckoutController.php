@@ -220,8 +220,13 @@ class CheckoutController extends Controller
     {
         $order = Order::findOrFail($orderId);
 
+        $paymentMethods = PaymentMethod::find($order->payment_method_id);
+
+        $isUsd = $paymentMethods->type === 'USD';
+
+
         $request->validate([
-            'amount_bs' => 'required|numeric|min:0.01',
+            'amount' => 'required|numeric|min:0.01',
             'reference_number' => 'required|string',
             'bank_name' => 'required|string',
             'payment_date' => 'required|date',
@@ -232,6 +237,7 @@ class CheckoutController extends Controller
         $data['order_id'] = $order->id;
         $data['user_id'] = $order->user_id; 
         $data['status'] = 'pending';
+        $data['amount_bs'] = $request->amount;
 
         if ($request->hasFile('proof_image')) {
             $data['proof_image'] = $request->file('proof_image')->store('payment_proofs', 'public');
