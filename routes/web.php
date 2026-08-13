@@ -28,6 +28,7 @@ use App\Http\Controllers\LinkController;
 use App\Http\Controllers\Admin\PaymentReportAdminController;
 use App\Http\Controllers\Admin\OrderCommentController;
 use App\Http\Controllers\Admin\PaymentMethodController;
+use App\Http\Controllers\Admin\InventoryController;
 use Illuminate\Support\Facades\Route;
 
 use App\Models\Product;
@@ -145,6 +146,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::delete('/reviews/{review}', [ReviewAdminController::class, 'destroy'])->name('reviews.destroy');
 
     Route::resource('payment-methods', PaymentMethodController::class);
+
+    
+    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     
 });
 

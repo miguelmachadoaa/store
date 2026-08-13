@@ -221,7 +221,7 @@
                                         <td class="px-4 py-3">
                                             @if($payment->proof_image)
                                                 {{-- Cambio a URL del disco r2 --}}
-                                                <a href="{{ Storage::disk('r2')->url($payment->proof_image) }}" target="_blank" class="text-indigo-600 hover:text-indigo-900 font-semibold flex items-center gap-0.5">
+                                                <a href="{{ Storage::disk('public')->url($payment->proof_image) }}" target="_blank" class="text-indigo-600 hover:text-indigo-900 font-semibold flex items-center gap-0.5">
                                                     Ver Captura ↗
                                                 </a>
                                             @else
@@ -292,8 +292,8 @@
                             @if($comment->file_path)
                                 <div class="w-24 h-24 flex-shrink-0 relative group cursor-pointer">
                                     {{-- Cambio a URL del disco r2 en los enlaces e imágenes --}}
-                                    <a href="{{ Storage::disk('r2')->url($comment->file_path) }}" target="_blank" title="Ver imagen completa">
-                                        <img src="{{ Storage::disk('r2')->url($comment->file_path) }}" 
+                                    <a href="{{ Storage::disk('public')->url($comment->file_path) }}" target="_blank" title="Ver imagen completa">
+                                        <img src="{{ Storage::disk('public')->url($comment->file_path) }}" 
                                             alt="Guía o evidencia" 
                                             class="w-full h-full object-cover rounded-lg border border-gray-200 shadow-sm transition transform hover:scale-105">
                                         <span class="absolute bottom-1 right-1 bg-black bg-opacity-60 text-white text-[10px] px-1 rounded">🔎 Ver</span>

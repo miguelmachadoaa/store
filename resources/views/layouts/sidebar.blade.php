@@ -68,6 +68,9 @@
 
                     <a href="{{ route('admin.payment-methods.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.payment-methods.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Métodos de Pago</a>
+
+                    <a href="{{ route('admin.inventory.index') }}"
+                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.inventory.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Inventario</a>
                 </div>
             </li>
 

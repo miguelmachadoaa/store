@@ -269,6 +269,23 @@ class ProductController extends Controller
     {
         $query = Product::query()->where('is_active', 1);
 
+        if ($request->filled('search')) {
+            // Limpiamos y dividimos la búsqueda por espacios en blanco
+            $searchTerms = array_filter(explode(' ', trim($request->search)));
+
+            $query->where(function ($q) use ($searchTerms) {
+                foreach ($searchTerms as $term) {
+                    // Buscamos que CADA palabra coincida en el nombre, descripción o código/modelo
+                    $q->where(function ($subQ) use ($term) {
+                        $subQ->where('name', 'LIKE', "%{$term}%")
+                            ->orWhere('description', 'LIKE', "%{$term}%");
+                            // Si tienes un campo de marca/modelo o sku, puedes incluirlo aquí:
+                            // ->orWhere('sku', 'LIKE', "%{$term}%");
+                    });
+                }
+            });
+        }
+
         // Filtro por categoría
         if ($request->category) {
             $query->where('category_id', $request->category);

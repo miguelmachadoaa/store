@@ -331,7 +331,7 @@
                 </button>
 
                 <a href="{{ route('home') }}" class="zolum-brand-logo">
-                    <img src="{{ asset('storage/logo_head.png') }}" alt="Zolum Shop" class="zolum-logo-img" style="max-height: 38px;">
+                    <img src="{{ asset('storage/zolum_blanco.png') }}" alt="Zolum Shop" class="zolum-logo-img" style="max-height: 38px;">
                 </a>
             </div>
 

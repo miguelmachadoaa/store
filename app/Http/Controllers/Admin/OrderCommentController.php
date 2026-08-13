@@ -22,7 +22,7 @@ class OrderCommentController extends Controller
         // Si el usuario subió una foto (ej: foto de la guía de despacho)
         if ($request->hasFile('photo')) {
             // Se guardará directamente en tu bucket de Cloudflare R2
-            $filePath = $request->file('photo')->store('order-comments', 'r2');
+            $filePath = $request->file('photo')->store('order-comments', 'public');
         }
 
         $order->comments()->create([
