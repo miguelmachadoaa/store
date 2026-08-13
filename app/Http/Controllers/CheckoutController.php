@@ -205,13 +205,36 @@ class CheckoutController extends Controller
             $session = StripeSession::retrieve($sessionId);
 
             if ($session && $session->payment_status === 'paid') {
+
+                // 1. Actualizamos el estado de la orden
                 $order->update([
-                    'status' => 'pagada', // O el estado activo que utilices
+                    'status' => 'pagada',
                 ]);
+
+                // 2. Verificamos si ya se registró el pago para no duplicarlo si el usuario recarga la página
+                $existingReport = PaymentReport::where('order_id', $order->id)
+                    ->where('reference_number', $session->payment_intent ?? $sessionId)
+                    ->first();
+
+                if (!$existingReport) {
+                    // 3. Creamos el registro del reporte de pago automáticamente
+                    PaymentReport::create([
+                        'order_id'         => $order->id,
+                        'user_id'          => $order->user_id,
+                        'amount'           => $order->total,                   // Monto en USD
+                        'amount_bs'        => $order->total_bs,                // Monto equivalente en Bolívares
+                        'reference_number' => $session->payment_intent ?? $sessionId, // ID único de la transacción en Stripe
+                        'bank_name'        => 'Stripe',
+                        'payment_date'     => now(),
+                        'status'           => 'approved',                      // Queda aprobado automáticamente
+                        'notes'            => 'Pago automático procesado vía Stripe Checkout.'
+                    ]);
+                }
             }
         }
 
-        return redirect()->route('checkout.success', $order->id)->with('success', '¡Pago procesado exitosamente con Stripe!');
+        return redirect()->route('checkout.success', $order->id)
+            ->with('success', '¡Pago procesado y registrado exitosamente con Stripe!');
     }
 
     public function stripeCancel(Order $order)
