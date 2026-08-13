@@ -96,6 +96,7 @@ class CheckoutController extends Controller
             $taxRate = $product->tax->rate ?? 0;
 
             $itemTotal = $item['price'] * $item['quantity'];
+
             if ($taxRate > 0) {
                 $itemTaxableBase = $itemTotal / (1 + ($taxRate / 100));
                 $itemTaxAmount = $itemTotal - $itemTaxableBase;

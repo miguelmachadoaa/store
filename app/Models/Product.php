@@ -13,7 +13,7 @@ class Product extends Model
     // Helper estático para obtener la tasa del día (cacheable si se quisiera)
     public static function getDollarRate()
     {
-        return \App\Models\DollarValue::latest('date')->first()?->value ?? 0;
+        return  DollarValue::latest('date')->first()?->value ?? 0;
     }
 
     // Accessor para precio en Bolívares

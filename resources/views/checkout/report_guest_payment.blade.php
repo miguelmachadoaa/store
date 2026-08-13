@@ -257,11 +257,16 @@
                 </div>
                 <div class="zrp-billboard__right">
                     <div class="zrp-billboard__label">Monto Total a Pagar</div>
+                    @if($order->payment_method_id)
+                        <div class="zrp-billboard__sub">Método: {{ $order->paymentMethod->name }}</div>
+                    @endif
                     <div class="zrp-billboard__amount">Bs. {{ number_format($order->total_bs, 2) }}</div>
                     @if(isset($order->total_usd) || isset($order->total))
                         <div class="zrp-billboard__ref">Ref: ${{ number_format($order->total_usd ?? $order->total, 2) }}</div>
                     @endif
                 </div>
+                //datos apra el pago 
+                
             </div>
 
             {{-- Formulario Laravel Autenticado mediante Enlace Firmado --}}

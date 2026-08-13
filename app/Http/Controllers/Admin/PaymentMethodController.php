@@ -37,11 +37,12 @@ class PaymentMethodController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string',
+            'currency' => 'required|in:USD,BS',
             'description' => 'nullable|string',
             'logo' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->only('name', 'type', 'description', 'is_active');
+        $data = $request->only('name', 'type', 'currency', 'description', 'is_active');
 
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('payment_methods', 'public');
@@ -49,9 +50,10 @@ class PaymentMethodController extends Controller
 
         PaymentMethod::create($data);
 
-        return redirect()->route('payment-methods.index')->with('success', 'Forma de pago creada con éxito.');
+        return redirect()->route('admin.payment-methods.index')->with('success', 'Forma de pago creada con éxito.');
     }
 
+    
     public function edit(PaymentMethod $paymentMethod)
     {
         return view('admin.payment_methods.edit', compact('paymentMethod'));
@@ -62,11 +64,12 @@ class PaymentMethodController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string',
+            'currency' => 'required|in:USD,BS',
             'description' => 'nullable|string',
             'logo' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->only('name', 'type', 'description', 'is_active');
+        $data = $request->only('name', 'type', 'currency', 'description', 'is_active');
 
         if ($request->hasFile('logo')) {
             if ($paymentMethod->logo) {
@@ -77,8 +80,9 @@ class PaymentMethodController extends Controller
 
         $paymentMethod->update($data);
 
-        return redirect()->route('payment-methods.index')->with('success', 'Forma de pago actualizada.');
+        return redirect()->route('admin.payment-methods.index')->with('success', 'Forma de pago actualizada.');
     }
+
 
     public function destroy(PaymentMethod $paymentMethod)
     {

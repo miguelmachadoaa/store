@@ -24,6 +24,14 @@
                     </div>
 
                     <div class="mb-4">
+                        <label class="block font-semibold mb-1">Moneda</label>
+                        <select name="currency" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                            <option value="USD" {{ (old('currency', $paymentMethod->currency ?? '') == 'USD') ? 'selected' : '' }}>USD ($)</option>
+                            <option value="BS" {{ (old('currency', $paymentMethod->currency ?? '') == 'BS') ? 'selected' : '' }}>BS (Bs.)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
                         <label class="block font-semibold mb-1">Detalle / Instrucciones</label>
                         <textarea name="description" rows="4" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ $paymentMethod->description }}</textarea>
                     </div>

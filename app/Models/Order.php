@@ -12,6 +12,7 @@ class Order extends Model
         'customer_email',
         'customer_rif',
         'address',
+        'payment_method_id',
         'payment_method',
         'total',
         'total_bs',
@@ -58,6 +59,11 @@ class Order extends Model
     public function comments()
     {
         return $this->hasMany(OrderComment::class)->latest(); // El más reciente primero
+    }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
     }
 
 }

@@ -6,7 +6,7 @@
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow sm:rounded-lg p-6">
-                <form action="{{ route('payment-methods.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.payment-methods.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <div class="mb-4">
@@ -20,6 +20,14 @@
                             <option value="manual">Manual (Efectivo, Transferencia, etc.)</option>
                             <option value="stripe">Stripe Gateway</option>
                             <option value="paypal">PayPal Gateway</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block font-semibold mb-1">Moneda</label>
+                        <select name="currency" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                            <option value="USD" {{ (old('currency', $paymentMethod->currency ?? '') == 'USD') ? 'selected' : '' }}>USD ($)</option>
+                            <option value="BS" {{ (old('currency', $paymentMethod->currency ?? '') == 'BS') ? 'selected' : '' }}>BS (Bs.)</option>
                         </select>
                     </div>
 
@@ -42,7 +50,7 @@
                     </div>
 
                     <div class="flex justify-between items-center mt-6">
-                        <a href="{{ route('payment-methods.index') }}" class="text-gray-600 hover:underline">Cancelar</a>
+                        <a href="{{ route('admin.payment-methods.index') }}" class="text-gray-600 hover:underline">Cancelar</a>
                         <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Guardar</button>
                     </div>
                 </form>
