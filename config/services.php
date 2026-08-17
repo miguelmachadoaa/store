@@ -39,4 +39,8 @@ return [
         'key' => env('BREVO_API_KEY'),
     ],
 
+    'cotizave' => [
+        'api_key' => env('COTIZAVE_API_KEY'),
+    ],
+
 ];
