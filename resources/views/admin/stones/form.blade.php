@@ -1,0 +1,149 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800">
+            {{ isset($stone) ? 'Editar Piedra' : 'Nueva Piedra' }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12 max-w-3xl mx-auto sm:px-6 lg:px-8">
+
+        <div class="bg-white shadow-lg rounded-lg p-6 border">
+
+            <form method="POST" enctype="multipart/form-data"
+                  action="{{ isset($stone) ? route('admin.stones.update', $stone) : route('admin.stones.store') }}">
+                @csrf
+                @isset($stone)
+                    @method('PUT')
+                @endisset
+
+                <div class="mb-4">
+                    <label class="font-semibold">Nombre de la Piedra</label>
+                    <input type="text" name="name"
+                           value="{{ old('name', $stone->name ?? '') }}"
+                           class="w-full border rounded p-2 @error('name') border-red-500 @enderror"
+                           required>
+                    @error('name')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="font-semibold">Subtítulo / Frase Corta</label>
+                    <input type="text" name="subtitle"
+                           value="{{ old('subtitle', $stone->subtitle ?? '') }}"
+                           placeholder="Ej: Fuerza, coraje y confianza"
+                           class="w-full border rounded p-2 @error('subtitle') border-red-500 @enderror">
+                    @error('subtitle')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="font-semibold">Descripción Corta (Para tarjetas)</label>
+                    <textarea name="short_description" rows="2"
+                              class="w-full border rounded p-2 @error('short_description') border-red-500 @enderror" required>{{ old('short_description', $stone->short_description ?? '') }}</textarea>
+                    @error('short_description')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="font-semibold">Descripción Larga / Contenido de la Página</label>
+                    <textarea name="description" rows="6"
+                              class="w-full border rounded p-2 @error('description') border-red-500 @enderror" required>{{ old('description', $stone->description ?? '') }}</textarea>
+                    @error('description')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="font-semibold">Signos Zodiacales</label>
+                        <input type="text" name="zodiac_signs"
+                               value="{{ old('zodiac_signs', $stone->zodiac_signs ?? '') }}"
+                               placeholder="Ej: Aries, Tauro, Leo"
+                               class="w-full border rounded p-2">
+                    </div>
+
+                    <div>
+                        <label class="font-semibold">Orden de Presentación</label>
+                        <input type="number" name="sort_order"
+                               value="{{ old('sort_order', $stone->sort_order ?? 0) }}"
+                               class="w-full border rounded p-2" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="font-semibold">Imagen</label>
+                    <input type="file" name="image" accept="image/*"
+                           class="w-full border rounded p-2 @error('image') border-red-500 @enderror"
+                           onchange="previewImage(event)">
+                    @error('image')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+
+                    <!-- Preview de la imagen -->
+                    <div class="mt-3">
+                        @if(isset($stone) && $stone->image)
+                            <div class="relative inline-block">
+                                <img id="image-preview"
+                                     src="{{ Storage::disk('r2')->url($stone->image) }}"
+                                     alt="Stone image"
+                                     class="h-32 w-32 object-cover rounded-lg border-2 border-gray-200">
+                                <label class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 cursor-pointer hover:bg-red-600">
+                                    <input type="checkbox" name="remove_image" value="1" class="hidden">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </label>
+                            </div>
+                        @else
+                            <img id="image-preview"
+                                 src=""
+                                 alt="Preview"
+                                 class="h-32 w-32 object-cover rounded-lg border-2 border-gray-200 hidden">
+                        @endif
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="font-semibold">Estado</label>
+                    <select name="is_active" class="w-full border rounded p-2">
+                        <option value="1" {{ old('is_active', $stone->is_active ?? 1) == 1 ? 'selected' : '' }}>Activa</option>
+                        <option value="0" {{ old('is_active', $stone->is_active ?? 1) == 0 ? 'selected' : '' }}>Inactiva</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+                        Guardar
+                    </button>
+                    <a href="{{ route('admin.stones.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                        Cancelar
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    @push('scripts')
+    <script>
+        function previewImage(event) {
+            const preview = document.getElementById('image-preview');
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+    @endpush
+</x-app-layout>

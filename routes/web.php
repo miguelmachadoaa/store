@@ -27,6 +27,11 @@ use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\Admin\PaymentReportAdminController;
 use App\Http\Controllers\Admin\OrderCommentController;
+use App\Http\Controllers\StoneController;
+use App\Http\Controllers\Admin\StoneAdminController;
+
+// Rutas de administración (CRUD)
+
 use Illuminate\Support\Facades\Route;
 
 use App\Models\Product;
@@ -94,6 +99,10 @@ Route::post('/cart/buy-now/{id}', [CartController::class, 'buyNow'])->name('cart
 
 Route::get('/shop', [ProductController::class, 'shop'])->name('shop.index');
 
+// Ruta pública para listar y mostrar el detalle de cada piedra
+Route::get('/piedras', [StoneController::class, 'publicIndex'])->name('stones.index');
+Route::get('/piedras/{stone:slug}', [StoneController::class, 'publicShow'])->name('stones.show');
+
 // area clienets
 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
@@ -136,12 +145,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{orderId}/invoice', [CheckoutController::class, 'downloadInvoice'])->name('orders.invoice');
 });
 
+
+
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/reviews', [ReviewAdminController::class, 'index'])->name('reviews.index');
     Route::get('/reviews/create', [ReviewAdminController::class, 'create'])->name('reviews.create');
     Route::post('/reviews', [ReviewAdminController::class, 'store'])->name('reviews.store');
     Route::put('/reviews/{review}/approve', [ReviewAdminController::class, 'approve'])->name('reviews.approve');
     Route::delete('/reviews/{review}', [ReviewAdminController::class, 'destroy'])->name('reviews.destroy');
+
+    Route::resource('stones', StoneAdminController::class);
+
 
 });
 
