@@ -13,7 +13,6 @@ class PaymentMethodController extends Controller
     {
         $query = PaymentMethod::orderBy('id', 'desc');
 
-        // Búsqueda integrada (como la tienes en tu vista)
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
@@ -40,12 +39,29 @@ class PaymentMethodController extends Controller
             'currency' => 'required|in:USD,BS',
             'description' => 'nullable|string',
             'logo' => 'nullable|image|max:2048',
+            'qr_code' => 'nullable|image|max:2048',
+            'bank_details' => 'nullable|array',
         ]);
 
         $data = $request->only('name', 'type', 'currency', 'description', 'is_active');
+        $data['is_active'] = $request->has('is_active') ? $request->is_active : true;
+        
+        // Filtra los pares clave/valor vacíos de los datos bancarios
+        // Método store() y update()
+        if ($request->has('bank_details')) {
+            $data['bank_details'] = array_values(array_filter($request->bank_details, function ($item) {
+                return !empty($item['label']) || !empty($item['value']);
+            }));
+        } else {
+            $data['bank_details'] = [];
+        }
 
         if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('payment_methods', 'public');
+            $data['logo'] = $request->file('logo')->store('payment_methods', 'r2');
+        }
+
+        if ($request->hasFile('qr_code')) {
+            $data['qr_code'] = $request->file('qr_code')->store('payment_methods/qr', 'r2');
         }
 
         PaymentMethod::create($data);
@@ -53,36 +69,53 @@ class PaymentMethodController extends Controller
         return redirect()->route('admin.payment-methods.index')->with('success', 'Forma de pago creada con éxito.');
     }
 
-    
     public function edit(PaymentMethod $paymentMethod)
     {
         return view('admin.payment_methods.edit', compact('paymentMethod'));
     }
 
     public function update(Request $request, PaymentMethod $paymentMethod)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|string',
-            'currency' => 'required|in:USD,BS',
-            'description' => 'nullable|string',
-            'logo' => 'nullable|image|max:2048',
-        ]);
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'type' => 'required|string',
+        'currency' => 'required|in:USD,BS',
+        'description' => 'nullable|string',
+        'logo' => 'nullable|image|max:2048',
+        'qr_code' => 'nullable|image|max:2048',
+        'bank_details' => 'nullable|array',
+    ]);
 
-        $data = $request->only('name', 'type', 'currency', 'description', 'is_active');
+    $data = $request->only('name', 'type', 'currency', 'description', 'is_active');
 
-        if ($request->hasFile('logo')) {
-            if ($paymentMethod->logo) {
-                Storage::disk('public')->delete($paymentMethod->logo);
-            }
-            $data['logo'] = $request->file('logo')->store('payment_methods', 'public');
-        }
-
-        $paymentMethod->update($data);
-
-        return redirect()->route('admin.payment-methods.index')->with('success', 'Forma de pago actualizada.');
+    // Procesar las líneas de datos para copiar (filtrar nulos o vacíos)
+   // Método store() y update()
+    if ($request->has('bank_details')) {
+        $data['bank_details'] = array_values(array_filter($request->bank_details, function ($item) {
+            return !empty($item['label']) || !empty($item['value']);
+        }));
+    } else {
+        $data['bank_details'] = [];
     }
 
+    if ($request->hasFile('logo')) {
+        if ($paymentMethod->logo) {
+            Storage::disk('public')->delete($paymentMethod->logo);
+        }
+        $data['logo'] = $request->file('logo')->store('payment_methods', 'public');
+    }
+
+    if ($request->hasFile('qr_code')) {
+        if ($paymentMethod->qr_code) {
+            Storage::disk('public')->delete($paymentMethod->qr_code);
+        }
+        $data['qr_code'] = $request->file('qr_code')->store('payment_methods/qr', 'public');
+    }
+
+    $paymentMethod->update($data);
+
+    return redirect()->route('admin.payment-methods.index')->with('success', 'Forma de pago actualizada.');
+}
 
     public function destroy(PaymentMethod $paymentMethod)
     {
@@ -90,8 +123,12 @@ class PaymentMethodController extends Controller
             Storage::disk('public')->delete($paymentMethod->logo);
         }
 
+        if ($paymentMethod->qr_code) {
+            Storage::disk('public')->delete($paymentMethod->qr_code);
+        }
+
         $paymentMethod->delete();
 
-        return redirect()->route('payment-methods.index')->with('success', 'Forma de pago eliminada.');
+        return redirect()->route('admin.payment-methods.index')->with('success', 'Forma de pago eliminada.');
     }
 }

@@ -10,12 +10,18 @@ class PaymentMethod extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id',
         'name',
         'type',
         'currency',
         'description',
         'logo',
+        'qr_code',
+        'bank_details',
         'is_active'
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'bank_details' => 'array',
     ];
 }

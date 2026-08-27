@@ -707,6 +707,35 @@
     transition: background .15s;
 }
 .zc-empty__btn:hover { background: var(--midnight-light); }
+
+.zc-whatsapp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: #25D366;
+    border: 1px solid #1EBE5D;
+    color: #FFFFFF;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    padding: 12px 0;
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+.zc-whatsapp-btn:hover {
+    background: #1EBE5D;
+    color: #FFFFFF;
+}
+
+
 </style>
 
 <div class="zc-page">
@@ -925,10 +954,27 @@
         </div>{{-- /zc-panel --}}
 
         {{-- ════ PANEL DERECHO: RESUMEN ═══════════════════════ --}}
-        @php
-            $discount = session('coupon.discount', 0);
-            $total    = $subtotal - $discount;
-        @endphp
+       @php
+        $discount = session('coupon.discount', 0);
+        $total    = $subtotal - $discount;
+
+        // Mensaje formateado para WhatsApp
+        $waText = "Hola! Quisiera realizar el siguiente pedido:\n\n";
+        foreach($cart as $item) {
+            $waText .= "• *" . $item['name'] . "* x" . $item['quantity'] . " - $" . number_format($item['price'] * $item['quantity'], 2) . "\n";
+        }
+
+        if($discount > 0) {
+            $waText .= "\nDescuento (" . session('coupon.code') . "): -$" . number_format($discount, 2);
+        }
+
+        $waText .= "\n\n*Total a pagar: $" . number_format($total, 2) . "*";
+        if($showBs) {
+            $waText .= " (Bs. " . number_format($total * $rate, 2) . ")";
+        }
+
+        $waUrl = "https://wa.me/" . $settings->clean_whatsapp . "?text=" . urlencode($waText);
+    @endphp
 
         <div>
             <div class="zc-summary">
@@ -1011,6 +1057,12 @@
                     <a href="{{ route('checkout.index') }}" class="zc-checkout-btn">
                         Proceder al Pago →
                     </a>
+
+                    @if($settings->clean_whatsapp)
+                        <a href="{{ $waUrl }}" target="_blank" class="zc-whatsapp-btn">
+                            💬 Pedir por WhatsApp
+                        </a>
+                    @endif
 
                     {{-- Micro-confianza --}}
                     <div class="zc-trust-mini">

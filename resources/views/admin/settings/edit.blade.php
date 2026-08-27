@@ -60,6 +60,15 @@
                             <x-input-error class="mt-2" :messages="$errors->get('phone')" />
                         </div>
 
+                        {{-- WhatsApp --}}
+                        <div>
+                            <x-input-label for="whatsapp" :value="__('Número de WhatsApp')" />
+                            <x-text-input id="whatsapp" name="whatsapp" type="text" class="mt-1 block w-full"
+                                :value="old('whatsapp', $setting->whatsapp)" placeholder="Ej: 04141234567 o 584141234567" />
+                            <p class="text-sm text-gray-500 mt-1">Número donde recibirás los pedidos directos del carrito.</p>
+                            <x-input-error class="mt-2" :messages="$errors->get('whatsapp')" />
+                        </div>
+
                         {{-- RIF --}}
                         <div>
                             <x-input-label for="rif" :value="__('RIF')" />

@@ -19,12 +19,13 @@ class SettingController extends Controller
 
     public function update(Request $request)
     {
-        // 1. Validamos tanto tus campos originales como los nuevos del Linktree
+        // 1. Validamos tanto tus campos originales como el nuevo WhatsApp y Linktree
         $request->validate([
             'name' => 'required|string|max:255',
             'logo' => 'nullable|image|max:1024', // 1MB Max
             'address' => 'required|string',
             'phone' => 'required|string',
+            'whatsapp' => 'nullable|string|max:20', // <-- Validación agregada
             'rif' => 'required|string',
             'email' => 'required|email',
             'currency_preference' => 'required|in:usd,bs,both',
@@ -50,7 +51,7 @@ class SettingController extends Controller
         // Excluimos todos los archivos binarios del request para procesarlos manualmente
         $data = $request->except(['logo', 'linktree_logo', 'linktree_bg_image']);
 
-        // Asegurar que use_brevo sea 0 si no viene en el request (al ser un checkbox/select estructurado)
+        // Asegurar que use_brevo sea 0 si no viene en el request
         $data['use_brevo'] = $request->has('use_brevo') ? $request->input('use_brevo') : 0;
 
         // 2. Manejo del Logo de la Tienda en Cloudflare R2

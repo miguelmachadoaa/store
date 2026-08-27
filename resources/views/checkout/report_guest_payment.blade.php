@@ -124,7 +124,7 @@
     margin-top: 2px;
 }
 
-/* ── DATOS PARA TRANSFERIR ─────────────────────────────────── */
+/* ── DATOS PARA TRANSFERIR & COPIA RÁPIDA ─────────────────── */
 .zrp-bank-info {
     background: #F0F4F8;
     border-bottom: 1px solid var(--border);
@@ -151,6 +151,91 @@
     white-space: pre-line;
 }
 
+.zrp-details-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 12px;
+}
+.zrp-qr-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #FFFFFF;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 130px;
+    flex-shrink: 0;
+}
+.zrp-qr-img {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+}
+.zrp-qr-label {
+    font-family: var(--font-tech);
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    text-transform: uppercase;
+}
+
+.zrp-copy-list {
+    flex: 1;
+    min-width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.zrp-copy-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+}
+.zrp-copy-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-right: 8px;
+}
+.zrp-copy-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+.zrp-copy-val {
+    font-family: var(--font-tech);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    word-break: break-all;
+}
+.zrp-btn-copy {
+    background: var(--navy);
+    color: #FFFFFF;
+    border: none;
+    font-family: var(--font-tech);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background .15s;
+    flex-shrink: 0;
+}
+.zrp-btn-copy:hover {
+    background: var(--orange);
+    color: var(--black);
+}
+
 /* ── CUERPO DEL FORMULARIO Y CAMPOS ─────────────────────────── */
 .zrp-form { padding: 28px 24px; }
 .zrp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
@@ -168,7 +253,6 @@
 .zrp-req { color: var(--red); }
 .zrp-opt { color: var(--muted); font-weight: 400; font-size: 11px; }
 
-/* Inputs nativos estilo Amazon/Zolum */
 .zrp-input-wrapper { position: relative; display: flex; width: 100%; }
 .zrp-input-prefix {
     position: absolute;
@@ -266,6 +350,8 @@
     .zrp-grid { grid-template-columns: 1fr; gap: 16px; }
     .zrp-panel__billboard { flex-direction: column; align-items: flex-start; text-align: left; }
     .zrp-billboard__right { text-align: left; }
+    .zrp-details-grid { flex-direction: column; }
+    .zrp-qr-box { width: 100%; }
 }
 </style>
 
@@ -280,8 +366,17 @@
 
         {{-- ── PANEL PRINCIPAL ── --}}
         <div class="zrp-panel">
-            
-            {{-- Billboard de Datos de la Orden (Fijo arriba) --}}
+            @if ($errors->any())
+                <div class="alert alert-danger" style="color: red; padding: 12px 24px;">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+                    
+            {{-- Billboard de Datos de la Orden --}}
             <div class="zrp-panel__billboard">
                 <div>
                     <div class="zrp-billboard__label">Documento de Referencia</div>
@@ -294,7 +389,6 @@
                         <div class="zrp-billboard__sub">Método: {{ $order->paymentMethod->name }} ({{ $order->paymentMethod->currency }})</div>
                     @endif
 
-                    {{-- Mostrar Monto Principal según Moneda del Método --}}
                     @if($isUsd)
                         <div class="zrp-billboard__amount">${{ number_format($order->total_usd ?? $order->total, 2) }} USD</div>
                         <div class="zrp-billboard__ref">Ref: Bs. {{ number_format($order->total_bs, 2) }}</div>
@@ -307,43 +401,80 @@
                 </div>
             </div>
 
-            {{-- Datos de Cuenta / Instrucciones del Método de Pago --}}
-            @if($order->paymentMethod && $order->paymentMethod->description)
+            {{-- Datos de Cuenta / Instrucciones y Copia Rápida --}}
+            @if($order->paymentMethod)
                 <div class="zrp-bank-info">
                     <div class="zrp-bank-info__header">
                         <span>💳</span>
                         <h4 class="zrp-bank-info__title">Datos para realizar el pago ({{ $order->paymentMethod->name }})</h4>
                     </div>
-                    <div class="zrp-bank-info__body">{{ $order->paymentMethod->description }}</div>
+
+                    @if($order->paymentMethod->description)
+                        <div class="zrp-bank-info__body mb-3">{{ $order->paymentMethod->description }}</div>
+                    @endif
+
+                    <div class="zrp-details-grid">
+                        {{-- Imagen QR de Pago --}}
+                        @if($order->paymentMethod->qr_code)
+                            <div class="zrp-qr-box">
+                                <img src="{{ asset('storage/' . $order->paymentMethod->qr_code) }}" alt="QR de Pago" class="zrp-qr-img">
+                                <span class="zrp-qr-label">Escanea para pagar</span>
+                            </div>
+                        @endif
+
+                        {{-- Lista de Datos para Copiar (Formato Label - Value) --}}
+                        @if(!empty($order->paymentMethod->bank_details) && is_array($order->paymentMethod->bank_details))
+                            <div class="zrp-copy-list">
+                                @foreach($order->paymentMethod->bank_details as $index => $detail)
+                                    @php
+                                        $label = is_array($detail) ? ($detail['label'] ?? '') : '';
+                                        $val = is_array($detail) ? ($detail['value'] ?? '') : $detail;
+                                    @endphp
+                                    
+                                    @if(!empty($val))
+                                        <div class="zrp-copy-item">
+                                            <div class="zrp-copy-info">
+                                                @if($label)
+                                                    <span class="zrp-copy-label">{{ $label }}</span>
+                                                @endif
+                                                <span class="zrp-copy-val" id="copy-text-{{ $index }}">{{ $val }}</span>
+                                            </div>
+                                            <button type="button" 
+                                                    onclick="copyToClipboard('copy-text-{{ $index }}', this)" 
+                                                    class="zrp-btn-copy">
+                                                Copiar
+                                            </button>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
                 </div>
             @endif
 
-            {{-- Formulario Laravel Autenticado mediante Enlace Firmado --}}
+            {{-- Formulario de Reporte de Pago --}}
             <form action="{{ route('guest.payments.store', $order->id) }}" method="POST" enctype="multipart/form-data" class="zrp-form">
                 @csrf
 
-                {{-- Campo oculto para llevar registro del ID del método de pago --}}
                 <input type="hidden" name="payment_method_id" value="{{ $order->payment_method_id }}">
 
                 {{-- FILA 1: Monto y Referencia --}}
                 <div class="zrp-grid">
                     <div class="zrp-group">
-                        <label for="amount" class="zrp-label">
+                        <label for="amount_bs" class="zrp-label">
                             Monto Pagado ({{ $isUsd ? 'USD' : 'Bs.' }}) <span class="zrp-req">*</span>
                         </label>
                         <div class="zrp-input-wrapper">
                             <span class="zrp-input-prefix">{{ $isUsd ? '$' : 'Bs.' }}</span>
-                            
-                            {{-- Ajustamos el name e id dinámicamente o mantenemos una clave uniforme --}}
-                            <input type="number" step="0.01" name="{{ $isUsd ? 'amount' : 'amount' }}" id="amount" 
-                                value="{{ old($isUsd ? 'amount' : 'amount', $isUsd ? ($order->total_usd ?? $order->total) : $order->total_bs) }}"
-                                class="zrp-control zrp-control--prefixed @error('amount') zrp-control--error @enderror " 
+                            <input type="number" step="0.01" name="amount_bs" id="amount_bs" 
+                                value="{{ old('amount_bs', $isUsd ? ($order->total_usd ?? $order->total) : $order->total_bs) }}"
+                                class="zrp-control zrp-control--prefixed @error('amount_bs') zrp-control--error @enderror" 
                                 required>
                         </div>
-                        @error('amount')
+                        @error('amount_bs')
                             <span class="zrp-error-msg">{{ $message }}</span>
                         @enderror
-                       
                     </div>
 
                     <div class="zrp-group">
@@ -433,6 +564,25 @@
         let fileName = e.target.files[0] ? e.target.files[0].name : "Sube un archivo";
         document.getElementById('zrp-text-trigger').textContent = fileName;
     });
+
+    function copyToClipboard(elementId, btnElement) {
+        const textToCopy = document.getElementById(elementId).innerText;
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            const originalText = btnElement.innerText;
+            btnElement.innerText = '¡Copiado!';
+            btnElement.style.background = '#2e7d32';
+            btnElement.style.color = '#ffffff';
+
+            setTimeout(() => {
+                btnElement.innerText = originalText;
+                btnElement.style.background = '';
+                btnElement.style.color = '';
+            }, 2000);
+        }).catch(err => {
+            console.error('Error al copiar: ', err);
+        });
+    }
 </script>
 
 </x-front-layout>

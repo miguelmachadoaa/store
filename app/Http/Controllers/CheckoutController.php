@@ -252,5 +252,49 @@ class CheckoutController extends Controller
         return view('checkout.success', compact('order', 'viewOrderUrl', 'reportPaymentUrl'));
     }
 
+     // =========================================================================
+    // FLUJO PÚBLICO SEGURO PARA CONSULTAS Y REPORTES DE INVITADOS (GUESTS)
+    // =========================================================================
+
+    public function guestViewOrder(Request $request, $orderId)
+    {
+        $order = Order::with('items')->findOrFail($orderId);
+        return view('checkout.view_guest_order', compact('order'));
+    }
+
+    public function guestReportPaymentForm(Request $request, $orderId)
+    {
+        $order = Order::findOrFail($orderId);
+        return view('checkout.report_guest_payment', compact('order'));
+    }
+
+    public function guestStorePaymentReport(Request $request, $orderId)
+    {
+        $order = Order::findOrFail($orderId);
+
+        $request->validate([
+            'amount_bs' => 'required|numeric|min:0.01',
+            'reference_number' => 'required|string',
+            'bank_name' => 'required|string',
+            'payment_date' => 'required|date',
+            'proof_image' => 'nullable|image|max:2048',
+        ]);
+
+        $data = $request->all();
+        $data['order_id'] = $order->id;
+        $data['user_id'] = $order->user_id; 
+        $data['status'] = 'pending';
+
+        if ($request->hasFile('proof_image')) {
+            $data['proof_image'] = $request->file('proof_image')->store('payment_proofs', 'public');
+        }
+
+        PaymentReport::create($data);
+
+        $viewOrderUrl = URL::signedRoute('guest.order.show', ['orderId' => $order->id]);
+
+        return redirect($viewOrderUrl)->with('success', 'El pago ha sido reportado exitosamente. Lo validaremos a la brevedad.');
+    }
+
     // ... (demás métodos como downloadInvoice, guestViewOrder, etc. se mantienen igual) ...
 }

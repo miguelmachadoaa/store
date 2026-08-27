@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\Setting;
 use App\Models\Coupon;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
@@ -54,7 +56,10 @@ class CartController extends Controller
     {
         $cart = $this->getCartItems();
 
-        return view('cart.index', compact('cart'));
+        $settings = Setting::first();
+
+
+        return view('cart.index', compact('cart', 'settings'));
     }
 
     // Agregar producto
