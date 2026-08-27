@@ -17,7 +17,7 @@
 </head>
 
 <body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100 flex">
+    <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-gray-100 flex">
 
         {{-- Sidebar --}}
         @if(auth()->user()->isAdmin())
