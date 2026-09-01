@@ -100,16 +100,16 @@ class PaymentMethodController extends Controller
 
     if ($request->hasFile('logo')) {
         if ($paymentMethod->logo) {
-            Storage::disk('public')->delete($paymentMethod->logo);
+            Storage::disk('r2')->delete($paymentMethod->logo);
         }
-        $data['logo'] = $request->file('logo')->store('payment_methods', 'public');
+        $data['logo'] = $request->file('logo')->store('payment_methods', 'r2');
     }
 
     if ($request->hasFile('qr_code')) {
         if ($paymentMethod->qr_code) {
-            Storage::disk('public')->delete($paymentMethod->qr_code);
+            Storage::disk('r2')->delete($paymentMethod->qr_code);
         }
-        $data['qr_code'] = $request->file('qr_code')->store('payment_methods/qr', 'public');
+        $data['qr_code'] = $request->file('qr_code')->store('payment_methods/qr', 'r2');
     }
 
     $paymentMethod->update($data);
