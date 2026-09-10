@@ -4,8 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Editar Producto') }}
             </h2>
-            <a href="{{ route('products.index') }}"
-                class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            <a href="{{ route('products.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                 Volver
             </a>
         </div>
@@ -13,6 +12,18 @@
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+
+            @if ($errors->any())
+                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-md">
+                    <div class="font-medium text-red-800">¡Ups! Algo salió mal.</div>
+                    <ul class="mt-2 list-disc list-inside text-sm text-red-700">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data">
@@ -22,11 +33,9 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Nombre -->
                             <div class="md:col-span-2">
-                                <label for="name" class="block text-sm font-medium text-gray-700">Nombre del Producto
-                                    *</label>
-                                <input type="text" name="name" id="name" value="{{ old('name', $product->name) }}"
-                                    required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('name') border-red-500 @enderror">
+                                <label for="name" class="block text-sm font-medium text-gray-700">Nombre del Producto *</label>
+                                <input type="text" name="name" id="name" value="{{ old('name', $product->name) }}" required
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('name') border-red-500 @enderror">
                                 @error('name')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -36,7 +45,7 @@
                             <div>
                                 <label for="sku" class="block text-sm font-medium text-gray-700">SKU</label>
                                 <input type="text" name="sku" id="sku" value="{{ old('sku', $product->sku) }}"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('sku') border-red-500 @enderror">
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('sku') border-red-500 @enderror">
                                 @error('sku')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -45,51 +54,9 @@
                             <!-- Stock -->
                             <div>
                                 <label for="stock" class="block text-sm font-medium text-gray-700">Stock *</label>
-                                <input type="number" name="stock" id="stock" value="{{ old('stock', $product->stock) }}"
-                                    min="0" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('stock') border-red-500 @enderror">
+                                <input type="number" name="stock" id="stock" value="{{ old('stock', $product->stock) }}" min="0" required
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('stock') border-red-500 @enderror">
                                 @error('stock')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-4">
-                               <div class="md:col-span-2">
-                                    <label for="categories" class="block text-sm font-medium text-gray-700">Categorías</label>
-                                    <select name="categories[]" id="categories" multiple 
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                        @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" 
-                                                {{ (is_array(old('categories', $product->categories->pluck('id')->toArray())) && in_array($category->id, old('categories', $product->categories->pluck('id')->toArray()))) ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="font-semibold">Marca</label>
-                                <select name="brand_id" class="w-full border rounded p-2">
-                                    <option value="">Seleccione una marca</option>
-                                    @foreach($brands as $brand)
-                                        <option value="{{ $brand->id }}" {{ old('brand_id', $product->brand_id) == $brand->id ? 'selected' : '' }}>
-                                            {{ $brand->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="font-semibold">Impuesto</label>
-                                <select name="tax_id" class="w-full border rounded p-2">
-                                    @foreach($taxes as $tax)
-                                        <option value="{{ $tax->id }}" {{ old('tax_id', $product->tax_id ?? 1) == $tax->id ? 'selected' : '' }}>
-                                            {{ $tax->name }} ({{ number_format($tax->rate, 2) }}%)
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('tax_id')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -101,9 +68,8 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <span class="text-gray-500 sm:text-sm">$</span>
                                     </div>
-                                    <input type="number" name="price" id="price"
-                                        value="{{ old('price', $product->price) }}" step="0.01" min="0" required
-                                        class="pl-7 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 @error('price') border-red-500 @enderror">
+                                    <input type="number" name="price" id="price" value="{{ old('price', $product->price) }}" step="0.01" min="0" required
+                                           class="pl-7 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 @error('price') border-red-500 @enderror">
                                 </div>
                                 @error('price')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -112,85 +78,117 @@
 
                             <!-- Precio de comparación -->
                             <div>
-                                <label for="compare_price" class="block text-sm font-medium text-gray-700">Precio
-                                    Anterior</label>
+                                <label for="compare_price" class="block text-sm font-medium text-gray-700">Precio Anterior</label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <span class="text-gray-500 sm:text-sm">$</span>
                                     </div>
-                                    <input type="number" name="compare_price" id="compare_price"
-                                        value="{{ old('compare_price', $product->compare_price) }}" step="0.01" min="0"
-                                        class="pl-7 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 @error('compare_price') border-red-500 @enderror">
+                                    <input type="number" name="compare_price" id="compare_price" value="{{ old('compare_price', $product->compare_price) }}" step="0.01" min="0"
+                                           class="pl-7 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 @error('compare_price') border-red-500 @enderror">
                                 </div>
-                                <p class="mt-1 text-sm text-gray-500">Para mostrar descuentos</p>
+                                <p class="mt-1 text-xs text-gray-500">Para mostrar descuentos</p>
                                 @error('compare_price')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
 
+                            <!-- Categorías -->
+                            @if(isset($categories) && $categories->count() > 0)
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Categorías</label>
+                                @php
+                                    $selectedCategories = old('categories', $product->categories ? $product->categories->pluck('id')->toArray() : []);
+                                @endphp
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-48 overflow-y-auto p-3 border border-gray-200 rounded-md bg-gray-50">
+                                    @foreach($categories as $category)
+                                        <label class="inline-flex items-center space-x-2 text-sm text-gray-700 cursor-pointer">
+                                            <input type="checkbox" name="categories[]" value="{{ $category->id }}"
+                                                {{ in_array($category->id, $selectedCategories) ? 'checked' : '' }}
+                                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                            <span>{{ $category->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                                @error('categories')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            @endif
+
+                            <!-- Selección de Piedras / Cristales -->
+                            @if(isset($stones) && $stones->count() > 0)
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Piedras / Cristales Incorporados
+                                </label>
+                                <p class="text-xs text-gray-500 mb-2">Selecciona las piedras naturales asociadas a este producto.</p>
+                                @php
+                                    $selectedStones = old('stones', $product->stones ? $product->stones->pluck('id')->toArray() : []);
+                                @endphp
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-56 overflow-y-auto p-3 border border-gray-200 rounded-md bg-gray-50">
+                                    @foreach($stones as $stone)
+                                        <label class="inline-flex items-center space-x-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 p-1.5 rounded transition-colors">
+                                            <input type="checkbox" name="stones[]" value="{{ $stone->id }}"
+                                                {{ in_array($stone->id, $selectedStones) ? 'checked' : '' }}
+                                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                            <span class="flex items-center gap-1.5">
+                                                @if(!empty($stone->color_hex))
+                                                    <span class="w-3 h-3 rounded-full border border-gray-300 inline-block" style="background-color: {{ $stone->color_hex }}"></span>
+                                                @endif
+                                                {{ $stone->name }}
+                                            </span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                                @error('stones')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            @endif
+
                             <!-- Descripción -->
                             <div class="md:col-span-2">
-                                <label for="description"
-                                    class="block text-sm font-medium text-gray-700">Descripción</label>
+                                <label for="description" class="block text-sm font-medium text-gray-700">Descripción</label>
                                 <textarea name="description" id="description" rows="4"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('description') border-red-500 @enderror">{{ old('description', $product->description) }}</textarea>
+                                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('description') border-red-500 @enderror">{{ old('description', $product->description) }}</textarea>
                                 @error('description')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <!-- Imagen actual -->
+                            <!-- Imagen Principal Actual -->
                             @if($product->image)
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Imagen Actual</label>
-                                    <img src="{{ Storage::disk('r2')->url($product->image) }}" alt="{{ $product->name }}"
-                                        class="h-32 w-32 object-cover rounded-lg border border-gray-200 shadow-sm">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Imagen Principal Actual</label>
+                                    <img src="{{ Storage::disk('r2')->url($product->image) }}" alt="{{ $product->name }}" class="h-32 w-32 object-cover rounded-lg border border-gray-200 shadow-sm">
                                 </div>
                             @endif
 
-                            <!-- Imagen Principal -->
+                            <!-- Nueva Imagen Principal -->
                             <div class="md:col-span-2">
                                 <label for="image" class="block text-sm font-medium text-gray-700">
-                                    {{ $product->image ? 'Cambiar Imagen Principal' : 'Imagen Principal' }}
+                                    {{ $product->image ? 'Cambiar Imagen Principal' : 'Imagen del Producto' }}
                                 </label>
                                 <input type="file" name="image" id="image" accept="image/*"
-                                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 @error('image') border-red-500 @enderror">
+                                       class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 @error('image') border-red-500 @enderror">
                                 @error('image')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <!-- Galería -->
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Galería de Imágenes</label>
-                                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-4">
-                                    @foreach($product->images as $img)
-                                        <div class="relative group" id="image-{{ $img->id }}">
-                                            <img src="{{ Storage::disk('r2')->url($img->image) }}"
-                                                class="h-24 w-full object-cover rounded-lg border border-gray-200">
-                                            <button type="button" onclick="deleteProductImage({{ $img->id }})"
-                                                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition opacity-0 group-hover:opacity-100">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    @endforeach
-                                </div>
-                                <label for="images" class="block text-sm font-medium text-gray-700">Agregar más
-                                    imágenes</label>
-                                <input type="file" name="images[]" id="images" accept="image/*" multiple
-                                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                                <p class="mt-1 text-sm text-gray-500">Puedes seleccionar varias imágenes a la vez.</p>
+                            <!-- Galería Múltiple / Imágenes Adicionales -->
+                            <div class="md:col-span-2 border-t pt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Añadir Imágenes Adicionales</label>
+                                <input type="file" name="images[]" multiple id="images" accept="image/*"
+                                       class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                <p class="mt-1 text-xs text-gray-500">Puedes seleccionar varios archivos para ampliar la galería del producto.</p>
                             </div>
 
-                            <!-- Checkboxes -->
-                            <div class="md:col-span-2 space-y-4">
+                            <!-- Checkboxes de Estado -->
+                            <div class="md:col-span-2 space-y-4 pt-2">
                                 <div class="flex items-center">
                                     <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }}
-                                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                     <label for="is_active" class="ml-2 block text-sm text-gray-900">
                                         Producto Activo
                                     </label>
@@ -198,51 +196,183 @@
 
                                 <div class="flex items-center">
                                     <input type="checkbox" name="is_featured" id="is_featured" value="1" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}
-                                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                     <label for="is_featured" class="ml-2 block text-sm text-gray-900">
                                         Producto Destacado
                                     </label>
                                 </div>
                             </div>
 
-                            <!-- SEO Settings -->
-                            <div class="md:col-span-2 border-t pt-6 mt-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Configuración SEO</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Configuración de Diseño -->
+                            <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-200 my-4">
+                                <h3 class="text-lg font-bold text-gray-900 mb-4">Configuración de Diseño</h3>
+                                <div>
+                                    <label for="view_type" class="block text-sm font-medium text-gray-700">Tipo de Ficha de Producto</label>
+                                    <select name="view_type" id="view_type" onchange="toggleHotmartFields()" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        <option value="default" {{ old('view_type', $product->view_type) == 'default' ? 'selected' : '' }}>Tienda Clásica (Estándar)</option>
+                                        <option value="hotmart" {{ old('view_type', $product->view_type) == 'hotmart' ? 'selected' : '' }}>Landing Page de Conversión (Tipo Hotmart)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Secciones de Landing Page (Hotmart) -->
+                            <div id="hotmart_fields_container" class="md:col-span-2 hidden space-y-6 bg-gray-50 p-6 rounded-lg border border-gray-200 mb-6">
+                                <h3 class="text-lg font-bold text-indigo-900 border-b pb-2">Secciones de la Landing Page (Hotmart)</h3>
+
+                                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Título Impactante (Headline)</label>
+                                        <input type="text" name="landing_headline" value="{{ old('landing_headline', $product->landing_headline) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Subtítulo / Promesa (Subheadline)</label>
+                                        <input type="text" name="landing_subheadline" value="{{ old('landing_subheadline', $product->landing_subheadline) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                                    </div>
                                     <div class="md:col-span-2">
-                                        <label for="meta_title" class="block text-sm font-medium text-gray-700">Meta
-                                            Title</label>
-                                        <input type="text" name="meta_title" id="meta_title"
-                                            value="{{ old('meta_title', $product->meta_title) }}"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('meta_title') border-red-500 @enderror"
-                                            placeholder="Título para buscadores (opcional)">
-                                        @error('meta_title')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
+                                        <label class="block text-sm font-medium text-gray-700">URL del Video de Presentación (YouTube / Vimeo)</label>
+                                        <input type="url" name="landing_video_url" value="{{ old('landing_video_url', $product->landing_video_url) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Beneficios / ¿Qué va a lograr el cliente?</label>
+                                    <div id="benefits-wrapper" class="space-y-2">
+                                        @if($product->landing_benefits && is_array($product->landing_benefits))
+                                            @foreach($product->landing_benefits as $benefit)
+                                                <div class="flex items-center space-x-2">
+                                                    <input type="text" name="landing_benefits[]" value="{{ $benefit }}" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                                                    <button type="button" onclick="removeRow(this)" class="bg-rose-500 text-white px-3 py-2 rounded-md text-sm">Eliminar</button>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <div class="flex items-center space-x-2">
+                                                <input type="text" name="landing_benefits[]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Ej. Equilibra la energía...">
+                                                <button type="button" onclick="removeRow(this)" class="bg-rose-500 text-white px-3 py-2 rounded-md text-sm">Eliminar</button>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <button type="button" onclick="addBenefitRow()" class="mt-2 inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+                                        + Añadir Beneficio
+                                    </button>
+                                </div>
+
+                                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                    <div>
+                                        <label class="block text-sm font-medium text-emerald-700 mb-2">👍 ¿Para quién SÍ es este producto?</label>
+                                        <div id="target-si-wrapper" class="space-y-2">
+                                            @if(isset($product->landing_target_public['si']) && is_array($product->landing_target_public['si']))
+                                                @foreach($product->landing_target_public['si'] as $item)
+                                                    <div class="flex items-center space-x-2">
+                                                        <input type="text" name="landing_target_public[si][]" value="{{ $item }}" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                                                        <button type="button" onclick="removeRow(this)" class="bg-rose-500 text-white px-3 py-2 rounded-md text-sm">X</button>
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="flex items-center space-x-2">
+                                                    <input type="text" name="landing_target_public[si][]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                                                    <button type="button" onclick="removeRow(this)" class="bg-rose-500 text-white px-3 py-2 rounded-md text-sm">X</button>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <button type="button" onclick="addTargetSiRow()" class="mt-2 inline-flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-500">
+                                            + Añadir Condición SÍ
+                                        </button>
                                     </div>
 
-                                    <div class="md:col-span-2">
-                                        <label for="meta_description"
-                                            class="block text-sm font-medium text-gray-700">Meta Description</label>
-                                        <textarea name="meta_description" id="meta_description" rows="3"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('meta_description') border-red-500 @enderror"
-                                            placeholder="Descripción para buscadores (opcional)">{{ old('meta_description', $product->meta_description) }}</textarea>
-                                        @error('meta_description')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
+                                    <div>
+                                        <label class="block text-sm font-medium text-rose-700 mb-2">👎 ¿Para quién NO es este producto?</label>
+                                        <div id="target-no-wrapper" class="space-y-2">
+                                            @if(isset($product->landing_target_public['no']) && is_array($product->landing_target_public['no']))
+                                                @foreach($product->landing_target_public['no'] as $item)
+                                                    <div class="flex items-center space-x-2">
+                                                        <input type="text" name="landing_target_public[no][]" value="{{ $item }}" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                                                        <button type="button" onclick="removeRow(this)" class="bg-rose-500 text-white px-3 py-2 rounded-md text-sm">X</button>
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="flex items-center space-x-2">
+                                                    <input type="text" name="landing_target_public[no][]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                                                    <button type="button" onclick="removeRow(this)" class="bg-rose-500 text-white px-3 py-2 rounded-md text-sm">X</button>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <button type="button" onclick="addTargetNoRow()" class="mt-2 inline-flex items-center text-sm font-semibold text-rose-600 hover:text-rose-500">
+                                            + Añadir Condición NO
+                                        </button>
                                     </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Testimonios de Clientes</label>
+                                    <div id="testimonials-wrapper" class="space-y-3">
+                                        @if($product->landing_testimonials && is_array($product->landing_testimonials))
+                                            @foreach($product->landing_testimonials as $index => $testimonial)
+                                                <div class="grid grid-cols-1 gap-2 p-4 bg-white rounded-md border border-gray-200 relative">
+                                                    <input type="text" name="landing_testimonials[{{ $index }}][name]" value="{{ $testimonial['name'] ?? '' }}" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Nombre del cliente">
+                                                    <textarea name="landing_testimonials[{{ $index }}][text]" rows="2" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Opinión...">{{ $testimonial['text'] ?? '' }}</textarea>
+                                                    <button type="button" onclick="removeRow(this.parentElement)" class="absolute top-2 right-2 text-rose-600 text-sm font-bold">Eliminar</button>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <div class="grid grid-cols-1 gap-2 p-4 bg-white rounded-md border border-gray-200 relative">
+                                                <input type="text" name="landing_testimonials[0][name]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Nombre del cliente">
+                                                <textarea name="landing_testimonials[0][text]" rows="2" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Opinión..."></textarea>
+                                                <button type="button" onclick="removeRow(this.parentElement)" class="absolute top-2 right-2 text-rose-600 text-sm font-bold">Eliminar</button>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <button type="button" onclick="addTestimonialRow()" class="mt-2 inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+                                        + Añadir Testimonio
+                                    </button>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Bonus Incluidos de Regalo</label>
+                                    <div id="bonuses-wrapper" class="space-y-3">
+                                        @if($product->landing_bonuses && is_array($product->landing_bonuses))
+                                            @foreach($product->landing_bonuses as $index => $bonus)
+                                                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-4 bg-white rounded-md border border-gray-200 relative">
+                                                    <div class="md:col-span-2 space-y-2">
+                                                        <input type="text" name="landing_bonuses[{{ $index }}][title]" value="{{ $bonus['title'] ?? '' }}" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Título del Bonus">
+                                                        <input type="text" name="landing_bonuses[{{ $index }}][description]" value="{{ $bonus['description'] ?? '' }}" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Descripción">
+                                                    </div>
+                                                    <div>
+                                                        <input type="number" step="0.01" name="landing_bonuses[{{ $index }}][value]" value="{{ $bonus['value'] ?? '' }}" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Valor ($)">
+                                                    </div>
+                                                    <button type="button" onclick="removeRow(this.parentElement)" class="absolute top-2 right-2 text-rose-600 text-sm font-bold">Eliminar</button>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-4 bg-white rounded-md border border-gray-200 relative">
+                                                <div class="md:col-span-2 space-y-2">
+                                                    <input type="text" name="landing_bonuses[0][title]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Título del Bonus">
+                                                    <input type="text" name="landing_bonuses[0][description]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Descripción">
+                                                </div>
+                                                <div>
+                                                    <input type="number" step="0.01" name="landing_bonuses[0][value]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Valor ($)">
+                                                </div>
+                                                <button type="button" onclick="removeRow(this.parentElement)" class="absolute top-2 right-2 text-rose-600 text-sm font-bold">Eliminar</button>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <button type="button" onclick="addBonusRow()" class="mt-2 inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+                                        + Añadir Bonus de Regalo
+                                    </button>
+                                </div>
+
+                                <div class="w-full md:w-1/3">
+                                    <label for="landing_warranty_days" class="block text-sm font-medium text-gray-700">Días de Garantía de Devolución</label>
+                                    <input type="number" name="landing_warranty_days" id="landing_warranty_days" value="{{ old('landing_warranty_days', $product->landing_warranty_days ?? 7) }}" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
                                 </div>
                             </div>
                         </div>
 
                         <!-- Botones -->
-                        <div class="mt-6 flex items-center justify-end gap-x-4">
-                            <a href="{{ route('products.index') }}"
-                                class="text-sm font-semibold leading-6 text-gray-900">
+                        <div class="mt-8 flex items-center justify-end gap-x-4 border-t border-gray-200 pt-6">
+                            <a href="{{ route('products.index') }}" class="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-700">
                                 Cancelar
                             </a>
-                            <button type="submit"
-                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded">
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-md shadow-sm">
                                 Actualizar Producto
                             </button>
                         </div>
@@ -252,24 +382,90 @@
         </div>
     </div>
 
+    <!-- JavaScript para interacción dinámica -->
     <script>
-        function deleteProductImage(imageId) {
-            if (!confirm('¿Estás seguro de que deseas eliminar esta imagen?')) return;
-
-            fetch(`/admin/products/images/${imageId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                }
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById(`image-${imageId}`).remove();
-                    }
-                });
+        function toggleHotmartFields() {
+            const viewType = document.getElementById('view_type').value;
+            const container = document.getElementById('hotmart_fields_container');
+            if (viewType === 'hotmart') {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
         }
+
+        function removeRow(element) {
+            element.parentElement.remove();
+        }
+
+        function addBenefitRow() {
+            const wrapper = document.getElementById('benefits-wrapper');
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-2';
+            div.innerHTML = `
+                <input type="text" name="landing_benefits[]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Otro beneficio...">
+                <button type="button" onclick="removeRow(this)" class="bg-rose-500 text-white px-3 py-2 rounded-md text-sm">Eliminar</button>
+            `;
+            wrapper.appendChild(div);
+        }
+
+        function addTargetSiRow() {
+            const wrapper = document.getElementById('target-si-wrapper');
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-2';
+            div.innerHTML = `
+                <input type="text" name="landing_target_public[si][]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Nueva condición...">
+                <button type="button" onclick="removeRow(this)" class="bg-rose-500 text-white px-3 py-2 rounded-md text-sm">X</button>
+            `;
+            wrapper.appendChild(div);
+        }
+
+        function addTargetNoRow() {
+            const wrapper = document.getElementById('target-no-wrapper');
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-2';
+            div.innerHTML = `
+                <input type="text" name="landing_target_public[no][]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Nueva condición...">
+                <button type="button" onclick="removeRow(this)" class="bg-rose-500 text-white px-3 py-2 rounded-md text-sm">X</button>
+            `;
+            wrapper.appendChild(div);
+        }
+
+        let testimonialCount = {{ count($product->landing_testimonials ?? [1]) }};
+        function addTestimonialRow() {
+            const wrapper = document.getElementById('testimonials-wrapper');
+            const div = document.createElement('div');
+            div.className = 'grid grid-cols-1 gap-2 p-4 bg-white rounded-md border border-gray-200 relative';
+            div.innerHTML = `
+                <input type="text" name="landing_testimonials[${testimonialCount}][name]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Nombre del cliente">
+                <textarea name="landing_testimonials[${testimonialCount}][text]" rows="2" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Opinión..."></textarea>
+                <button type="button" onclick="removeRow(this.parentElement)" class="absolute top-2 right-2 text-rose-600 text-sm font-bold">Eliminar</button>
+            `;
+            wrapper.appendChild(div);
+            testimonialCount++;
+        }
+
+        let bonusCount = {{ count($product->landing_bonuses ?? [1]) }};
+        function addBonusRow() {
+            const wrapper = document.getElementById('bonuses-wrapper');
+            const div = document.createElement('div');
+            div.className = 'grid grid-cols-1 md:grid-cols-3 gap-2 p-4 bg-white rounded-md border border-gray-200 relative';
+            div.innerHTML = `
+                <div class="md:col-span-2 space-y-2">
+                    <input type="text" name="landing_bonuses[${bonusCount}][title]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Título del Bonus">
+                    <input type="text" name="landing_bonuses[${bonusCount}][description]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Descripción">
+                </div>
+                <div>
+                    <input type="number" step="0.01" name="landing_bonuses[${bonusCount}][value]" class="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Valor ($)">
+                </div>
+                <button type="button" onclick="removeRow(this.parentElement)" class="absolute top-2 right-2 text-rose-600 text-sm font-bold">Eliminar</button>
+            `;
+            wrapper.appendChild(div);
+            bonusCount++;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            toggleHotmartFields();
+        });
     </script>
 </x-app-layout>
-<<<

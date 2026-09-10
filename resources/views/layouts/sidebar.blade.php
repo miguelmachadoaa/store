@@ -59,8 +59,8 @@
                     <a href="{{ route('admin.dollar-values.index') }}"
                         class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.dollar-values.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Valor
                         Dólar</a>
-                    <a href="{{ route('admin.taxes.index') }}"
-                        class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.taxes.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Impuestos</a>
+                    <a href="{{ route('admin.taxes.index') }}" class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.taxes.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Impuestos</a>
+                    <a href="{{ route('admin.stones.index') }}" class="block px-3 py-2 rounded text-sm hover:bg-gray-100 {{ request()->routeIs('admin.stones.*') ? 'text-indigo-600 font-semibold' : 'text-gray-600' }}">Piedras</a>
                 </div>
             </li>
 

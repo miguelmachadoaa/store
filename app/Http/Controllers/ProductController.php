@@ -6,8 +6,9 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
-use App\Models\Tax;
 use App\Models\Review;
+use App\Models\Stone;
+use App\Models\Tax;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -46,8 +47,9 @@ class ProductController extends Controller
         $categories = Category::where('is_active', 1)->get();
         $brands = Brand::where('is_active', 1)->get();
         $taxes = Tax::orderBy('name')->get();
+        $stones = Stone::where('is_active', 1)->orderBy('sort_order', 'asc')->get();
 
-        return view('admin.products.create', compact('categories', 'brands', 'taxes'));
+        return view('admin.products.create', compact('categories', 'brands', 'taxes', 'stones'));
     }
 
     /**
@@ -67,6 +69,8 @@ class ProductController extends Controller
             'category_id' => 'nullable|exists:categories,id',
             'categories' => 'nullable|array',
             'categories.*' => 'exists:categories,id',
+            'stones' => 'nullable|array',
+            'stones.*' => 'exists:stones,id',
             'tax_id' => 'nullable|exists:taxes,id',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
@@ -95,6 +99,10 @@ class ProductController extends Controller
 
         if ($request->has('categories')) {
             $product->categories()->sync($request->categories);
+        }
+
+        if ($request->has('stones')) {
+            $product->stones()->sync($request->stones);
         }
 
         // Galería de imágenes múltiples en Cloudflare R2
@@ -129,8 +137,11 @@ class ProductController extends Controller
         $brands = Brand::where('is_active', 1)->get();
         $taxes = Tax::orderBy('name')->get();
         $categories = Category::where('is_active', 1)->get();
+        $stones = Stone::where('is_active', 1)->orderBy('sort_order', 'asc')->get();
 
-        return view('admin.products.edit', compact('product', 'categories', 'brands', 'taxes'));
+        $product->load('stones');
+
+        return view('admin.products.edit', compact('product', 'categories', 'brands', 'taxes', 'stones'));
     }
 
     /**
@@ -155,11 +166,12 @@ class ProductController extends Controller
             'meta_description' => 'nullable|string|max:500',
             'categories' => 'nullable|array',
             'categories.*' => 'exists:categories,id',
+            'stones' => 'nullable|array',
+            'stones.*' => 'exists:stones,id',
         ]);
 
         // Actualizar la imagen destacada en Cloudflare R2
         if ($request->hasFile('image')) {
-            // Eliminar imagen anterior de R2
             if ($product->image) {
                 Storage::disk('r2')->delete($product->image);
             }
@@ -172,6 +184,7 @@ class ProductController extends Controller
         $product->update($validated);
 
         $product->categories()->sync($request->categories ?? []);
+        $product->stones()->sync($request->stones ?? []);
 
         // Añadir nuevas imágenes a la galería en Cloudflare R2
         if ($request->hasFile('images')) {
@@ -194,12 +207,10 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // Eliminar imagen destacada de Cloudflare R2 si existe
         if ($product->image) {
             Storage::disk('r2')->delete($product->image);
         }
 
-        // Eliminar también todas las imágenes de la galería asociadas a este producto en R2
         foreach ($product->images as $img) {
             Storage::disk('r2')->delete($img->image);
             $img->delete();
@@ -219,7 +230,6 @@ class ProductController extends Controller
             'image' => 'nullable|image|max:2048',
         ]);
 
-        // Edición rápida de imagen desde la tabla (inline)
         if ($request->field === 'image' && $request->hasFile('image')) {
             if ($product->image) {
                 Storage::disk('r2')->delete($product->image);
@@ -230,11 +240,10 @@ class ProductController extends Controller
 
             return response()->json([
                 'success' => true,
-                'image_url' => Storage::disk('r2')->url($path), // Retorna la URL pública de Cloudflare
+                'image_url' => Storage::disk('r2')->url($path),
             ]);
         }
 
-        // Campos simples
         $product->update([
             $request->field => $request->value,
         ]);
@@ -243,61 +252,52 @@ class ProductController extends Controller
     }
 
     public function shop(Request $request)
-{
-    // 1. Iniciamos especificando que solo queremos los campos de products y valores únicos
-    $query = Product::select('products.*')->distinct()->where('products.is_active', 1);
+    {
+        $query = Product::select('products.*')->distinct()->where('products.is_active', 1);
 
-    // 2. Filtro por categoría (Adaptado por si usas la relación muchos a muchos)
-    if ($request->category) {
-        $query->whereHas('categories', function ($q) use ($request) {
-            $q->where('categories.id', $request->category);
-        });
-        // NOTA: Si usas la columna directa de la tabla products, cámbialo a:
-        // $query->where('products.category_id', $request->category);
-    }
-
-    // 3. Filtro por marca
-    if ($request->brand) {
-        // Asegúrate de que $request->brand sea un array para whereIn, si es un string usa where
-        $brands = is_array($request->brand) ? $request->brand : [$request->brand];
-        $query->whereIn('products.brand_id', $brands);
-    }
-
-    // 4. Filtro por precio (Especificando la tabla para evitar ambigüedades)
-    if ($request->min_price) {
-        $query->where('products.price', '>=', $request->min_price);
-    }
-
-    if ($request->max_price) {
-        $query->where('products.price', '<=', $request->max_price);
-    }
-
-    // 5. Ordenar
-    if ($request->sort) {
-        $query->orderBy('products.price', $request->sort === 'asc' ? 'ASC' : 'DESC');
-    } else {
-        // Orden por defecto para que la paginación sea consistente en el scroll
-        $query->latest('products.id');
-    }
-
-    $products = $query->paginate(100)->withQueryString();
-
-    if ($request->ajax()) {
-        $view = '';
-        foreach ($products as $product) {
-            $view .= view('components.product-card', compact('product'))->render();
+        if ($request->category) {
+            $query->whereHas('categories', function ($q) use ($request) {
+                $q->where('categories.id', $request->category);
+            });
         }
-        return response()->json([
-            'html' => $view,
-            'nextPageUrl' => $products->nextPageUrl()
-        ]);
+
+        if ($request->brand) {
+            $brands = is_array($request->brand) ? $request->brand : [$request->brand];
+            $query->whereIn('products.brand_id', $brands);
+        }
+
+        if ($request->min_price) {
+            $query->where('products.price', '>=', $request->min_price);
+        }
+
+        if ($request->max_price) {
+            $query->where('products.price', '<=', $request->max_price);
+        }
+
+        if ($request->sort) {
+            $query->orderBy('products.price', $request->sort === 'asc' ? 'ASC' : 'DESC');
+        } else {
+            $query->latest('products.id');
+        }
+
+        $products = $query->paginate(100)->withQueryString();
+
+        if ($request->ajax()) {
+            $view = '';
+            foreach ($products as $product) {
+                $view .= view('components.product-card', compact('product'))->render();
+            }
+            return response()->json([
+                'html' => $view,
+                'nextPageUrl' => $products->nextPageUrl()
+            ]);
+        }
+
+        $categories = Category::all();
+        $brands = Brand::all();
+
+        return view('shop.index', compact('products', 'categories', 'brands'));
     }
-
-    $categories = Category::all();
-    $brands = Brand::all();
-
-    return view('shop.index', compact('products', 'categories', 'brands'));
-}
 
     public function byBrand(Request $request, $slug)
     {
@@ -324,36 +324,35 @@ class ProductController extends Controller
     }
 
     public function byCategory(Request $request, $slug)
-{
-    $category = Category::where('slug', $slug)->firstOrFail();
+    {
+        $category = Category::where('slug', $slug)->firstOrFail();
 
-    // CORRECCIÓN: Usamos select('products.*') para evitar que se pisen los IDs
-    $products = Product::select('products.*') // Evita que se pisen los IDs
-    ->join('category_product', 'products.id', '=', 'category_product.product_id')
-    ->where('category_product.category_id', $category->id)
-    ->where('products.is_active', 1)
-    ->distinct() // CORRECCIÓN: Evita que se dupliquen productos si están repetidos en la tabla pivote
-    ->paginate(100);// Aquí conservas tu paginación de 20 en 20
+        $products = Product::select('products.*')
+            ->join('category_product', 'products.id', '=', 'category_product.product_id')
+            ->where('category_product.category_id', $category->id)
+            ->where('products.is_active', 1)
+            ->distinct()
+            ->paginate(100);
 
-    if ($request->ajax()) {
-        $view = '';
-        foreach ($products as $product) {
-            $view .= view('components.product-card', compact('product'))->render();
+        if ($request->ajax()) {
+            $view = '';
+            foreach ($products as $product) {
+                $view .= view('components.product-card', compact('product'))->render();
+            }
+            return response()->json([
+                'html' => $view,
+                'nextPageUrl' => $products->nextPageUrl()
+            ]);
         }
-        return response()->json([
-            'html' => $view,
-            'nextPageUrl' => $products->nextPageUrl()
-        ]);
+
+        $title = "Productos en {$category->name} - " . config('app.name');
+
+        return view('shop.by-category', compact('category', 'products', 'title'));
     }
-
-    $title = "Productos en {$category->name} - " . config('app.name');
-
-    return view('shop.by-category', compact('category', 'products', 'title'));
-}
 
     public function detail($slug)
     {
-        $product = Product::with(['brand', 'category'])->where('slug', $slug)->firstOrFail();
+        $product = Product::with(['brand', 'category', 'stones'])->where('slug', $slug)->firstOrFail();
 
         $related = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
@@ -365,20 +364,17 @@ class ProductController extends Controller
             ->take(3)
             ->get();
 
-            $reviews = Review::where('product_id', $product->id)
+        $reviews = Review::where('product_id', $product->id)
             ->where('is_approved', true)
-            ->with(['user', 'images']) // <--- Carga eager loading
+            ->with(['user', 'images'])
             ->get();
 
-        return view('shop.detail', compact('product', 'related', 'relatedProducts'));
+        return view('shop.detail', compact('product', 'related', 'relatedProducts', 'reviews'));
     }
 
     public function deleteImage(ProductImage $image)
     {
-        // Eliminar del almacenamiento de Cloudflare R2
         Storage::disk('r2')->delete($image->image);
-
-        // Eliminar de la base de datos
         $image->delete();
 
         return response()->json(['success' => true]);

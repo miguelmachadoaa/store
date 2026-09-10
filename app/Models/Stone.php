@@ -32,4 +32,9 @@ class Stone extends Model
             'sort_order' => 'integer',
         ];
     }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
+    }
 }

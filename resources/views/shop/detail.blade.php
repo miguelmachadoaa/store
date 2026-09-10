@@ -222,8 +222,99 @@
                     {!! nl2br(e($product->description)) !!}
                 </p>
             </div>
+
+
         </div>
     </div>
+
+    {{-- Sección de Piedras Naturales y Propiedades --}}
+@if($product->stones && $product->stones->count() > 0)
+    <div class="mt-10 border-t pt-8">
+        <div class="bg-gradient-to-br from-pink-50/50 via-purple-50/30 to-white p-5 sm:p-8 rounded-2xl border border-pink-100 shadow-sm">
+            
+            {{-- Encabezado de la sección --}}
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2.5 bg-pink-100 text-pink-600 rounded-xl flex-shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">Piedras y Energías Naturales</h3>
+                    <p class="text-xs sm:text-sm text-gray-500">Descubre los beneficios energéticos de los minerales en esta pieza</p>
+                </div>
+            </div>
+
+            {{-- Grid Responsivo Mobile-First --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                @foreach($product->stones as $stone)
+                    <div class="bg-white p-4 sm:p-5 rounded-xl border border-gray-100 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                        <div>
+                            {{-- Cabecera de la Tarjeta de Piedra --}}
+                            <div class="flex items-center gap-3 mb-3">
+                                @if($stone->image)
+                                    <img src="{{ Storage::disk('r2')->url($stone->image) }}" 
+                                         alt="{{ $stone->name }}" 
+                                         class="w-12 h-12 rounded-full object-cover border-2 border-pink-100 flex-shrink-0 shadow-xs">
+                                @else
+                                    <div class="w-12 h-12 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center font-bold text-lg flex-shrink-0">
+                                        {{ mb_substr($stone->name, 0, 1) }}
+                                    </div>
+                                @endif
+
+                                <div>
+                                    <h4 class="font-bold text-gray-900 text-base leading-snug">{{ $stone->name }}</h4>
+                                    @if(!empty($stone->chakras) && (is_iterable($stone->chakras) ? count($stone->chakras) > 0 : true))
+                                        <div class="flex flex-wrap gap-1 mt-1">
+                                            @if(is_iterable($stone->chakras))
+                                                {{-- Si es una colección de Eloquent o un array --}}
+                                                @foreach($stone->chakras as $chakra)
+                                                    <span class="inline-block text-[0.7rem] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
+                                                        Chakra: {{ is_object($chakra) ? $chakra->name : $chakra }}
+                                                    </span>
+                                                @endforeach
+                                            @else
+                                                {{-- Fallback si eventualmente viene como string --}}
+                                                <span class="inline-block text-[0.7rem] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
+                                                    Chakra: {{ $stone->chakras }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- Descripción / Beneficios --}}
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                                @php
+                                    $benefitText = $stone->subtitle ?? $stone->description;
+                                @endphp
+
+                                @if(is_array($benefitText))
+                                    {{ implode(', ', $benefitText) }}
+                                @else
+                                    {{ $benefitText }}
+                                @endif
+                            </p>
+                        </div>
+
+                        {{-- Propiedades secundarias / Tags (Opcional) --}}
+                        @if(!empty($stone->benefits))
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex flex-wrap gap-1.5">
+                                @foreach(is_array($stone->benefits) ? $stone->benefits : explode(',', $stone->benefits) as $benefit)
+                                    <span class="text-[0.68rem] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md font-medium">
+                                        ✨ {{ trim($benefit) }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+
+        </div>
+    </div>
+@endif
 
     {{-- Productos relacionados --}}
     <div class="max-w-7xl mx-auto px-6 mt-12">
