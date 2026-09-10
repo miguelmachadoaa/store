@@ -44,6 +44,7 @@
                 @if($order->taxable_base)
                     <div class="text-xs text-gray-400">Base Imponible: ${{ number_format($order->taxable_base, 2) }}</div>
                     <div class="text-xs text-gray-400 pb-2">Impuesto (IVA): ${{ number_format($order->tax_amount, 2) }}</div>
+                    <div class="text-xs text-gray-400 pb-2">Descuento $: ${{ number_format($order->discount_amount, 2) }}</div>
                 @endif
                 <div class="text-xl font-bold text-gray-800">Total: ${{ number_format($order->total, 2) }}</div>
                 @if($order->total_bs)

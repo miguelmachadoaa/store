@@ -37,12 +37,23 @@
                 </ul>
 
                 @php
-                    $discount = session('coupon.discount', 0);
+                    // Servicio de descuentos automáticos (3x2, % por volumen, etc.)
+                    $discountService = app(\App\Services\CartDiscountService::class);
+                    $autoDiscountData = $discountService->calculateAutomaticDiscount($cart);
                     
+                    $autoDiscount = $autoDiscountData['discount_amount'] ?? 0;
+                    $autoDiscountMessage = $autoDiscountData['discount_message'] ?? null;
+
+                    // Descuento manual de cupón en sesión
+                    $couponDiscount = session('coupon.discount', 0);
+                    
+                    // Suma total de descuentos
+                    $totalDiscount = $autoDiscount + $couponDiscount;
+
                     // Lógica de envío: gratis a partir de $20, sino $3
                     $shippingCost = ($subtotal >= 20) ? 0 : 3; 
                     
-                    $total = $subtotal - $discount + $shippingCost;
+                    $total = max(0, $subtotal - $totalDiscount + $shippingCost);
                 @endphp
 
                 <div class="mt-4 pt-4 border-t border-gray-100 space-y-1.5">
@@ -51,16 +62,25 @@
                         <span class="font-medium text-gray-800">${{ number_format($subtotal, 2) }}</span>
                     </div>
 
-                    @if ($discount > 0)
+                    {{-- Mostrar Descuento Automático --}}
+                    @if ($autoDiscount > 0)
+                        <div class="flex justify-between text-sm text-emerald-600">
+                            <span>Descuento automático ({{ $autoDiscountMessage ?? 'Promoción' }})</span>
+                            <span class="font-medium">-${{ number_format($autoDiscount, 2) }}</span>
+                        </div>
+                    @endif
+
+                    {{-- Mostrar Cupón Manual --}}
+                    @if ($couponDiscount > 0)
                         <div class="flex justify-between text-sm text-emerald-600">
                             <span class="flex items-center gap-1">
-                                Descuento ({{ session('coupon.code') }})
+                                Cupón ({{ session('coupon.code') }})
                                 <form action="{{ route('cart.coupon.remove') }}" method="POST" class="inline">
                                     @csrf
                                     <button class="text-red-400 text-xs hover:underline ml-1">Eliminar</button>
                                 </form>
                             </span>
-                            <span class="font-medium">-${{ number_format($discount, 2) }}</span>
+                            <span class="font-medium">-${{ number_format($couponDiscount, 2) }}</span>
                         </div>
                     @endif
 

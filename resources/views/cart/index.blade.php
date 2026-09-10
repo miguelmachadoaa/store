@@ -8,7 +8,7 @@
             $rate = \App\Models\Product::getDollarRate();
         @endphp
 
-        {{-- Notificaciones de éxito o error --}}
+        {{-- Notificaciones --}}
         @if(session('success'))
             <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 shrink-0" viewBox="0 0 20 20" fill="currentColor">
@@ -21,22 +21,28 @@
         @if(session('error'))
             <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 10-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
                 </svg>
                 <span>{{ session('error') }}</span>
             </div>
         @endif
 
         @if(count($cart) > 0)
-            {{-- Inicializamos el subtotal y los arreglos para Meta Pixel --}}
             @php 
-                $subtotal = 0; 
+                $subtotal = $cartTotals['subtotal'];
+                $autoDiscount = $cartTotals['auto_discount'];
+                $couponDiscount = $cartTotals['coupon_discount'];
+                $costoEnvio = $cartTotals['costo_envio'];
+                $costoEnvioBase = $cartTotals['costo_envio_base'];
+                $faltaParaGratis = $cartTotals['falta_para_gratis'];
+                $porcentajeProgreso = $cartTotals['porcentaje_progreso'];
+                $total = $cartTotals['total'];
+
                 $pixelContentIds = [];
                 $pixelContents = [];
                 $pixelNumItems = 0;
 
                 foreach($cart as $id => $item) {
-                    $subtotal += $item['price'] * $item['quantity'];
                     $pixelContentIds[] = (string) $id;
                     $pixelContents[] = [
                         'id' => (string) $id,
@@ -45,25 +51,13 @@
                     ];
                     $pixelNumItems += $item['quantity'];
                 }
-                
-                // Configuración de envío
-                $envioGratisMinimo = 20.00;
-                $costoEnvioBase = 3.00;
-                $faltaParaGratis = $envioGratisMinimo - $subtotal;
-                $porcentajeProgreso = min(($subtotal / $envioGratisMinimo) * 100, 100);
-                $costoEnvio = $subtotal >= $envioGratisMinimo ? 0 : $costoEnvioBase;
-                
-                // Descuentos y totales finales
-                $discount = session('coupon.discount', 0);
-                $total = max(0, $subtotal - $discount + $costoEnvio);
             @endphp
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                 
-                {{-- COLUMNA DE PRODUCTOS (2/3 de ancho en desktop, apilados en móvil) --}}
+                {{-- COLUMNA DE PRODUCTOS --}}
                 <div class="lg:col-span-2 space-y-4">
                     @foreach($cart as $id => $item)
-                        {{-- Tarjeta de producto optimizada para móviles y pantallas táctiles --}}
                         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row justify-between gap-4">
                             <div class="flex-1">
                                 <span class="text-sm font-semibold text-gray-900 block">{{ $item['name'] }}</span>
@@ -77,7 +71,6 @@
                                     @endif
                                 </div>
 
-                                {{-- Controles de cantidad cómodos para el dedo --}}
                                 <form action="{{ route('cart.update', $id) }}" method="POST" class="mt-3 flex items-center gap-2">
                                     @csrf
                                     <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
@@ -114,7 +107,7 @@
                     @endforeach
                 </div>
 
-                {{-- COLUMNA DE RESUMEN, ENVÍOS Y PAGO --}}
+                {{-- COLUMNA DE RESUMEN --}}
                 <div class="space-y-4">
                     
                     {{-- 1. Barra de Progreso de Envío Gratis --}}
@@ -136,7 +129,6 @@
                             </div>
                         @endif
 
-                        {{-- Línea de progreso visual --}}
                         <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
                             <div class="h-full rounded-full transition-all duration-500 {{ $faltaParaGratis > 0 ? 'bg-indigo-600' : 'bg-emerald-500' }}"
                                  style="width: {{ $porcentajeProgreso }}%;">
@@ -156,7 +148,17 @@
                                 <span class="font-semibold text-gray-800">${{ number_format($subtotal, 2) }}</span>
                             </div>
 
-                            {{-- Línea del Costo de Envío --}}
+                            {{-- Descuento Automático por Volumen --}}
+                            @if($autoDiscount['discount_amount'] > 0)
+                                <div class="flex justify-between text-emerald-700 bg-emerald-50 p-2.5 rounded-lg border border-emerald-100">
+                                    <span class="flex items-center gap-1.5 text-xs font-semibold">
+                                        ✨ {{ $autoDiscount['label'] }}
+                                    </span>
+                                    <span class="font-bold">-${{ number_format($autoDiscount['discount_amount'], 2) }}</span>
+                                </div>
+                            @endif
+
+                            {{-- Envío --}}
                             <div class="flex justify-between text-gray-500">
                                 <span>Envío</span>
                                 @if($costoEnvio == 0)
@@ -166,8 +168,9 @@
                                 @endif
                             </div>
 
-                            @if($discount > 0)
-                                <div class="flex justify-between text-emerald-600 bg-emerald-50 p-2 rounded-lg">
+                            {{-- Cupón Manual --}}
+                            @if($couponDiscount > 0)
+                                <div class="flex justify-between text-indigo-600 bg-indigo-50 p-2 rounded-lg">
                                     <span class="flex items-center gap-1 text-xs">
                                         Cupón ({{ session('coupon.code') }})
                                         <form action="{{ route('cart.coupon.remove') }}" method="POST" class="inline">
@@ -175,7 +178,7 @@
                                             <button class="text-red-500 hover:text-red-700 font-bold ml-1 text-[11px]">✕</button>
                                         </form>
                                     </span>
-                                    <span class="font-semibold">-${{ number_format($discount, 2) }}</span>
+                                    <span class="font-semibold">-${{ number_format($couponDiscount, 2) }}</span>
                                 </div>
                             @endif
 
@@ -203,7 +206,6 @@
                             </button>
                         </form>
 
-                        {{-- Botón de Checkout principal con tracking de Meta Pixel --}}
                         <div class="mt-5">
                             <a href="{{ route('checkout.index') }}"
                                onclick="trackInitiateCheckout()"
@@ -211,30 +213,6 @@
                                 Proceder al Pago →
                             </a>
                         </div>
-                    </div>
-
-                    {{-- 3. Métodos de Pago Aceptados (Informativo / Genera Confianza) --}}
-                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 text-center">
-                            Métodos de pago aceptados en el checkout
-                        </p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="bg-white border border-gray-100 rounded-lg p-2.5 flex items-center gap-2 justify-center shadow-2xs">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                </svg>
-                                <span class="text-[11px] font-semibold text-gray-600">Tarjeta de Crédito</span>
-                            </div>
-                            <div class="bg-white border border-gray-100 rounded-lg p-2.5 flex items-center gap-2 justify-center shadow-2xs">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                </svg>
-                                <span class="text-[11px] font-semibold text-gray-600">Pago Móvil</span>
-                            </div>
-                        </div>
-                        <p class="text-[9px] text-gray-400 mt-3 text-center">
-                            Procesado de forma segura y encriptada
-                        </p>
                     </div>
 
                 </div>
@@ -255,11 +233,7 @@
                 }
             </script>
         @else
-            {{-- Estado Vacío --}}
             <div class="text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-xs">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
                 <p class="text-gray-500 text-base mb-4">Tu carrito está vacío.</p>
                 <a href="{{ route('shop.index') }}" 
                    class="inline-block bg-gray-900 text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-800 transition">

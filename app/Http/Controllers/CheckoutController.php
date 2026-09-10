@@ -9,6 +9,7 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Models\PaymentReport;
 use App\Models\Cart;
+use App\Services\CartDiscountService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,11 +17,12 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
 use App\Services\DiscordNotificationService;
 
-
 class CheckoutController extends Controller
 {
-    public function __construct(private DiscordNotificationService $discord)
-    {
+    public function __construct(
+        private DiscordNotificationService $discord,
+        private CartDiscountService $discountService
+    ) {
     }
 
     public function index()
@@ -94,7 +96,8 @@ class CheckoutController extends Controller
             }
         }
 
-        $total = 0;
+        // 1. Calcular subtotal e impuestos de los ítems
+        $subtotal = 0;
         $totalTaxableBase = 0;
         $totalTaxAmount = 0;
         $exchangeRate = Product::getDollarRate();
@@ -114,7 +117,7 @@ class CheckoutController extends Controller
                 $itemTaxAmount = 0;
             }
 
-            $total += $itemTotal;
+            $subtotal += $itemTotal;
             $totalTaxableBase += $itemTaxableBase;
             $totalTaxAmount += $itemTaxAmount;
 
@@ -132,20 +135,38 @@ class CheckoutController extends Controller
             ];
         }
 
-        // Calcular descuento si hay cupón en sesión
-        $discountAmount = 0;
+        // 2. Procesar Descuento Automático (Ej: 20% por 3 o más pulseras)
+        $autoDiscountData = $this->discountService->calculateAutomaticDiscount($cart);
+        $autoDiscountAmount = $autoDiscountData['discount_amount'] ?? 0;
+
+        // 3. Procesar Cupón Manual de la Sesión
+        $couponDiscountAmount = 0;
         $couponId = null;
+
         if (session()->has('coupon')) {
-            $coupon = \App\Models\Coupon::where('code', session('coupon.code'))->first();
-            if ($coupon && $coupon->isValid($user, $total)) {
-                $couponId = $coupon->id;
-                $discountAmount = $coupon->calculateDiscount($total, $cart);
-                $total -= $discountAmount;
-                $coupon->increment('used_count');
+            $couponSession = session('coupon');
+            $couponCode = $couponSession['code'] ?? null;
+
+            if ($couponCode) {
+                $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
+                if ($coupon && $coupon->isValid($user, $subtotal)) {
+                    $couponId = $coupon->id;
+                    $couponDiscountAmount = $coupon->calculateDiscount($subtotal, $cart);
+                    $coupon->increment('used_count');
+                }
             }
         }
 
-        // Crear la orden vinculada al usuario
+        // Descuento total combinado (Automático + Cupón)
+        $totalDiscountAmount = $autoDiscountAmount + $couponDiscountAmount;
+
+        // 4. Lógica de Envío
+        $shippingCost = ($subtotal >= 20) ? 0 : 3;
+
+        // 5. Calcular Total Final Correcto
+        $finalTotal = max(0, $subtotal - $totalDiscountAmount + $shippingCost);
+
+        // 6. Crear la orden con los descuentos guardados
         $order = Order::create([
             'user_id' => $user->id,
             'customer_name' => $user->name,
@@ -153,13 +174,13 @@ class CheckoutController extends Controller
             'customer_rif' => $request->rif,
             'address' => $request->address,
             'payment_method' => $request->payment,
-            'total' => $total,
-            'total_bs' => $total * $exchangeRate,
+            'total' => $finalTotal,
+            'total_bs' => $finalTotal * $exchangeRate,
             'taxable_base' => $totalTaxableBase * $exchangeRate,
             'tax_amount' => $totalTaxAmount * $exchangeRate,
             'exchange_rate' => $exchangeRate,
             'coupon_id' => $couponId,
-            'discount_amount' => $discountAmount,
+            'discount_amount' => $totalDiscountAmount,
         ]);
 
         // Crear los items correspondientes
@@ -177,8 +198,8 @@ class CheckoutController extends Controller
 
         session()->forget('cart'); 
         session()->forget('coupon');
-        // Enviar notificación de nueva compra a Discord
 
+        // Enviar notificación de nueva compra a Discord
         $this->discord->purchase([
             'customer_name' => $order->customer_name,
             'customer_email' => $order->customer_email,
