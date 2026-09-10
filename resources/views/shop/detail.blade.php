@@ -22,7 +22,7 @@
                 @mouseenter="zoom = true" @mouseleave="zoom = false">
 
                 <img id="main-image" src="{{ Storage::disk('r2')->url($product->image) }}"
-                    class="w-full h-[500px] object-contain bg-white transition-transform duration-300"
+                    class="w-full h-auto max-h-[400px] object-cover bg-white transition-transform duration-300"
                     :style="zoom ? `transform: scale(2); transform-origin: ${x}% ${y}%` : ''">
             </div>
 
@@ -102,117 +102,232 @@
                 </p>
             @endif
 
-            {{-- Precio --}}
-            <div class="mt-4">
-                <div class="flex flex-col items-start gap-1">
-                    @if($showUsd)
-                        <p class="text-4xl font-bold text-gray-900">${{ number_format($product->price, 2) }}</p>
-                    @endif
+            {{-- Componente Reactivo de Producto con Paquetes y Selección de Cantidad --}}
+<div x-data="{ 
+    quantity: 1,
+    unitPrice: {{ $product->price }},
+    unitPriceBs: {{ $product->price_bs }},
+    bundles: [
+        { qty: 1, price: {{ $product->price }}, discountLabel: '', freeShipping: false },
+        { qty: 2, price: {{ $product->price * 2 * 0.95 }}, discountLabel: '5% Desc.', freeShipping: false },
+        { qty: 3, price: {{ $product->price * 3 * 0.88 }}, discountLabel: 'Mejor Opción + ENVÍO GRATIS', freeShipping: true }
+    ],
+    selectedBundle: 1,
+    
+    // Método para calcular el precio dinámico
+    getTotalPrice() {
+        let bundle = this.bundles.find(b => b.qty === this.quantity);
+        return bundle ? bundle.price : (this.quantity * this.unitPrice);
+    },
+    
+    selectBundle(qty) {
+        this.quantity = qty;
+        this.selectedBundle = qty;
+    }
+}">
 
-                    @if($showBs)
-                        <p class="text-2xl font-semibold text-gray-600">Bs. {{ number_format($product->price_bs, 2) }}</p>
-                    @endif
-                </div>
+    {{-- Precio Dinámico --}}
+    <div class="mt-4">
+        <div class="flex flex-col items-start gap-1">
+            @if($showUsd)
+                <p class="text-4xl font-bold text-gray-900">
+                    $<span x-text="getTotalPrice().toFixed(2)"></span>
+                </p>
+            @endif
 
-                @if($product->compare_price)
-                    <p class="text-gray-500 line-through mt-2">
-                        @if($showUsd)
-                            ${{ number_format($product->compare_price, 2) }}
-                        @endif
-                        @if($showUsd && $showBs) / @endif
-                        @if($showBs)
-                            Bs. {{ number_format($product->compare_price_bs, 2) }}
-                        @endif
-                    </p>
+            @if($showBs)
+                <p class="text-2xl font-semibold text-gray-600">
+                    Bs. <span x-text="(getTotalPrice() * (unitPriceBs / unitPrice)).toFixed(2)"></span>
+                </p>
+            @endif
+        </div>
+
+        @if($product->compare_price)
+            <p class="text-gray-500 line-through mt-2">
+                @if($showUsd)
+                    ${{ number_format($product->compare_price, 2) }}
                 @endif
-            </div>
-
-            {{-- Stock --}}
-            <p class="mt-2 text-sm {{ $product->stock > 0 ? 'text-green-600' : 'text-red-600' }}">
-                {{ $product->stock > 0 ? 'En stock' : 'Agotado' }}
+                @if($showUsd && $showBs) / @endif
+                @if($showBs)
+                    Bs. {{ number_format($product->compare_price_bs, 2) }}
+                @endif
             </p>
+        @endif
+    </div>
 
-            {{-- Contenedor Principal: Optimizado para conversión local --}}
-            <div class="mt-6 flex flex-col gap-3 w-full">
-                
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
-                    {{-- 1. Botón Agregar al Carrito --}}
-                    <div class="flex-1 min-w-0">
-                        <x-add-to-cart-button :product="$product" />
-                    </div>
+    {{-- Stock --}}
+    <p class="mt-2 text-sm {{ $product->stock > 0 ? 'text-green-600' : 'text-red-600' }}">
+        {{ $product->stock > 0 ? 'En stock' : 'Agotado' }}
+    </p>
 
-                    {{-- 2. Botón Comprar Ya --}}
-                    @if($product->stock > 0)
-                        <div class="flex-1 min-w-0">
-                            <form action="{{ route('cart.buy-now', $product->id) }}" method="POST" class="m-0 p-0">
-                                @csrf
-                                <button type="submit" 
-                                    class="w-full bg-[#db2777] hover:bg-[#be185d] text-white border-none font-medium text-[0.75rem] uppercase tracking-[0.08em] cursor-pointer flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 shadow-sm"
-                                    style="border-radius: 2rem; padding: 0.6rem 1rem; font-family: 'DM Sans', sans-serif; height: 42px;">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
-                                        <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                    </svg>
-                                    <span class="truncate">Comprar ya</span>
-                                </button>
-                            </form>
+    {{-- Selector de Ofertas por Paquete (Bundles) --}}
+    @if($product->stock > 0)
+        <div class="mt-5 space-y-2.5">
+            <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide">¿Cuántas quieres llevar?</h3>
+            
+            <div class="grid grid-cols-1 gap-2.5">
+                {{-- Paquete 1 --}}
+                <label @click="selectBundle(1)" 
+                    :class="selectedBundle === 1 ? 'border-pink-600 bg-pink-50/40 ring-1 ring-pink-600' : 'border-gray-200 hover:border-gray-300 bg-white'"
+                    class="relative flex items-center justify-between p-3.5 border rounded-xl cursor-pointer transition-all duration-200">
+                    <div class="flex items-center gap-3">
+                        <input type="radio" name="bundle_selection" value="1" x-model="selectedBundle" class="text-pink-600 focus:ring-pink-500 h-4 w-4">
+                        <div>
+                            <span class="font-bold text-gray-900 text-sm">1 Unidad</span>
                         </div>
-                    @endif
-                </div>
-
-                {{-- 3. Botón de Pedido Rápido por WhatsApp --}}
-                @if($product->stock > 0)
-                    @php
-                        $message = urlencode("¡Hola! Me interesa el producto: *" . $product->name . "* con un precio de $" . number_format($product->price, 2) . ". ¿Está disponible?");
-                        $phone = "584245478154";
-                    @endphp
-                    <div class="w-full">
-                        <a href="https://wa.me/{{ $phone }}?text={{ $message }}" target="_blank"
-                            class="w-full text-white font-bold text-[0.8rem] uppercase tracking-[0.08em] flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 shadow-md no-underline" 
-                            style="background-color: #25D366 !important; border-radius: 2rem; padding: 0.7rem 1rem; font-family: 'DM Sans', sans-serif; height: 44px;">
-                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 11.973 0c3.184.001 6.177 1.242 8.426 3.496 2.248 2.253 3.487 5.244 3.484 8.425-.004 6.625-5.34 11.973-11.916 11.973-1.994-.001-3.953-.5-5.69-1.446L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.794 1.451 5.435 0 9.856-4.42 9.86-9.858.002-2.634-1.023-5.11-2.881-6.97C16.502 1.868 14.032.843 11.397.842 5.96.842 1.54 5.261 1.537 10.7c-.001 1.713.453 3.39 1.313 4.873L1.86 21.082l5.723-1.5-.936.572z"/>
-                            </svg>
-                            <span>Consultar o Comprar por WhatsApp</span>
-                        </a>
                     </div>
-                @endif
+                    <span class="font-bold text-gray-900 text-sm">${{ number_format($product->price, 2) }}</span>
+                </label>
 
-                {{-- Botón de Favoritos --}}
-                <div class="w-full flex justify-center mt-1">
-                    <button onclick="toggleWishlist({{ $product->id }}, this)"
-                        class="w-full p-2 bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-pink-600 transition flex justify-center items-center gap-2 text-sm font-medium"
-                        style="height: 38px;"
-                        data-favorited="{{ auth()->check() && auth()->user()->hasInWishlist($product->id) ? 'true' : 'false' }}">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                        </svg>
-                        <span class="wishlist-text">
-                            {{ auth()->check() && auth()->user()->hasInWishlist($product->id) ? 'Quitar de Favoritos' : 'Guardar en Favoritos' }}
-                        </span>
-                    </button>
-                </div>
+                {{-- Paquete 2 --}}
+                <label @click="selectBundle(2)" 
+                    :class="selectedBundle === 2 ? 'border-pink-600 bg-pink-50/40 ring-1 ring-pink-600' : 'border-gray-200 hover:border-gray-300 bg-white'"
+                    class="relative flex items-center justify-between p-3.5 border rounded-xl cursor-pointer transition-all duration-200">
+                    <div class="flex items-center gap-3">
+                        <input type="radio" name="bundle_selection" value="2" x-model="selectedBundle" class="text-pink-600 focus:ring-pink-500 h-4 w-4">
+                        <div>
+                            <span class="font-bold text-gray-900 text-sm">2 Unidades</span>
+                            <span class="ml-2 text-xs bg-purple-100 text-purple-700 font-semibold px-2 py-0.5 rounded-full">5% DESC</span>
+                        </div>
+                    </div>
+                    <span class="font-bold text-gray-900 text-sm">${{ number_format($product->price * 2 * 0.95, 2) }}</span>
+                </label>
+
+                {{-- Paquete 3 (Destacado - Mejor Valor) --}}
+                <label @click="selectBundle(3)" 
+                    :class="selectedBundle === 3 ? 'border-pink-600 bg-pink-50/60 ring-2 ring-pink-600 shadow-sm' : 'border-pink-300 hover:border-pink-400 bg-white'"
+                    class="relative flex items-center justify-between p-3.5 border rounded-xl cursor-pointer transition-all duration-200">
+                    <div class="absolute -top-2.5 right-4 bg-pink-600 text-white text-[0.65rem] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-xs">
+                        🔥 Más Popular
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="radio" name="bundle_selection" value="3" x-model="selectedBundle" class="text-pink-600 focus:ring-pink-500 h-4 w-4">
+                        <div>
+                            <span class="font-bold text-gray-900 text-sm">3 Unidades</span>
+                            <div class="mt-0.5">
+                                <span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full">🚚 ENVÍO GRATIS</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-bold text-pink-600 text-base">${{ number_format($product->price * 3 * 0.88, 2) }}</span>
+                    </div>
+                </label>
             </div>
 
-            {{-- Sección de Confianza y Garantía --}}
-            <div class="mt-6 p-4 bg-gray-50 border border-gray-100 rounded-xl space-y-3">
-                <div class="flex items-center gap-3 text-sm text-gray-600">
-                    <svg class="w-5 h-5 text-pink-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                    </svg>
-                    <span><strong>Pago 100% Seguro:</strong> Cifrado de datos protegido.</span>
+            {{-- Selector de Cantidad Manual (- 1 +) para cantidades personalizadas --}}
+            <div class="flex items-center gap-3 pt-2">
+                <span class="text-xs font-semibold text-gray-600">O elige otra cantidad:</span>
+                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
+                    <button type="button" @click="if (quantity > 1) { quantity--; selectedBundle = quantity; }" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm transition">-</button>
+                    <span class="px-4 py-1 text-sm font-bold text-gray-900" x-text="quantity"></span>
+                    <button type="button" @click="quantity++; selectedBundle = quantity;" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm transition">+</button>
                 </div>
-                <div class="flex items-center gap-3 text-sm text-gray-600">
-                    <svg class="w-5 h-5 text-pink-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-                    </svg>
-                    <span><strong>Envío Gratis:</strong> Aplicable para compras mayores a $20 USD.</span>
+            </div>
+        </div>
+    @endif
+
+    {{-- Botones de Acción integrados con la cantidad seleccionada --}}
+    <div class="mt-6 flex flex-col gap-3 w-full">
+        
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
+            
+            {{-- 2. Botón Comprar Ya --}}
+            @if($product->stock > 0)
+                <div class="flex-1 min-w-0">
+                    <form action="{{ route('cart.buy-now', $product->id) }}" method="POST" class="m-0 p-0">
+                        @csrf
+                        {{-- Input oculto que envía la cantidad seleccionada --}}
+                        <input type="hidden" name="quantity" :value="quantity">
+                        
+                        <button type="submit" 
+                            class="w-full bg-[#db2777] hover:bg-[#be185d] text-white border-none font-medium text-[0.75rem] uppercase tracking-[0.08em] cursor-pointer flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 shadow-sm"
+                            style="border-radius: 2rem; padding: 0.6rem 1rem; font-family: 'DM Sans', sans-serif; height: 42px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+                                <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            <span class="truncate">Comprar ya</span>
+                        </button>
+                    </form>
                 </div>
-                <div class="flex items-center gap-3 text-sm text-gray-600">
-                    <svg class="w-5 h-5 text-pink-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.757a1 1 0 01.707 1.707l-5.414 5.414a1 1 0 01-.707.293H10.5a1 1 0 01-.707-.293l-5.414-5.414A1 1 0 015.086 10H10V4a1 1 0 011-1h2a1 1 0 011 1v6z"/>
+            @endif
+
+            {{-- 1. Botón Agregar al Carrito --}}
+            <div class="flex-1 min-w-0">
+                <x-add-to-cart-button :product="$product" />
+            </div>
+        </div>
+
+        {{-- 3. Botón de WhatsApp dinámico según la cantidad seleccionada --}}
+        @if($product->stock > 0)
+            @php $phone = "584245478154"; @endphp
+            <div class="w-full">
+                <a :href="'https://wa.me/{{ $phone }}?text=' + encodeURIComponent('¡Hola! Me interesa comprar ' + quantity + ' unidad(es) del producto: *{{ $product->name }}* por un total de $' + getTotalPrice().toFixed(2) + '. ¿Tienen disponibilidad?')" 
+                    target="_blank"
+                    class="w-full text-white font-bold text-[0.8rem] uppercase tracking-[0.08em] flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 shadow-md no-underline" 
+                    style="background-color: #25D366 !important; border-radius: 2rem; padding: 0.7rem 1rem; font-family: 'DM Sans', sans-serif; height: 44px;">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 11.973 0c3.184.001 6.177 1.242 8.426 3.496 2.248 2.253 3.487 5.244 3.484 8.425-.004 6.625-5.34 11.973-11.916 11.973-1.994-.001-3.953-.5-5.69-1.446L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.794 1.451 5.435 0 9.856-4.42 9.86-9.858.002-2.634-1.023-5.11-2.881-6.97C16.502 1.868 14.032.843 11.397.842 5.96.842 1.54 5.261 1.537 10.7c-.001 1.713.453 3.39 1.313 4.873L1.86 21.082l5.723-1.5-.936.572z"/>
                     </svg>
-                    <span><strong>Compra Garantizada:</strong> Satisfacción y soporte post-venta asegurado.</span>
+                    <span> Consultar o pedir por WhatsApp</span>
+                </a>
+            </div>
+        @endif
+
+    </div>
+
+</div>
+
+            {{-- Sección de Confianza, Garantía e Información de Envíos --}}
+            <div class="mt-6 space-y-3">
+                
+                {{-- Bloque Destacado de Envíos --}}
+                <div class="p-4 bg-gradient-to-r from-pink-50/70 to-purple-50/70 border border-pink-100 rounded-xl shadow-xs">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xl">🚚</span>
+                        <h4 class="font-bold text-gray-900 text-sm sm:text-base">Información de Envíos y Entregas</h4>
+                    </div>
+
+                    <ul class="space-y-2 text-xs sm:text-sm text-gray-700">
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold text-pink-600">📦 Nacionales:</span>
+                            <span>Tarifa desde <strong>2.400 Bs</strong> vía <strong>MRW</strong>. También enviamos cobro en destino por <strong>Zoom</strong> y <strong>Tealca</strong>.</span>
+                        </li>
+                       
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold text-pink-600">📍 Maracay:</span>
+                            <span>Contamos con <strong>entregas personales</strong> en la ciudad.</span>
+                        </li>
+
+                         <li class="flex items-start gap-2">
+                            <span class="font-bold text-pink-600">🎉 Envío GRATIS:</span>
+                            <span>Aplica en compras superiores a <strong>$30 USD</strong> a nivel nacional.</span>
+                        </li>
+
+
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold text-pink-600">⏱️ Tiempo estimado:</span>
+                            <span>Despacho rápido en 1 a 2 días hábiles.</span>
+                        </li>
+                    </ul>
                 </div>
+
+                {{-- Beneficios de Compra --}}
+                <div class="p-4 bg-gray-50 border border-gray-100 rounded-xl space-y-2.5">
+                    <div class="flex items-center gap-3 text-xs sm:text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-pink-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        <span><strong>Pago 100% Seguro:</strong> Cifrado de datos y métodos locales protegidos.</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs sm:text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-pink-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.757a1 1 0 01.707 1.707l-5.414 5.414a1 1 0 01-.707.293H10.5a1 1 0 01-.707-.293l-5.414-5.414A1 1 0 015.086 10H10V4a1 1 0 011-1h2a1 1 0 011 1v6z"/>
+                        </svg>
+                        <span><strong>Compra Garantizada:</strong> Atención personalizada post-venta.</span>
+                    </div>
+                </div>
+
             </div>
 
             {{-- Descripción --}}
