@@ -68,18 +68,31 @@ class DiscordNotificationService
 
     public function purchase(array $data): bool
     {
+        // 1. Limpiamos el número para que solo contenga dígitos (ej: 584121234567)
+        $cleanPhone = preg_replace('/[^0-9]/', '', $data['customer_phone']);
+        
+        // 2. Construimos la URL de WhatsApp (puedes agregar un mensaje predeterminado si lo deseas)
+        $whatsappUrl = "https://wa.me/{$cleanPhone}";
+
         return $this->send('purchases', [
             'embeds' => [
                 DiscordEmbedBuilder::make()
                     ->title('🛒 Nueva compra')
                     ->color(0x57F287) // verde
-                    ->field('Cliente',  $data['customer_name'], true)
-                    ->field('Email',    $data['customer_email'], true)
-                    ->field('RIF',      $data['customer_rif'], true)
+                    ->field('Cliente',   $data['customer_name'], true)
+                    ->field('Email',     $data['customer_email'], true)
+                    ->field('RIF',       $data['customer_rif'], true)
                     ->field('Dirección', $data['customer_address'], true)
-                    ->field('Teléfono', $data['customer_phone'], true)
-                    ->field('Total',    '$' . number_format($data['total'], 2), true)
-                    ->field('Orden #',  $data['order_id'], true)
+                    
+                    // Opción: Enlace con Markdown dentro del mismo campo de teléfono
+                    ->field('Teléfono',  "[{$data['customer_phone']}]({$whatsappUrl})", true)
+                    
+                    ->field('Total',     '$' . number_format($data['total'], 2), true)
+                    ->field('Orden #',   $data['order_id'], true)
+                    
+                    // Opcional: Un campo dedicado exclusivamente para ir al chat
+                    ->field('WhatsApp',  "[Enviar mensaje]({$whatsappUrl})", true)
+                    
                     ->field('Productos', $data['items_summary'])
                     ->timestamp()
                     ->build(),

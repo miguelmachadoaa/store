@@ -30,7 +30,7 @@ class CartDiscountService
         // 2. Definimos los tramos de descuento según la cantidad total
         if ($totalItemsCount >= 3) {
             $discountPercent = 0.2; // 20% de descuento
-            $tierName = 'Lleva 3 o más (20% OFF + Envío GRATIS)';
+            $tierName = 'Lleva 3 o más (20% OFF )';
             $freeShipping = true;
         } elseif ($totalItemsCount === 2) {
             $discountPercent = 0.05; // 5% de descuento
