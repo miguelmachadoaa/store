@@ -379,4 +379,73 @@ class ProductController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function exportJsonCatalog()
+    {
+        // 1. Obtener todas las piedras activas para el índice de piedras
+        $stones = Stone::where('is_active', 1)
+            ->orderBy('sort_order', 'asc')
+            ->get()
+            ->map(function ($stone) {
+                return [
+                    "id" => $stone->id,
+                    "name" => $stone->name,
+                    "slug" => $stone->slug,
+                    "subtitle" => $stone->subtitle ?? "",
+                    "short_description" => $stone->short_description ?? "",
+                    "zodiac_signs" => $stone->zodiac_signs ?? [],
+                    "chakras" => $stone->chakras ?? [],
+                    "benefits" => $stone->benefits ?? []
+                ];
+            });
+
+        // 2. Obtener los productos con sus relaciones cargadas (imágenes, piedras, etc.)
+        $products = Product::with(['images', 'brand', 'stones'])
+            ->get()
+            ->map(function ($product) {
+                return [
+                    "id" => $product->id,
+                    "sku" => $product->sku,
+                    "name" => $product->name,
+                    "slug" => $product->slug,
+                    "price" => (float) $product->price,
+                    "compare_price" => $product->compare_price ? (float) $product->compare_price : null,
+                    "stock" => (int) $product->stock,
+                    "is_active" => (bool) $product->is_active,
+                    "is_featured" => (bool) $product->is_featured,
+                    "type" => $product->type ?? "Pulsera", // Ajusta según tu columna o lógica
+                    "main_image" => $product->image ? Storage::disk('r2')->url($product->image) : null,
+                    "gallery_images" => $product->images->map(function ($img) {
+                        return Storage::disk('r2')->url($img->image);
+                    })->toArray(),
+                    "associated_stones" => $product->stones->map(function ($stone) {
+                        return [
+                            "id" => $stone->id,
+                            "name" => $stone->name
+                        ];
+                    })->toArray(),
+                    "holistic_intentions" => $product->holistic_intentions ?? [], // Ajusta si usas JSON en BD
+                    "description" => $product->description,
+                    "seo" => [
+                        "title" => $product->meta_title ?? $product->name,
+                        "description" => $product->meta_description ?? substr(strip_tags($product->description), 0, 160)
+                    ]
+                ];
+            });
+
+        // 3. Estructura general del JSON solicitada
+        $catalog = [
+            "catalog_info" => [
+                "store_name" => "Mary Mystic Stones",
+                "currency" => "USD",
+                "version" => "1.0",
+                "description" => "Catálogo optimizado de joyería mística y holística elaborada con piedras naturales. Datos estructurados con relaciones directas, metadatos SEO y etiquetas holísticas para procesamiento e inferencia por Inteligencia Artificial."
+            ],
+            "stones_index" => $stones,
+            "products" => $products
+        ];
+
+        // Retornar en formato JSON bonito (Pretty Print)
+        return response()->json($catalog, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
 }

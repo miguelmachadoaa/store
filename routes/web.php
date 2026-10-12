@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\PaymentReportAdminController;
 use App\Http\Controllers\Admin\OrderCommentController;
 use App\Http\Controllers\StoneController;
 use App\Http\Controllers\Admin\StoneAdminController;
+use App\Http\Controllers\CatalogController;
 
 // Rutas de administración (CRUD)
 
@@ -53,6 +54,12 @@ Route::get('/storage/{path}', function ($path) {
 
     return Response::make($file, 200)->header("Content-Type", $type);
 })->where('path', '.*');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('products/catalog/pdf', [CatalogController::class, 'download'])
+        ->name('products.catalog.pdf');
+});
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
@@ -87,6 +94,8 @@ Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.
 Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon.apply');
 Route::post('/cart/coupon/remove', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
+
+Route::get('/export/catalog-json', [ProductController::class, 'exportJsonCatalog'])->name('export.catalog-json');
 
 Route::get('/marca/{slug}', [ProductController::class, 'byBrand'])->name('shop.byBrand');
 Route::get('/category/{slug}', [ProductController::class, 'byCategory'])->name('shop.byCategory');

@@ -8,6 +8,11 @@
                 class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
                 Nuevo Producto
             </a>
+
+            <a href="{{ route('products.catalog.pdf') }}"
+                class="inline-flex items-center gap-2 rounded-lg bg-rose-900 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-800">
+                    Descargar catálogo PDF
+            </a>
         </div>
     </x-slot>
 
